@@ -1,0 +1,892 @@
+<main class="main">
+    <section class="order-details">
+        <div class="d-flex justify-content-between pb-3 border-bottom mb-3">
+            <ul class="p-0 m-0 list-unstyled">
+                <li><b>#{{orderDetails.orderId}}</b></li>
+                <li class="color--grey">{{orderDetails.customerDetails.name}}</li>
+                <li class="color--grey">{{orderDetails.customerDetails.id}}</li>
+                <li class="color--grey" *ngIf="service !== Services.PND">
+                    {{orderDetails.customerDetails.addressLine1}}, {{orderDetails.customerDetails.addressLine2}},
+                    {{orderDetails.customerDetails.city}}, {{orderDetails.customerDetails.state}},
+                    {{orderDetails.customerDetails.country}} - {{orderDetails.customerDetails.pinCode}}
+                </li>
+                <li class="color--grey">
+                    {{orderDetails.customerDetails.phone}}
+                </li>
+                <li class="color--grey">
+                    {{orderDetails.customerDetails.email}}
+                </li>
+            </ul>
+        </div>
+        <div class="cart-details" *ngFor="let orderItem of orderDetails.orderItems">
+            <span class="w-75">
+                <b>{{orderItem.orderItemQuantity}} x {{orderItem.orderItemName}}</b>
+                <p>
+                    <label *ngFor="let orderVariant of orderItem.orderVariants; let i=index">
+                        {{orderVariant.orderVariantName}}
+                        <span
+                            *ngIf="orderItem.orderVariants.length !== i+1 || orderItem.orderAddons.length">,&nbsp;</span>
+                    </label>
+                    <label *ngFor="let orderAddon of orderItem.orderAddons; let j=index">
+                        {{orderAddon.orderAddonName}}
+                        <span *ngIf="orderItem.orderAddons.length !== j+1">,&nbsp;</span>
+                    </label>
+                </p>
+            </span>
+            <span>{{orderItem.orderItemFinalPrice}}</span>
+        </div>
+        <!-- <ng-container *ngIf="service === Services.PND">
+            <div class="cart-details">
+                <span class="w-50"><strong>Pickup Name</strong></span>
+                <span>{{orderDetails.pickupDetails.name}}</span>
+            </div>
+            <div class="cart-details">
+                <span class="w-50"><strong>Pickup Contact</strong></span>
+                <span>{{orderDetails.pickupDetails.contact}}</span>
+            </div>
+            <div class="cart-details">
+                <span class="w-50"><strong>Pickup Address</strong></span>
+                <span class="text-end">{{orderDetails.pickupDetails.address}}</span>
+            </div>
+            <div class="cart-details">
+                <span class="w-50"><strong>Drop Name</strong></span>
+                <span>{{orderDetails.dropDetails.name}}</span>
+            </div>
+            <div class="cart-details">
+                <span class="w-50"><strong>Drop Contact</strong></span>
+                <span>{{orderDetails.dropDetails.contact}}</span>
+            </div>
+            <div class="cart-details">
+                <span class="w-50"><strong>Drop Address</strong></span>
+                <span class="text-end">{{orderDetails.dropDetails.address}}</span>
+            </div>
+        </ng-container> -->
+        <h6><b>Billing Summary</b></h6>
+        <!-- <ng-container *ngIf="service !== Services.PND" [ngTemplateOutlet]="orderDetails.invoiceDetails.version === '0.0.1' ? invoiceV1 : invoiceV2">
+        </ng-container> -->
+        <ng-container [ngTemplateOutlet]="invoiceBreakOut">
+        </ng-container>
+        <button class="buttons br-50 mt-2" (click)="markOrderForRefund()" *ngIf="showMarkForRefundBtn">
+            {{orderAction.MarkForRefund}}</button>
+        <button class="buttons br-50 w-100 mt-2" (click)="showAllocationHistory = !showAllocationHistory"
+            *ngIf="orderDetails.deliveryPartnerAllocationHistory && orderDetails.orderStatus === 'Completed' ">
+            {{ showAllocationHistory ? 'Hide Delivery Partner Allocation History' : 'Show Delivery Partner Allocation
+            History' }}
+        </button>
+        <div class="special-request my-3" *ngIf="orderDetails.anySpecialRequest">
+            <p>Special request</p>
+            <span>{{orderDetails.anySpecialRequest}}</span>
+        </div>
+    </section>
+
+
+    <!-- Order Details Section -->
+    <section class="row" *ngIf="orderDetails.orderAcceptanceStatus === 'Pending' && orderDetails.orderStatus === 'Placed' && service === Services.Food">
+  <div class="col-12 mt-2 d-flex justify-content-end">
+    <button class="buttons cursor-enabled w-25 ml-auto" [ngClass]="{'buttons--disabled': !isSendNotificationButtonDisable}"
+        (click)="sendNotificationToVendor(orderDetails.orderId)"
+        [disabled]="!isSendNotificationButtonDisable">
+  <strong class="me-2 fs-5">Send Notification</strong>
+  <mat-icon>notifications_active</mat-icon>
+</button>
+  </div>
+</section>
+
+    <section class="row">
+        <!-- Rider Details -->
+        <section class="row">
+            <h3 class="col-12">Rider Details</h3>
+
+            <div class="input-details col-4">
+                <label for="search" class="input-heading">Rider Id</label>
+                <p class="input-field">
+                    {{orderDetails.riderId ? orderDetails.riderId : 'N/A'}}
+                </p>
+            </div>
+            <div class="input-details col-4">
+                <label for="search" class="input-heading">Rider Name</label>
+                <p class="input-field">
+                    {{orderDetails.riderName ? orderDetails.riderName : 'N/A'}}
+                </p>
+            </div>
+            <div class="input-details col-4">
+                <label for="search" class="input-heading">Rider Phone Number</label>
+                <p class="input-field">
+                    {{orderDetails.riderContact ? orderDetails.riderContact : 'N/A'}}
+                </p>
+            </div>
+            <div class="input-details col-4">
+                <label for="search" class="input-heading">Delivery Service</label>
+                <p class="input-field">
+                    {{orderDetails.deliveryService ? orderDetails.deliveryService : 'N/A'}}
+                </p>
+            </div>
+            <div class="input-details col-4">
+                <label for="search" class="input-heading">Pickup Eta</label>
+                <p class="input-field">
+                    {{orderDetails.pickupETA ? orderDetails.pickupETA : 'N/A'}}
+                </p>
+            </div>
+            <div class="input-details col-4">
+                <label for="search" class="input-heading">Drop Eta</label>
+                <p class="input-field">
+                    {{orderDetails.dropETA? orderDetails.dropETA : 'N/A'}}
+                </p>
+            </div>
+            <div class="input-details col-4" *ngIf="service === Services.Food">
+                <label for="search" class="input-heading">Is Sponsored Rider</label>
+                <p class="input-field">
+                    {{orderDetails.isSponsoredRider? 'Yes' : 'No'}}
+                </p>
+            </div>
+        </section>
+        <!-- Order Item Details -->
+    <ng-container *ngIf="service === Services.PND">
+        <hr> 
+        <section class=" w-75">
+            <h3>Order Items Details</h3>
+            <table class="report-table w-100">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Pickup Location Id</th>
+                        <th>Drop Location Id</th>
+                        <th>Items Name</th>
+                        <th>Item Price</th>
+                        <th>Category Id</th>
+                        <th>Custom Category Name</th>
+                        <th>External Id</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let items of orderDetails.pndOrderItems">
+                        <td><strong>{{items.id}}</strong></td>
+                        <td>{{items.pickupLocationId}}</td>
+                        <td>{{items.dropLocationId}}</td>
+                        <td>{{items.name}}</td>
+                        <td>{{items.price}}</td>
+                        <td>{{items.categoryId}}</td>
+                        <td>{{items.customCategoryName?items.customCategoryName:'N/A'}}</td>
+                        <td>{{items.externalId?items.externalId:'N/A'}}</td>                        
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+    </ng-container>
+
+    <!-- Order Locations -->
+    <ng-container *ngIf="service === Services.PND">
+        <section class=" w-75 mt-3">
+            <h3>Order Location Details</h3>
+            <table class="report-table w-100">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Type</th>
+                        <th>Contact Name</th>                        
+                        <th>Contact Number</th>
+                        <th>Address</th>
+                        <th>Arrival ETA</th>
+                        <th>Merchant Pod Amount</th>
+                        <th>Visit Sequence</th>
+                        <th>Delivery Status</th>
+                        <th>Delivery Completed At</th>
+                        <th>Pod Status</th>
+                        <th>Cancellation Reason</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let location of orderDetails.pndOrderLocation">
+                        <td><strong>{{location.id}}</strong></td>
+                        <td>{{location.type | titlecase }}</td>
+                        <td>{{location.contactName}}</td>
+                        <td>{{location.contactNumber}}</td>
+                        <td>{{location.address}}</td>
+                        <td>{{location.arrivalEta}}</td>
+                        <td>{{location.merchantPodAmount}}</td>
+                        <td>{{location.visitSequence}}</td>
+                        <td>{{location.deliveryStatus | titlecase}}</td>
+                        <td>{{location.orderDeliveryCompletedAt ? (location.orderDeliveryCompletedAt | date: dateLongTimeFormat) :'N/A'}}</td>
+                        <td>{{location.podStatus | titlecase}}</td>
+                        <td>{{location.cancellationReason?location.cancellationReason:'N/A'}}</td>
+
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+    </ng-container>
+    <!-- Category Details --!>
+        // <section class="row mt-5 mb-2" *ngIf="service === Services.PND">
+        //     <hr>
+        //     <h3 class="col-12">Category Details</h3>
+        //     <div class="input-details col-4">
+        //         <label for="search" class="input-heading">Category Name</label>
+        //         <span class="input-field text-break">
+        //             {{orderDetails.categoryName ? orderDetails.categoryName: 'N/A'}}
+        //         </span>
+        //     </div>
+        //     <div class="input-details col-4">
+        //         <label for="search" class="input-heading">Category Id</label>
+        //         <span class="input-field text-break">
+        //             {{orderDetails.categoryId ? orderDetails.categoryId: 'N/A'}}
+        //         </span>
+        //     </div>
+        // </section>
+
+        <!--Order Details-->
+        <section class="row mt-5 mb-2">
+            <hr>
+            <h3 class="col-12">Order Details</h3>
+            <div class="input-details col-4">
+                <label for="search" class="input-heading">Order Review Comment</label>
+                <span class="input-field text-break">
+                    {{orderDetails.orderReviewComments ? orderDetails.orderReviewComments: 'N/A'}}
+                </span>
+            </div>
+        </section>
+
+        <!-- ETA When Order Placed -->
+        <section class="row mt-5 mb-2" *ngIf="service !== Services.PND">
+            <hr>
+            <h3 class="col-12">ETA When Order Placed</h3>
+            <div class="input-details col-4">
+                <label for="search" class="input-heading">Default Preparation Time</label>
+                <span class="input-field">
+                    {{orderDetails.defaultPreparationTime ? orderDetails.defaultPreparationTime: 'N/A'}}
+                </span>
+            </div>
+            <div class="input-details col-4">
+                <label for="search" class="input-heading">Date</label>
+                <span class="input-field">
+                    {{orderDetails.orderPlacedEtaEpoch ? orderDetails.orderPlacedEtaEpoch: 'N/A'}}
+                </span>
+            </div>
+            <div class="input-details col-4">
+                <label for="search" class="input-heading">Rider To Vendor Eta</label>
+                <span class="input-field">
+                    {{orderDetails.riderToVendorEta ? orderDetails.riderToVendorEta: 'N/A'}}
+                </span>
+            </div>
+            <div class="input-details col-4">
+                <label for="search" class="input-heading">Rider ETA From Vendor To Customer</label>
+                <span class="input-field">
+                    {{orderDetails.riderFromVendorToCustomerEta ? orderDetails.riderFromVendorToCustomerEta: 'N/A'}}
+                </span>
+            </div>
+            <div class="input-details col-4">
+                <label for="search" class="input-heading">Delivery Eta Mins When Order Was Placed</label>
+                <span class="input-field">
+                    {{orderDetails.deliveryEtaMinsWhenOrderWasPlaced ? orderDetails.deliveryEtaMinsWhenOrderWasPlaced:
+                    'N/A'}}
+                </span>
+            </div>
+        </section>
+        <!-- ETA When Vendor Accept -->
+        <section class="row mt-5 mb-2" *ngIf="service !== Services.PND">
+            <hr>
+            <h3 class="col-12">ETA When Vendor Accepted</h3>
+            <div class="input-details col-4">
+                <label for="search" class="input-heading">Preparation Time</label>
+                <span class="input-field">
+                    {{orderDetails.vendorPreparationTime ? orderDetails.vendorPreparationTime: 'N/A'}}
+                </span>
+            </div>
+            <div class="input-details col-4">
+                <label for="search" class="input-heading">Date</label>
+                <span class="input-field">
+                    {{orderDetails.vendorEpoch ? orderDetails.vendorEpoch: 'N/A'}}
+                </span>
+            </div>
+            <div class="input-details col-4">
+                <label for="search" class="input-heading">Rider To Vendor Eta</label>
+                <span class="input-field">
+                    {{orderDetails.vendorAcceptedRiderToVendorEta ? orderDetails.vendorAcceptedRiderToVendorEta: 'N/A'}}
+                </span>
+            </div>
+            <div class="input-details col-4">
+                <label for="search" class="input-heading">Rider ETA From Vendor To Customer</label>
+                <span class="input-field">
+                    {{orderDetails.vendorAcceptedRiderFromVendorToCustomerEta ?
+                    orderDetails.vendorAcceptedRiderFromVendorToCustomerEta: 'N/A'}}
+                </span>
+            </div>
+            <div class="input-details col-4">
+                <label for="search" class="input-heading">Delivery Eta Mins When Order Was Accepted By Vendor</label>
+                <span class="input-field">
+                    {{orderDetails.deliveryEtaMinsWhenOrderWasAcceptedByVendor ?
+                    orderDetails.deliveryEtaMinsWhenOrderWasAcceptedByVendor: 'N/A'}}
+                </span>
+            </div>
+        </section>
+        <!-- Order Logs -->
+        <section class="row mt-5 mb-2">
+            <hr>
+            <h3 class="col-12">Order Logs</h3>
+            <div class="input-details col-4">
+                <label for="search" class="input-heading">Placed At</label>
+                <span class="input-field">
+                    {{orderDetails.orderPlacedTime ? (orderDetails.orderPlacedTime | date: dateLongTimeFormat) : 'N/A'}}
+                </span>
+            </div>
+            <div class="input-details col-4" *ngIf="service !== Services.PND">
+                <label for="search" class="input-heading">Acceptance End Time</label>
+                <span class="input-field">
+                    {{orderDetails.timerEndTime ? (orderDetails.timerEndTime | date: dateLongTimeFormat) : 'N/A'}}
+                </span>
+            </div>
+            <div class="input-details col-4" *ngIf="service !== Services.PND">
+                <label for="search" class="input-heading">Vendor Accepted At</label>
+                <span class="input-field">
+                    {{orderDetails.vendorAcceptedTime ? (orderDetails.vendorAcceptedTime | date: dateLongTimeFormat) :
+                    'N/A'}}
+                </span>
+            </div>
+            <div class="input-details col-4" *ngIf="service !== Services.PND">
+                <label for="search" class="input-heading">Marked Ready At</label>
+                <span class="input-field">
+                    {{orderDetails.orderMarkedReadyTime ? (orderDetails.orderMarkedReadyTime | date: dateLongTimeFormat)
+                    :
+                    'N/A'}}
+                </span>
+            </div>
+            <div class="input-details col-4" *ngIf="service !== Services.PND">
+                <label for="search" class="input-heading">Pickedup At</label>
+                <span class="input-field">
+                    {{orderDetails.orderPickedupTime ? (orderDetails.orderPickedupTime | date: dateLongTimeFormat) :
+                    'N/A'}}
+                </span>
+            </div>
+            <div class="input-details col-4">
+                <label for="search" class="input-heading">Delivered At</label>
+                <span class="input-field">
+                    {{orderDetails.orderDeliveredTime ? (orderDetails.orderDeliveredTime | date: dateLongTimeFormat) :
+                    'N/A'}}
+                </span>
+            </div>
+        </section>
+
+        <!-- Order Status Details -->
+        <section class="row mt-5 mb-2">
+            <hr>
+            <div class="d-flex justify-content-between">
+                <h3>Order Status Details</h3>
+            </div>
+            <div class="input-details col-3" *ngIf="service !== Services.PND">
+                <label for="search" class="input-heading">Vendor Order Status</label>
+                <p class="input-field">
+                    {{orderDetails.orderAcceptanceStatus}}
+                </p>
+            </div>
+            <div class="input-details col-3">
+                <label for="search" class="input-heading">Delivery Status</label>
+                <p class="input-field">
+                    {{orderDetails.deliveryStatus}}
+                </p>
+            </div>
+            <div class="input-details col-3">
+                <label for="search" class="input-heading">Order Status</label>
+                <p class="input-field">
+                    {{orderDetails.orderStatus}}
+                </p>
+            </div>
+            <div class="input-details col-3">
+                <label for="search" class="input-heading">Refund Status</label>
+                <p class="input-field">
+                    {{orderDetails.refundStatus ? orderDetails.refundStatus : 'N/A'}}
+                </p>
+            </div>
+
+        </section>
+        <!-- Delivery Order Status History -->
+        <ng-container
+            *ngIf="orderDetails.deliveryOrderStatusHistory.length && orderDetails.orderStatus === 'Completed'">
+            <hr>
+            <h4 class="mt-2"><strong>Delivery Order Status History</strong></h4>
+            <section class="row">
+                <div class="input-details col-3 mb-3" *ngFor="let item of orderDetails.deliveryOrderStatusHistory">
+                    <span class="input-field"> <strong>{{item.status}} </strong>-> {{item.time | date:
+                        dateLongTimeFormat}}</span>
+                </div>
+            </section>
+        </ng-container>
+
+
+        <!-- Payment Details -->
+        <section class="row mt-5">
+            <hr>
+            <h3 class="col-12">Payment Details</h3>
+            <div class="input-details col-3">
+                <label for="search" class="input-heading">Payment ID</label>
+                <p class="input-field">
+                    {{orderDetails.paymentDetails.paymentId}}
+                </p>
+            </div>
+            <div class="input-details col-3">
+                <label for="search" class="input-heading">Payment Method</label>
+                <p class="input-field">
+                    {{!orderDetails.paymentDetails.isPod ? orderDetails.paymentDetails.paymentMethod : 'Pay on
+                    Delivery'}}
+                </p>
+            </div>
+            <div class="input-details col-3">
+                <label for="search" class="input-heading">Payment Status</label>
+                <p class="input-field">
+                    {{orderDetails.paymentDetails.paymentStatus}}
+                </p>
+            </div>
+            <ng-container *ngIf="!orderDetails.paymentDetails.isPod">
+                <div class="input-details col-3">
+                    <label for="search" class="input-heading">Payment Gateway</label>
+                    <p class="input-field">
+                        {{orderDetails.paymentDetails.paymentGateway}}
+                    </p>
+                </div>
+                <div class="input-details col-3">
+                    <label for="search" class="input-heading">Txn ID</label>
+                    <p class="input-field">
+                        {{orderDetails.paymentDetails.txnId}}
+                    </p>
+                </div>
+                <div class="input-details col-3">
+                    <label for="search" class="input-heading">Txn Time</label>
+                    <p class="input-field">
+                        {{orderDetails.paymentDetails.txnTime | date: dateLongTimeFormat}}
+                    </p>
+                </div>
+                <div class="input-details col-3">
+                    <label for="search" class="input-heading">Txn Amount</label>
+                    <p class="input-field">
+                        {{orderDetails.paymentDetails.txnAmount}}
+                    </p>
+                </div>
+            </ng-container>
+            <div class="input-details col-3" *ngIf="service !== Services.PND">
+                <label for="search" class="input-heading">Delivery Charges Paid By</label>
+                <p class="input-field">
+                    {{orderDetails.invoiceDetails.deliveryChargesPaidBy}}
+                </p>
+            </div>
+        </section>
+
+        <!-- Cancellation Details -->
+        <section class="row mt-5 mb-2" *ngIf="orderDetails.cancellationTime">
+            <hr>
+            <h3 class="col-12">Cancellation Details</h3>
+            <div class="input-details col-3">
+                <label for="search" class="input-heading">Cancelled By</label>
+                <p class="input-field">
+                    {{orderDetails.cancelledBy}}
+                </p>
+            </div>
+            <div class="input-details col-3" *ngIf="orderDetails.cancelledBy === 'admin'">
+                <label for="search" class="input-heading">Cancelled By Name</label>
+                <p class="input-field">
+                    {{orderDetails.cancelledByName ? orderDetails.cancelledByName: 'N/A'}}
+                </p>
+            </div>
+            <div class="input-details col-3">
+                <label for="search" class="input-heading">Cancellation Reason</label>
+                <p class="input-field text-break">
+                    {{orderDetails.cancellationReason}}
+                </p>
+            </div>
+            <div class="input-details col-3">
+                <label for="search" class="input-heading">Cancellation Time</label>
+                <p class="input-field">
+                    {{orderDetails.cancellationTime ? (orderDetails.cancellationTime | date: dateLongTimeFormat) :
+                    '---'}}
+                </p>
+            </div>
+        </section>
+
+        <!-- Refund Details -->
+        <section class="row mt-5 mb-2" *ngIf="orderDetails.refundDetails">
+            <hr>
+            <h3 class="col-12">Refund Details</h3>
+            <div class="input-details col-4" *ngIf="service !== Services.PND">
+                <label for="search" class="input-heading">Vendor Payout Amount</label>
+                <p class="input-field">
+                    {{orderDetails.refundDetails.vendorPayoutAmount}}
+                </p>
+            </div>
+            <div class="input-details col-4">
+                <label for="search" class="input-heading">Delivery Partner Amount</label>
+                <p class="input-field">
+                    {{orderDetails.refundDetails.deliveryPartnerAmount}}
+                </p>
+            </div>
+            <div class="input-details col-4">
+                <label for="search" class="input-heading">Customer Refundable Amount</label>
+                <p class="input-field">
+                    {{orderDetails.refundDetails.customerRefundableAmount}}
+                </p>
+            </div>
+            <div class="input-details col-4">
+                <label for="search" class="input-heading">Refund Settled By</label>
+                <p class="input-field">
+                    {{orderDetails.refundDetails.refundSettledBy? orderDetails.refundDetails.refundSettledBy : 'N/A'}}
+                </p>
+            </div>
+            <div class="input-details col-4">
+                <label for="search" class="input-heading">Refund Settled By Name</label>
+                <p class="input-field">
+                    {{orderDetails.refundDetails.refundSettledByName? orderDetails.refundDetails.refundSettledByName :
+                    'N/A'}}
+                </p>
+            </div>
+            <div class="input-details col-4" *ngIf="service !== Services.PND">
+                <label class="input-heading">Remarks for Vendor</label>
+                <p class="input-field text-break">
+                    {{orderDetails.refundDetails.remarksForVendor}}
+                </p>
+            </div>
+            <div class="input-details col-4">
+                <label class="input-heading">Remarks for Delivery Partner</label>
+                <p class="input-field text-break">
+                    {{orderDetails.refundDetails.remarksForDeliveryPartner ?
+                    orderDetails.refundDetails.remarksForDeliveryPartner : 'N/A' }}
+                </p>
+            </div>
+            <div class="input-details col-4">
+                <label class="input-heading ">Remarks for Customer</label>
+                <p class="input-field text-break">
+                    {{orderDetails.refundDetails.remarksForCustomer}}
+                </p>
+            </div>
+        </section>
+
+        <!-- Section for cancel/refund order -->
+        <section class="row order-action--grid-column mt-5 mb-2"
+            *ngIf="action === orderAction.CancelOrder || action === orderAction.SettleRefund">
+            <hr>
+            <h3 class="col-12">{{action}}</h3>
+            <div class="input-details" *ngIf="action === orderAction.CancelOrder">
+                <mat-radio-group [formControl]="cancellationReason" class="mt-2">
+                    <mat-radio-button [value]="reason.cancellationReason" class="input-heading me-3"
+                        *ngFor="let reason of cancellationReasonsList">{{reason.cancellationReason}}</mat-radio-button>
+                </mat-radio-group>
+                <app-form-error-msg [control]="cancellationReason"></app-form-error-msg>
+            </div>
+            <form class="row" [formGroup]="refundOrderForm" *ngIf="action === orderAction.SettleRefund">
+                <div class="input-details col-4" *ngIf="service !== Services.PND">
+                    <label class="input-heading"> Vendor Payout Amount
+                        <label>(max amount: {{orderDetails.invoiceDetails.vendorPayoutAmount}})</label>
+                    </label>
+                    <input type="text" class="input-field input-field--white" name="vendorPayoutAmount"
+                        formControlName="vendorPayoutAmount" placeholder="Enter Amount">
+                    <app-form-error-msg [control]="refundOrderForm.controls.vendorPayoutAmount"></app-form-error-msg>
+                </div>
+                <div class="input-details col-4">
+                    <label class="input-heading"> Delivery Partner Amount
+                        <label>(max amount: {{orderDetails.invoiceDetails.deliveryCharges}})</label>
+                    </label>
+                    <input type="text" class="input-field input-field--white" name="deliveryPartnerAmount"
+                        formControlName="deliveryPartnerAmount" placeholder="Enter Amount">
+                    <app-form-error-msg [control]="refundOrderForm.controls.deliveryPartnerAmount"></app-form-error-msg>
+                </div>
+                <div class="input-details col-4">
+                    <label class="input-heading"> Customer Refundable Amount
+                        <label>(max amount: {{orderDetails.invoiceDetails.totalCustomerPayable}})</label>
+                    </label>
+                    <input type="text" class="input-field input-field--white" name="customerRefundableAmount"
+                        formControlName="customerRefundableAmount" placeholder="Enter Amount">
+                    <app-form-error-msg
+                        [control]="refundOrderForm.controls.customerRefundableAmount"></app-form-error-msg>
+                </div>
+                <div class="input-details col-4" *ngIf="service !== Services.PND">
+                    <label class="input-heading text-break">Remarks for Vendor</label>
+                    <textarea class="reason" placeholder="Type here..." formControlName="remarksForVendor"></textarea>
+                    <app-form-error-msg [control]="refundOrderForm.controls.remarksForVendor"></app-form-error-msg>
+                </div>
+                <div class="input-details col-4">
+                    <label class="input-heading text-break">Remarks for Delivery Partner</label>
+                    <textarea class="reason" placeholder="Type here..."
+                        formControlName="remarksForDeliveryPartner"></textarea>
+                    <app-form-error-msg
+                        [control]="refundOrderForm.controls.remarksForDeliveryPartner"></app-form-error-msg>
+                </div>
+                <div class="input-details col-4">
+                    <label class="input-heading text-break">Remarks for Customer</label>
+                    <textarea class="reason" placeholder="Type here..." formControlName="remarksForCustomer"></textarea>
+                    <app-form-error-msg [control]="refundOrderForm.controls.remarksForCustomer"></app-form-error-msg>
+                </div>
+            </form>
+            <div class="d-flex justify-content-end gap-3 mt-3">
+                <button class="buttons buttons--white br-50 w-25" (click)="onClear()">Clear</button>
+                <button class="buttons br-50 w-25" (click)="onConfirm()"> Ok</button>
+            </div>
+        </section>
+    </section>
+
+    <!-- Invoice -->
+    <ng-template #invoiceV1>
+        <div class="cart-details">
+            <span>
+                <span>{{service !== Services.PND ? 'Item Total' : 'Total Cost'}}</span>
+                <p *ngIf="service === Services.PND">(Speedyy Charges)</p>
+            </span>
+            <span>
+                <span>{{orderDetails.invoiceDetails.totalItemCost}}</span>
+                <p *ngIf="service === Services.PND">({{orderDetails.invoiceDetails.speedyyCharges}})</p>
+            </span>
+        </div>
+        <div class="cart-details" *ngIf="service !== Services.PND">
+            <span> Order Packing Charges</span>
+            <span>{{orderDetails.invoiceDetails.totalPackingCharges}}</span>
+        </div>
+        <div class="cart-details">
+            <span> taxes</span>
+            <span>{{orderDetails.invoiceDetails.totalTax}}</span>
+        </div>
+        <div class="cart-details" *ngIf="service !== Services.PND">
+            <span> Delivery Charges</span>
+            <span>{{orderDetails.invoiceDetails.deliveryCharges}}</span>
+        </div>
+        <div class="cart-details">
+            <span> {{service !== Services.PND ? 'Transaction Charges' : 'Service Charges'}}</span>
+            <span>{{orderDetails.invoiceDetails.txnCharges}}</span>
+        </div>
+        <div class="cart-details" *ngIf="orderDetails.couponDetails">
+            <span> Discounts</span>
+            <span><span class="discount-code">{{orderDetails.couponDetails.couponCode}}</span> -
+                {{orderDetails.couponDetails.discountAmount}}
+            </span>
+        </div>
+        <div class="cart-details border-top pt-3">
+            <span> <b>bill total</b></span>
+            <span>{{orderDetails.invoiceDetails.totalCustomerPayable}}</span>
+        </div>
+        <button class="buttons br-50 w-25" (click)="showCouponDetails(orderDetails.couponDetails.couponId)"
+            *ngIf="orderDetails.couponDetails">Coupon Details</button>
+    </ng-template>
+
+    <ng-template #invoiceV2>
+        <h6><strong>Customer</strong></h6>
+        <div class="cart-details">
+            <span>Total Item Cost</span>
+            <span>{{orderDetails.invoiceDetails.totalItemCost}}</span>
+        </div>
+        <div class="cart-details">
+            <span>Packaging Charges</span>
+            <span>{{orderDetails.invoiceDetails.totalPackingCharges}}</span>
+        </div>
+        <div class="cart-details" *ngIf="service === Services.Paan">
+            <span>Platform Fees for Customer</span>
+            <span>{{orderDetails.invoiceDetails.speedyyChargesForCustomer}}</span>
+        </div>
+        <div class="cart-details">
+            <span>GST (Item + Packaging)</span>
+            <span>{{orderDetails.invoiceDetails.totalTax}}</span>
+        </div>
+        <div class="cart-details" *ngIf="orderDetails.invoiceDetails.transactionChargesPaidBy === 'customer'">
+            <span>Transaction Charges</span>
+            <span>{{orderDetails.invoiceDetails.txnCharges}}</span>
+        </div>
+        <div class="cart-details" *ngIf="orderDetails.invoiceDetails.deliveryChargesPaidBy === 'customer'">
+            <span>Delivery Charges (inclusive of taxes)</span>
+            <span>{{orderDetails.invoiceDetails.deliveryCharges}}</span>
+        </div>
+        <!-- <div class="cart-details" *ngIf="orderDetails.couponDetails">
+            <span>Discounts</span>
+            <span><span class="discount-code">{{orderDetails.couponDetails.couponCode}}</span> -
+                {{orderDetails.couponDetails.discountAmount}}
+            </span>
+        </div> -->
+        <div class="cart-details" *ngIf="orderDetails.couponDetails">
+            <span>Discount by Vendor</span>
+            <span><span class="discount-code">{{orderDetails.couponDetails.couponCode}}</span> - {{orderDetails.couponDetails.vendorDiscountShareAmount}}</span>
+        </div>
+        <div class="cart-details" *ngIf="orderDetails.couponDetails">
+            <span>Discount by Speedyy</span>
+            <span><span class="discount-code">{{orderDetails.couponDetails.couponCode}}</span> - {{orderDetails.couponDetails.speedyyDiscountShareAmount}}</span>
+    
+        </div>
+        <div class="cart-details">
+            <span><strong>Total Customer Payable</strong></span>
+            <span><strong>{{orderDetails.invoiceDetails.totalCustomerPayable}}</strong></span>
+        </div>
+        <hr>
+        <h6><strong>Vendor</strong></h6>
+        <div class="cart-details" *ngIf="service === Services.Paan">
+            <span>Platform Fees for Customer</span>
+            <span>- {{orderDetails.invoiceDetails.speedyyChargesForCustomer}}</span>
+        </div>
+        <div class="cart-details">
+            <span>GST (Item + Packaging)</span>
+            <span>- {{orderDetails.invoiceDetails.totalTax}}</span>
+        </div>
+        <div class="cart-details" *ngIf="orderDetails.invoiceDetails.deliveryChargesPaidBy !== 'speedyy'">
+            <span>Delivery Charges</span>
+            <span>- {{orderDetails.invoiceDetails.deliveryCharges}}</span>
+        </div>
+        <div class="cart-details">
+            <span>Transaction Charges</span>
+            <span>- {{orderDetails.invoiceDetails.txnCharges}}</span>
+        </div>
+        <div class="cart-details" *ngIf="orderDetails.invoiceDetails.isSpeedyyChargesApplied">
+            <span>Speedyy Charges (inclusive of taxes)</span>
+            <span>- {{orderDetails.invoiceDetails.totalSpeedyyCharges}}</span>
+        </div>
+        <!-- <div class="cart-details" *ngIf="orderDetails.couponDetails">
+            <span>Discount by Speedyy</span>
+            <span>{{orderDetails.couponDetails.speedyyDiscountShareAmount}}</span>
+        </div> -->
+        <div class="cart-details" *ngIf="orderDetails.couponDetails">
+            <span>Discount by Speedyy</span>
+            <span><span class="discount-code">{{orderDetails.couponDetails.couponCode}}</span> {{orderDetails.couponDetails.speedyyDiscountShareAmount}}</span>
+        </div>
+        <div class="cart-details">
+            <span><strong>Vendor Estimated Payout Amount</strong></span>
+            <span><strong>{{orderDetails.invoiceDetails.vendorPayoutAmount}}</strong></span>
+        </div>
+        <button class="buttons br-50 w-25" (click)="showCouponDetails(orderDetails.couponDetails.couponId)" *ngIf="orderDetails.couponDetails">Coupon Details</button>
+    </ng-template>
+        <ng-template #invoiceBreakOut>
+            <div *ngIf="service === Services.PND">
+                <div class="cart-details" *ngFor="let payableAmount of orderDetails.adminInvoice.payableAmountLineItem">
+                    <span [ngClass]="{'strikeThrough' : payableAmount.isStrikethrough}" [ngStyle]="{'color' : payableAmount.displayLabelColor}">{{payableAmount.displayLabel}}</span>
+                    <span [ngClass]="{'strikeThrough' : payableAmount.isStrikethrough}" [ngStyle]="{'color' : payableAmount.amountColor}">{{payableAmount.amount}}</span>
+                </div>
+                <div class="cart-details">
+                    <span [ngClass]="{'strikeThrough' : orderDetails.adminInvoice.totalPayableAmount.isStrikethrough}" [ngStyle]="{'color' : orderDetails.adminInvoice.totalPayableAmount.displayLabelColor}"><strong>{{orderDetails.adminInvoice.totalPayableAmount.displayLabel}}</strong></span>
+                    <span [ngClass]="{'strikeThrough' : orderDetails.adminInvoice.totalPayableAmount.isStrikethrough}" [ngStyle]="{'color' : orderDetails.adminInvoice.totalPayableAmount.amountColor}"><strong>{{orderDetails.adminInvoice.totalPayableAmount.amount}}</strong></span>
+                </div>
+            </div>
+            <div *ngIf="service !== Services.PND">
+                <div>
+                    <strong>Customer</strong>
+                    <div class="cart-details" *ngFor="let payableAmount of orderDetails.adminInvoice.customerInvoiceSection.payableAmountLineItem">
+                        <span [ngClass]="{'strikeThrough' : payableAmount.isStrikethrough}" [ngStyle]="{'color' : payableAmount.displayLabelColor}">{{payableAmount.displayLabel}}</span>
+                        <span [ngClass]="{'strikeThrough' : payableAmount.isStrikethrough}" [ngStyle]="{'color' : payableAmount.amountColor}">{{payableAmount.amount}}</span>
+                    </div>
+                    <div class="cart-details">
+                        <span [ngClass]="{'strikeThrough' : orderDetails.adminInvoice.customerInvoiceSection.totalPayableAmount.isStrikethrough}" [ngStyle]="{'color' : orderDetails.adminInvoice.customerInvoiceSection.totalPayableAmount.displayLabelColor}"><strong>{{orderDetails.adminInvoice.customerInvoiceSection.totalPayableAmount.displayLabel}}</strong></span>
+                        <span [ngClass]="{'strikeThrough' : orderDetails.adminInvoice.customerInvoiceSection.totalPayableAmount.isStrikethrough}" [ngStyle]="{'color' : orderDetails.adminInvoice.customerInvoiceSection.totalPayableAmount.amountColor}"><strong>{{orderDetails.adminInvoice.customerInvoiceSection.totalPayableAmount.amount}}</strong></span>
+                    </div>
+                </div>
+                <div>
+                    <strong>Vendor</strong>
+                    <div class="cart-details" *ngFor="let payableAmount of orderDetails.adminInvoice.vendorInvoiceSection.payoutAmountLineItem">
+                        <span [ngClass]="{'strikeThrough' : payableAmount.isStrikethrough}" [ngStyle]="{'color' : payableAmount.displayLabelColor}">{{payableAmount.displayLabel}}</span>
+                        <span [ngClass]="{'strikeThrough' : payableAmount.isStrikethrough}" [ngStyle]="{'color' : payableAmount.amountColor}">{{payableAmount.amount}}</span>
+                    </div>
+                    <div class="cart-details">
+                        <span [ngClass]="{'strikeThrough' : orderDetails.adminInvoice.vendorInvoiceSection.totalPayoutAmount.isStrikethrough}" [ngStyle]="{'color' : orderDetails.adminInvoice.vendorInvoiceSection.totalPayoutAmount.displayLabelColor}"><strong>{{orderDetails.adminInvoice.vendorInvoiceSection.totalPayoutAmount.displayLabel}}</strong></span>
+                        <span [ngClass]="{'strikeThrough' : orderDetails.adminInvoice.vendorInvoiceSection.totalPayoutAmount.isStrikethrough}" [ngStyle]="{'color' : orderDetails.adminInvoice.vendorInvoiceSection.totalPayoutAmount.amountColor}"><strong>{{orderDetails.adminInvoice.vendorInvoiceSection.totalPayoutAmount.amount}}</strong></span>
+                    </div>
+                </div>
+            </div>        
+        </ng-template>
+</main>
+
+<!-- Delivery Partner Allocation History -->
+
+<ng-container
+    *ngIf="orderDetails.deliveryPartnerAllocationHistory && orderDetails.orderStatus === 'Completed' && showAllocationHistory">
+    <hr>
+    <span class="d-flex justify-content-between align-items-center mt-5 w-100">
+        <h4 class="text-uppercase"><strong>Delivery Partner Allocation History</strong></h4>
+    </span>
+    <section class="row mb-1">
+        <div class="input-details col-3 mb-3">
+            <label class="input-heading">Attempt</label>
+            <span class="input-field">{{orderDetails.deliveryPartnerAllocationHistory.attempt}}</span>
+        </div>
+        <div class="input-details col-3 mb-3">
+            <label class="input-heading">Rider ID</label>
+            <span class="input-field">{{orderDetails.deliveryPartnerAllocationHistory.riderId}}</span>
+        </div>
+        <div class="input-details col-4 mb-4">
+            <label class="input-heading">Rider Name</label>
+            <span class="input-field">{{orderDetails.deliveryPartnerAllocationHistory.riderName}}</span>
+        </div>
+        <div class="input-details col-3 mb-3">
+            <label class="input-heading">Rider Contact</label>
+            <span class="input-field">{{orderDetails.deliveryPartnerAllocationHistory.riderContact}}</span>
+        </div>
+        <div class="input-details col-3 mb-3">
+            <label class="input-heading">Status</label>
+            <span class="input-field text-capitalize">{{orderDetails.deliveryPartnerAllocationHistory.status}}</span>
+        </div>
+        <div class="input-details col-3 mb-3">
+            <label class="input-heading">Manual Assigned Admin Id</label>
+            <span
+                class="input-field text-capitalize">{{orderDetails.deliveryPartnerAllocationHistory.manualAssignedAdminId
+                ? orderDetails.deliveryPartnerAllocationHistory.manualAssignedAdminId : 'N/A' }}</span>
+        </div>
+        <div class="input-details col-3 mb-3">
+            <label class="input-heading">Manual Assigned Admin Name</label>
+            <span
+                class="input-field text-capitalize">{{orderDetails.deliveryPartnerAllocationHistory.manualAssignedAdminName}}</span>
+        </div>
+        <div class="input-details col-3 mb-3">
+            <label class="input-heading">Assigned At</label>
+            <span class="input-field">{{orderDetails.deliveryPartnerAllocationHistory.assignedAt | date:
+                dateLongTimeFormat}}</span>
+        </div>
+        <div class="input-details col-3 mb-3">
+            <label class="input-heading">Action At</label>
+            <span class="input-field">{{orderDetails.deliveryPartnerAllocationHistory.actionAt | date:
+                dateLongTimeFormat}}</span>
+        </div>
+        <span class="d-flex justify-content-between align-items-center mt-2">
+            <h4><strong>Rider Search Logs</strong></h4>
+        </span>
+        <table class="report-table w-100">
+            <tr>
+                <th>Rider Id</th>
+                <th>Rider Status</th>
+                <th>Rider Distance (in kms)</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+                <th>POD Allowed</th>
+                <th>POD Collection</th>
+            </tr>
+            <tr *ngFor="let r of orderDetails.deliveryPartnerAllocationHistory.riderSearchResult">
+                <td>{{r.riderId}}</td>
+                <td>{{r.status}}</td>
+                <td>{{r.distance}}</td>
+                <td>{{r.latitude}}</td>
+                <td>{{r.longitude}}</td>
+                <td>{{r.podAllowed}}</td>
+                <td>₹ {{r.podCollection}}</td>
+            </tr>
+            <tr *ngIf="!(orderDetails.deliveryPartnerAllocationHistory.riderSearchResult?.length)">
+                <td colspan="8">Data not available</td>
+        </table>
+        <h4 class="mt-2"><strong>Riders & Pickup Location</strong></h4>
+        <agm-map [latitude]="pickupLat" [longitude]="pickupLong" [zoom]="12">
+            <agm-marker [latitude]="pickupLat" [longitude]="pickupLong" [iconUrl]="{url:'assets/icons/map-pickup-icon.svg',
+            scaledSize:{
+                width:30,
+                height:30
+            }}">
+                <agm-info-window class="d-flex align-items-center" [disableAutoPan]="true" [isOpen]="true">
+                    <span class="d-flex flex-column justify-content-between align-items-center">
+                        <label> <strong>Pickup Location</strong></label>
+                    </span>
+                </agm-info-window>
+            </agm-marker>
+            <agm-marker *ngFor="let rider of orderDetails.deliveryPartnerAllocationHistory.riderSearchResult"
+                [latitude]="rider.latitude" [longitude]="rider.longitude" [iconUrl]="{url:'assets/icons/map-rider-icon.svg',
+            scaledSize:{
+                width:30,
+                height:30
+            }}" (markerClick)="openMapfromPickupLocationToRiderDistance(rider.latitude,rider.longitude)">
+                <agm-info-window class="d-flex align-items-center" [disableAutoPan]="true" [isOpen]="true">
+                    <span class="d-flex flex-column justify-content-between align-items-center">
+                        <label><strong>[{{ rider.riderId }}]</strong></label>
+                        <label><strong>Status: [{{ rider.status }}]</strong></label>
+                        <label><strong>Distance: [{{ rider.distance }}] km</strong></label>
+                    </span>
+                </agm-info-window>
+                <agm-polyline [strokeColor]="'black'" [strokeWeight]="1" [strokeDashArray]="[15, 15]">
+                    <agm-polyline-point [latitude]="pickupLat" [longitude]="pickupLong"></agm-polyline-point>
+                    <agm-polyline-point [latitude]="rider.latitude" [longitude]="rider.longitude"></agm-polyline-point>
+                </agm-polyline>
+            </agm-marker>
+        </agm-map>
+    </section>
+</ng-container>

@@ -1,0 +1,17 @@
+// @import "./src/assets/styles/app";
+.dialog-wrapper {
+    margin: 0 auto;
+    padding: 2em;
+    width: 400px;
+
+    .choose-file-button {
+        border: none;
+        padding: 10px 20px;
+        border-radius: 10px;
+        background-color: #f5f9fc;
+        text-transform: capitalize;
+        min-width: 200px;
+        margin-right: 20px;
+        box-shadow: 2px 2px 3px 0px #ddd;
+    }
+}

@@ -1,0 +1,21 @@
+<div class="dialog-wrapper">
+    <h2>Add New Child Restaurant</h2>
+    <form [formGroup]="childOutletForm">
+        <div class="input-details">
+            <label class="input-heading">Parent Outlet Id</label>
+            <mat-form-field appearance="outline">
+                <input matInput type="text" name="parentOutletId" formControlName="parentOutletId" placeholder="Parent Outlet Id">
+            </mat-form-field>
+        </div>
+        <div class="input-details">
+            <label class="input-heading">Child Outlet Id</label>
+            <mat-form-field appearance="outline">
+                <input matInput type="text" name="childOutletId" formControlName="childOutletId" placeholder="Enter Child Outlet Id">
+            </mat-form-field>
+        </div>
+    </form>
+    <div class="mt-3">
+        <button class="buttons active-button h-3 w-100 mb-2 text-uppercase" mat-button (click)="onSubmit()"><strong>Add Child Outlet</strong></button>
+        <button class="buttons buttons--white h-3 w-100 mb-2 text-uppercase" mat-button (click)="onCancel()"><b>Cancel</b></button>
+    </div>
+</div>

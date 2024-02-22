@@ -1,0 +1,104 @@
+<section class="cuisines-wrapper">
+    <app-page-title [pageTitle]="'Cuisines Dump'"></app-page-title>
+
+    <div class="cuisines-wrapper__tools w-75">
+        <div class="row align-items-end">
+            <div class="col-6 input-details">
+                <label for="search" class="input-heading">Search by cuisine id or name...</label>
+                <input type="text" class="input-field" placeholder="Enter cuisine id or name" name="search" [ngModel]="globalFilter" (ngModelChange)="globalSearch($event)">
+            </div>
+            <div class="col-3">
+                <button class="buttons buttons--filter w-100" (click)="showFilterFields ? clearFilter('all') : showFilterFields = true">
+                    {{showFilterFields ? 'Clear Filters' : 'Add Filters'}}
+                    <img src="assets/icons/filter.svg" class="ms-4" alt="add-icon" />
+                </button>
+            </div>
+            <div class="col-3">
+                <button class="buttons" (click)="openCuisineDialog()">
+                    Add Cuisine
+                    <img src="assets/icons/add.svg" class="ms-4" alt="add-icon">
+                </button>
+            </div>
+        </div>
+
+        <div class="row align-items-end mt-4" *ngIf="showFilterFields">
+            <div class="col-3 input-details">
+                <label class="input-heading">ID</label>
+                <ng-select [items]="cuisinesDataArr" bindLabel="id" bindValue="id" placeholder="Select ID" [(ngModel)]="filterCuisineFields.id" (clear)="clearFilter()"></ng-select>
+            </div>
+            <div class="col-3 input-details">
+                <label class="input-heading">Cuisine Name</label>
+                <ng-select [items]="cuisinesDataArr" bindLabel="name" bindValue="name" placeholder="Select Cuisine" [(ngModel)]="filterCuisineFields.cuisine" (clear)="clearFilter()"></ng-select>
+            </div>
+
+            <div class="col-3 input-details">
+                <label class="input-heading">Status</label>
+                <ng-select [items]="cuisinesDataArr | filterUnique: 'status'" bindLabel="status" bindValue="status" placeholder="Select Status" [(ngModel)]="filterCuisineFields.status" (clear)="clearFilter()">
+                </ng-select>
+            </div>
+            <div class="col-3">
+                <button class="buttons br-50" (click)="applyFilter()">Apply Filter</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="cuisines-wrapper__content mt-5">
+        <table class="w-100" mat-table [dataSource]="cuisinesList" matSort>
+            <ng-container matColumnDef="sr no">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Sr No </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row; let i= index"> {{ (paginatorRef.pageIndex * paginatorRef.pageSize) + (i + 1) }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="cusineImg">
+                <th mat-header-cell *matHeaderCellDef>Image </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    <img class="outlet-img" src='{{row.imageUrl}}' alt="" width="50" height="50">
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="cuisineDetails">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Cuisines Details</th>
+                <td class="" mat-cell *matCellDef="let row">
+                    <span class="d-flex gap-3 align-items-center">
+                        <strong>{{row.name}}</strong>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.name">
+                    </span>
+                    <span class="d-flex gap-3 align-items-center">
+                        <strong>{{row.id}}</strong>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.id">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="ageRestricted" *ngIf="service === Services.Paan">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Age Restricted</th>
+                <td class="" mat-cell *matCellDef="let row">
+                    <strong>{{row.ageRestricted? 'Yes' : 'No'}}</strong>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+                <td class="" mat-cell *matCellDef="let row">
+                    <input class="me-3" type="checkbox" [ngClass]="{'active': row.status === 'active'}" role="switch" name="toggle" (click)="changeStatus(row)">
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
+                <td class="" mat-cell *matCellDef="let row">
+                    <mat-icon class="ms-2" (click)="openCuisineDialog(row)">edit</mat-icon>
+                    <mat-icon class="ms-2" (click)="deleteCuisine(row)">delete</mat-icon>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" colspan="4">There is no matching data !!!</td>
+            </tr>
+        </table>
+
+        <mat-paginator #paginatorRef [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+    </div>
+</section>

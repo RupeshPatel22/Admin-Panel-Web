@@ -1,0 +1,85 @@
+<section class="category-wrapper">
+    <app-page-title [pageTitle]="'Category Dump'"></app-page-title>
+
+    <div class="category-wrapper__tools w-75">
+        <div class="row align-items-end">
+            <div class="col-6 input-details">
+                <label for="search" class="input-heading">Search</label>
+                <input type="text" class="input-field" placeholder="Search..." name="search" [ngModel]="globalFilter"
+                    (ngModelChange)="globalSearch($event)">
+            </div>
+            <div class="col-3">
+                <button class="buttons buttons--filter w-100"
+                    (click)="showFilterFields ? clearFilter() : showFilterFields = true">
+                    {{showFilterFields ? 'Clear Filters' : 'Add Filters'}}
+                    <img src="assets/icons/filter.svg" class="ms-4" alt="add-icon" />
+                </button>
+            </div>
+            <div class="col-3">
+                <button class="buttons" (click)="openAddCategoryDialog()">
+                    Add Category
+                    <img src="assets/icons/add.svg" class="ms-4" alt="add-icon">
+                </button>
+            </div>
+        </div>
+
+        <div class="row align-items-end mt-4" *ngIf="showFilterFields">
+
+
+            <div class="col-3 input-details">
+                <label class="input-heading">Status</label>
+                <ng-select [items]="statuses" bindLabel="name" bindValue="id" placeholder="Select Status"
+                    [(ngModel)]="filterStatus" (clear)="clearFilter()"></ng-select>
+            </div>
+            <div class="col-3">
+                <button class="buttons br-50" (click)="setCategoriesList(filterStatus)">Apply Filter</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="category-wrapper__content mt-5">
+        <table class="w-100" mat-table [dataSource]="categoryList" matSort>
+
+            <ng-container matColumnDef="sr no">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Sr No </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row; let i= index"> {{ (paginatorRef.pageIndex *
+                    paginatorRef.pageSize) + (i + 1) }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="categoryDetails">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Category Details </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    <strong>{{row.name}}</strong>
+                    <span class="d-flex align-items-center gap-3">
+                        <p class="m-0">{{row.id}}</p>
+                        <img class="cursor-enabled" title="Copy" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.id">
+                    </span></td>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+                <td class="" mat-cell *matCellDef="let row">
+                    <input class="me-3" type="checkbox" [ngClass]="{'active': row.status === 'active'}" role="switch"
+                        name="toggle" [matTooltip]="row.status === 'active' ? 'Active' : 'Inactive'" (click)="changeStatus(row)">
+                </td>
+            </ng-container>
+            
+            <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
+                <td class="" mat-cell *matCellDef="let row">
+                    <mat-icon class="ms-2" (click)="deleteCategory(row)" matTooltip="Delete">delete</mat-icon>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" colspan="4">There is no matching data !!!</td>
+            </tr>
+        </table>
+
+        <mat-paginator #paginatorRef [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+    </div>
+</section>

@@ -1,0 +1,118 @@
+<section class="items-wrapper">
+    <app-page-title [pageTitle]="'Items Dump'"></app-page-title>
+
+    <div class="items-wrapper__tools ">
+        <div class="row align-items-end w-75">
+            <div class="col-6 input-details">
+                <label for="search" class="input-heading">Search</label>
+                <input type="text" class="input-field" placeholder="Search..." name="search" [ngModel]="globalFilter"
+                    (ngModelChange)="globalSearch($event)">
+            </div>
+            <div class="col-3">
+                <button class="buttons buttons--filter w-100"
+                    (click)="showFilterFields ? clearFilter('') : showFilterFields = true">
+                    {{showFilterFields ? 'Clear Filters' : 'Add Filters'}}
+                    <img src="assets/icons/filter.svg" class="ms-4" alt="add-icon" />
+                </button>
+            </div>
+        </div>
+
+        <div class="row align-items-end mt-4" *ngIf="showFilterFields">
+            <div class="col-2 input-details">
+                <label class="input-heading">Item Type</label>
+                <ng-select [items]="ELEMENT_DATA | filterUnique: 'veg'" bindLabel="veg" bindValue="veg"
+                    placeholder="Select" [(ngModel)]="filterVeg" (clear)="clearFilter('veg')"></ng-select>
+            </div>
+            <!-- <div class="col-2 input-details">
+            <label class="input-heading">Stock</label>
+            <ng-select [items]="ELEMENT_DATA | filterUnique: 'inStock'" bindLabel="inStock" bindValue="inStock" placeholder="Select Avaliability" 
+              [(ngModel)]="filterInStock" (clear)="clearFilter('inStock')"></ng-select>
+        </div> -->
+
+            <div class="col-2 input-details">
+                <label class="input-heading">Food Status</label>
+                <ng-select [items]="ELEMENT_DATA | filterUnique: 'status'" bindLabel="status" bindValue="status"
+                    placeholder="Select Status" [(ngModel)]="filterStatus" (clear)="clearFilter('status')"></ng-select>
+            </div>
+            <!-- <div class="col-2 input-details">
+            <label class="input-heading">Type</label>
+            <ng-select [items]="ELEMENT_DATA | filterUnique: 'type'"  bindLabel="type" bindValue="type" placeholder="Select Type" 
+              [(ngModel)]="filterType" (clear)="clearFilter('type')"></ng-select>
+        </div> -->
+            <div class="col-2">
+                <button class="buttons br-50" (click)="applyFilter()">Apply Filter</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="items-wrapper__content mt-5">
+        <table class="w-100" mat-table [dataSource]="itemsList" matSort>
+
+            <ng-container matColumnDef="image">
+                <th mat-header-cell *matHeaderCellDef> Image </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> <img src="assets/icons/food-image.svg" alt=""
+                        width="50" height="50"> </td>
+            </ng-container>
+
+            <ng-container matColumnDef="itemName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Item Name </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.itemName}} </td>
+            </ng-container>
+
+            <!-- <ng-container matColumnDef="inStock">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>In Stock </th>
+        <td mat-cell *matCellDef="let row"> 
+            <img src="assets/icons/enable-status.svg" alt="" *ngIf="row.inStock"> 
+            <img src="assets/icons/disable-status.svg" alt="" *ngIf="!row.inStock"> 
+        </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="isPerishable">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Is Perishable </th>
+        <td mat-cell *matCellDef="let row">
+            <img src="assets/icons/enable-status.svg" alt="" *ngIf="row.isPerishable"> 
+            <img src="assets/icons/disable-status.svg" alt="" *ngIf="!row.isPerishable"> 
+        </td>
+    </ng-container> -->
+
+            <ng-container matColumnDef="recommended">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Recommended </th>
+                <td class="cursor-disable text-capitalize" mat-cell *matCellDef="let row"> {{row.recommended}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> In Stock </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    <img src="assets/icons/enable-status.svg" alt="" *ngIf="row.status === 'enabled'">
+                    <img src="assets/icons/disable-status.svg" alt="" *ngIf="row.status !== 'enabled'">
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="itemType">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Item Type </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    <img height="20" width="20" src='{{"assets/icons/" + row.veg + "-icon.svg"}}' alt="item-type">
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="price">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Price </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.price}} </td>
+            </ng-container>
+
+            <!-- <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Type </th>
+        <td mat-cell *matCellDef="let row"> {{row.type}} </td>
+    </ng-container> -->
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" colspan="7">There is no matching data !!!</td>
+            </tr>
+        </table>
+
+        <mat-paginator #paginatorRef [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+    </div>
+</section>

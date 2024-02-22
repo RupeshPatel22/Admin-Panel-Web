@@ -1,0 +1,27 @@
+.partner-users-wrapper {
+    margin-top: 50px;
+
+    .custom-partner-users-filter.ng-select.ng-select-single {
+        width: 200px !important;
+    }
+}
+
+.proceed {
+    width: 20%;
+}
+
+.modal.drawer .modal-dialog {
+    max-width: 40% !important;
+
+    @media only screen and (min-device-width: 1025px) and (max-device-width: 1440px) {
+        max-width: 50% !important;
+    }
+}
+
+a {
+    cursor: pointer;
+}
+
+mat-icon {
+    cursor: pointer;
+}

@@ -1,0 +1,53 @@
+<main>
+    <ng-container *ngIf="riderPodDepositDetails.cancelledAt; else cancellation">
+        <h3>Cancellation Details</h3>
+        <div class="row">
+            <div class="input-details col-3">
+                <label class="input-heading">Cancelled At</label>
+                <span class="input-field">{{riderPodDepositDetails.cancelledAt | date: dateLongTimeFormat}}</span>
+            </div>
+            <div class="input-details col-3">
+                <label class="input-heading">Cancelled By</label>
+                <span class="input-field">{{riderPodDepositDetails.cancelledBy}}</span>
+            </div>
+            <div class="input-details col-3">
+                <label class="input-heading">Cancellation Reason</label>
+                <span class="input-field">{{riderPodDepositDetails.cancellationReason}}</span>
+            </div>
+        </div>
+    </ng-container>
+    <ng-template #cancellation>
+        <h3>Cancel Deposit</h3>
+        <div class="row">
+            <div class="input-details col-6">
+                <textarea class="reason" name="cancellationReason"
+                    placeholder="Enter Cancellation Reason"
+                    [formControl]="cancellationReason"></textarea>
+                <app-form-error-msg [control]="cancellationReason">
+                </app-form-error-msg>
+            </div>
+            <div class="col-2 d-flex align-items-center">
+                <button type="button" class="buttons br-50 w-25 h-3"
+                    (click)="cancelDeposit()">CANCEL</button>
+            </div>
+        </div>
+    </ng-template>
+    <h3 class="mt-4">Deposit Shift Details</h3>
+    <ng-container *ngFor="let record of riderPodDepositDetails.shiftDepositDetails">
+        <h5 class="text-uppercase"> <strong> Rider Shift ID: </strong> <strong class="cursor-enabled text-decoration-underline" (click)="navigateToRiderOrdersPage(record.riderShiftId)"> {{record.riderShiftId}} </strong></h5>
+        <div class="row mb-3">
+            <div class="input-details col-3">
+                <label class="input-heading">Amount</label>
+                <span class="input-field">{{record.amount}}</span>
+            </div>
+            <div class="input-details col-3">
+                <label class="input-heading">Total POD Collection</label>
+                <span class="input-field">{{record.totalPodCollection}}</span>
+            </div>
+            <div class="input-details col-3">
+                <label class="input-heading">Total POD Deposits</label>
+                <span class="input-field">{{record.totalPodDeposit}}</span>
+            </div>
+        </div>
+    </ng-container>
+</main>

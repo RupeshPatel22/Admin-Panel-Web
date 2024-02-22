@@ -1,0 +1,147 @@
+<section class="rider-orders-wrapper">
+    <app-page-title [pageTitle]="pageHeading"></app-page-title>
+    <div class="rider-orders-wrapper__tools">
+        <div class="row align-items-end w-75">
+            <div class="col-6 input-details">
+                <label for="search" class="input-heading">Search by rider id</label>
+                <input type="text" class="input-field" placeholder="Enter rider id" name="search" [(ngModel)]="filterAllRidersShift.riderId" (keyup.enter)="getAllRidersShiftData(true)">
+            </div>
+            <div class="col-3">
+                <button class="buttons buttons--filter w-100" (click)="showFilterFields ? clearFilter('all') : showFilterFields = true">
+          {{showFilterFields ? 'Clear Filters' : 'Add Filters'}}
+          <img src="assets/icons/filter.svg" class="ms-4" alt="add-icon" />
+        </button>
+            </div>
+            <div class="col-3">
+                <button class="buttons w-100" (click)="exportRiderShiftsInCsv()">Export in csv
+                </button>
+            </div>
+        </div>
+        <div class="row align-items-end mt-4" *ngIf="showFilterFields">
+            <div class="input-details col-2 mt-3">
+                <label class="input-heading">Transcation Id</label>
+                <input type="text" class="input-field" placeholder="Enter Payout Transaction Id" name="filterByPayoutTransactionId" [(ngModel)]="filterAllRidersShift.payoutTransactionId" (keydown.enter)="getAllRidersShiftData(true)">
+            </div>
+            <div class="col-2 input-details">
+                <label for="name" class="input-heading">Stop Payout?</label>
+                <mat-radio-group [(ngModel)]="filterAllRidersShift.stopPayout" class="mt-2">
+                    <mat-radio-button [value]="true" class="input-heading me-3">Yes</mat-radio-button>
+                    <mat-radio-button [value]="false" class="input-heading">No</mat-radio-button>
+                </mat-radio-group>
+            </div>
+            <div class="col-2 input-details">
+                <label class="input-heading">Rider Status</label>
+                <ng-select [items]="riderStatusList | keyvalue" [multiple]="true" bindLabel="value" bindValue="key" placeholder="Select Rider Status" (clear)="clearFilter()" [(ngModel)]="filterAllRidersShift.riderActiveStatus"></ng-select>
+            </div>
+            <div class="col-2 input-details mt-3">
+                <label class="input-heading">Start Date</label>
+                <mat-form-field class="custom-mat-form-field" appearance="outline">
+                    <input matInput (click)="startDate.open()" [matDatepicker]="startDate" [max]="maxDate" [readonly]="true" name="startDate" placeholder="Select date" [(ngModel)]="filterAllRidersShift.startDate" ngDefaultControl>
+                    <mat-datepicker-toggle matSuffix [for]="startDate" matSuffix></mat-datepicker-toggle>
+                    <mat-datepicker #startDate></mat-datepicker>
+                    <button mat-icon-button matSuffix *ngIf="filterAllRidersShift.startDate" (click)="clearFilter('startDate')">
+              <mat-icon>clear</mat-icon>
+          </button>
+                </mat-form-field>
+            </div>
+            <div class="col-2 input-details mt-3">
+                <label class="input-heading">End Date</label>
+                <mat-form-field class="custom-mat-form-field" appearance="outline">
+                    <input matInput (click)="endDate.open()" [matDatepicker]="endDate" [max]="maxDate" [readonly]="true" name="endDate" placeholder="Select date" [min]="filterAllRidersShift.startDate" [(ngModel)]="filterAllRidersShift.endDate" ngDefaultControl>
+                    <mat-datepicker-toggle matSuffix [for]="endDate" matSuffix></mat-datepicker-toggle>
+                    <mat-datepicker #endDate></mat-datepicker>
+                    <button mat-icon-button matSuffix *ngIf="filterAllRidersShift.endDate" (click)="clearFilter('endDate')">
+              <mat-icon>clear</mat-icon>
+          </button>
+                </mat-form-field>
+            </div>
+            <div class="col-2">
+                <button class="buttons br-50" (click)="getAllRidersShiftData(true)">Apply Filter</button>
+            </div>
+        </div>
+    </div>
+    <main class="rider-orders-wrapper__content mt-5">
+        <table class="w-100" mat-table [dataSource]="allRidersShiftList" matSort multiTemplateDataRows>
+            <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef>Rider Shift ID</th>
+                <td mat-cell *matCellDef="let row">
+                    <span class="cursor-enabled text-decoration-underline" matTooltipClass="custom-tooltip" matTooltip="See ping log" (click)="navigateToRiderPingLogs(row.id,row.riderId,row.riderName)">{{row.id}}</span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="riderId">
+                <th mat-header-cell *matHeaderCellDef>Rider Details</th>
+                <td mat-cell *matCellDef="let row">
+                    <label>{{row.riderName}}</label>
+                    <span class="d-flex align-items-center">
+            <label class="singleline-ellipsis cursor-enabled text-decoration-underline" matTooltip="See all orders" (click)="navigateToRiderOrdersPage(row.riderId)"><strong>{{row.riderId}}</strong></label>
+            <img class="cursor-enabled ms-2" src="assets/icons/copy-icon.svg" width="15" height="15" alt=""
+              [appCopyToClipboard]="row.riderId">
+          </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="type">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Rider Type</th>
+                <td mat-cell *matCellDef="let row">{{row.type ? row.type : 'N/A'}}</td>
+            </ng-container>
+            <ng-container matColumnDef="shiftName">
+                <th mat-header-cell *matHeaderCellDef>Shift Name </th>
+                <td mat-cell *matCellDef="let row">
+                    <label> <strong>{{row.shiftName}}</strong></label>
+                    <div class="d-flex align-items-center">
+                        <label class="singleline-ellipsis">{{row.shiftId}}</label>
+                        <img class="cursor-enabled ms-2" src="assets/icons/copy-icon.svg" width="15" height="15" alt=""
+                          [appCopyToClipboard]="row.shiftId">
+                    </div>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="firstPingEpoch">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>First Ping Time</th>
+                <td mat-cell *matCellDef="let row">{{row.firstPingEpoch | date: dateLongTimeFormat}}</td>
+            </ng-container>
+            <ng-container matColumnDef="lastPingEpoch">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Last Ping Time</th>
+                <td mat-cell *matCellDef="let row">{{row.lastPingEpoch | date: dateLongTimeFormat}}</td>
+            </ng-container>
+            <ng-container matColumnDef="riderStatus">
+                <th mat-header-cell *matHeaderCellDef>Status</th>
+                <td mat-cell *matCellDef="let row">{{row.riderStatus}}</td>
+            </ng-container>
+            <ng-container matColumnDef="uptimeSeconds">
+                <th mat-header-cell *matHeaderCellDef>Uptime (HH:MM)</th>
+                <td mat-cell *matCellDef="let row">{{row.uptimeSeconds}}</td>
+            </ng-container>
+            <ng-container matColumnDef="downtimeSeconds">
+                <th mat-header-cell *matHeaderCellDef>Downtime (HH:MM)</th>
+                <td mat-cell *matCellDef="let row">{{row.downtimeSeconds}} </td>
+            </ng-container>
+            <ng-container matColumnDef="stopPayout">
+                <th mat-header-cell *matHeaderCellDef>Stop Payout</th>
+                <td mat-cell *matCellDef="let row">{{row.stopPayout ? 'Yes' : 'No'}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="action">
+                <th class="cursor-disable" mat-header-cell *matHeaderCellDef>Action </th>
+                <td mat-cell *matCellDef="let row">
+                    <button mat-icon-button (click)="expandedRow = expandedRow === row ? null : row">
+            <mat-icon>{{row === expandedRow ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}</mat-icon>
+          </button>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="expandedDetail">
+                <td *matCellDef="let row" [attr.colspan]="displayedColumns.length">
+                    <app-rider-shifts-details class="expanded-row-details" [ngClass]="row === expandedRow ? 'expanded' : 'collapsed'" [allRiderShiftDetails]="row" (takeAction)="settleRiderShift($event)" *ngIf="expandedRow === row">
+                    </app-rider-shifts-details>
+                </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+                    There is no matching data !!!
+                </td>
+            </tr>
+        </table>
+        <mat-paginator #paginatorRef [length]="totalAllRidersShiftRecords" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)"></mat-paginator>
+    </main>
+</section>

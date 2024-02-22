@@ -1,0 +1,203 @@
+<section class="subscriptions-wrapper">
+    <app-page-title [pageTitle]="'Subscriptions'"></app-page-title>
+
+    <div class="subscriptions-wrapper__tools">
+        <div class="row align-items-end w-75">
+            <div class="col-6 input-details">
+                <label for="search" class="input-heading">Search by plan or outlet name...</label>
+                <input type="text" class="input-field" placeholder="Enter plan or outlet name" name="search" [(ngModel)]="filterSubscriptionFields.planOrOutletName" (keyup.enter)="getSubscriptions(true)">
+            </div>
+            <div class="col-3">
+                <button class="buttons buttons--filter w-100" (click)="showFilterFields ? clearFilter('all') : showFilterFields = true">
+                    {{showFilterFields ? 'Clear Filters' : 'Add Filters'}}
+                    <img src="assets/icons/filter.svg" class="ms-4" alt="add-icon" />
+                </button>
+            </div>
+        </div>
+
+        <div class="row align-items-end mt-4" *ngIf="showFilterFields">
+            <div class="col-3 mt-3 input-details">
+                <label for="id" class="input-heading">Subscription ID</label>
+                <input type="text" class="input-field" placeholder="Enter subscription id" name="filterBySubscriptionId" [(ngModel)]="filterSubscriptionFields.subscriptionId" (keydown.enter)="getSubscriptions(true)">
+            </div>
+            <div class="col-3 mt-3 input-details">
+                <label for="id" class="input-heading">Plan ID</label>
+                <input type="text" class="input-field" placeholder="Enter plan id" name="filterByPlanId" [(ngModel)]="filterSubscriptionFields.planId" (keydown.enter)="getSubscriptions(true)">
+            </div>
+            <div class="col-3 mt-3 input-details">
+                <label for="id" class="input-heading">Outlet ID</label>
+                <input type="text" class="input-field" placeholder="Enter outlet id" name="filterByOutletId" [(ngModel)]="filterSubscriptionFields.outletId" (keydown.enter)="getSubscriptions(true)">
+            </div>
+            <div class="col-3 mt-3 input-details">
+                <label for="id" class="input-heading">Status</label>
+                <ng-select [items]="subscriptionStatus | keyvalue: originalOrder" [multiple]="true" [closeOnSelect]="false" bindValue="key" bindLabel="value" placeholder="Select" [(ngModel)]="filterSubscriptionFields.status" (clear)="clearFilter()"></ng-select>
+            </div>
+            <div class="col-3 mt-3 input-details">
+                <label for="id" class="input-heading">Auth Status</label>
+                <ng-select [multiple]="true" [closeOnSelect]="false" [items]="subscriptionAuthStatus | keyvalue: originalOrder" bindValue="key" bindLabel="value" placeholder="Select" [(ngModel)]="filterSubscriptionFields.authStatus" (clear)="clearFilter()">
+                </ng-select>
+            </div>
+            <div class="col-3 mt-3 input-details">
+                <label for="id" class="input-heading">Cancelled By</label>
+                <ng-select [multiple]="true" [closeOnSelect]="false" [items]="subscriptionCancelledBy | keyvalue: originalOrder" bindValue="key" bindLabel="value" placeholder="Select" [(ngModel)]="filterSubscriptionFields.cancelledBy" (clear)="clearFilter()">
+                </ng-select>
+            </div>
+            <div class="col-3 mt-3 input-details">
+                <label class="input-heading">Next Payment Date</label>
+                <mat-form-field class="custom-mat-form-field" appearance="outline">
+                    <input matInput (click)="nextPaymentDate.open()" [matDatepicker]="nextPaymentDate" [readonly]="true" name="nextPaymentDate" placeholder="Select date" [(ngModel)]="filterSubscriptionFields.nextPaymentDate">
+                    <mat-datepicker-toggle matSuffix [for]="nextPaymentDate" matSuffix></mat-datepicker-toggle>
+                    <mat-datepicker #nextPaymentDate></mat-datepicker>
+                    <button mat-icon-button matSuffix *ngIf="filterSubscriptionFields.nextPaymentDate" (click)="clearFilter('nextPaymentDate')">
+                        <mat-icon>clear</mat-icon>
+                    </button>
+                </mat-form-field>
+            </div>
+            <div class="input-details col-3 mt-3">
+                <label class="input-heading">Subscription Start Date</label>
+                <mat-form-field class="custom-mat-form-field" appearance="outline">
+                    <input matInput (click)="startDate.open()" [matDatepicker]="startDate" [max]="maxDate" [(ngModel)]="filterSubscriptionFields.startDate" name="startDate" placeholder="Select date">
+                    <mat-datepicker-toggle matSuffix [for]="startDate"></mat-datepicker-toggle>
+                    <mat-datepicker #startDate></mat-datepicker>
+                    <button mat-icon-button matSuffix *ngIf="filterSubscriptionFields.startDate" (click)="clearFilter('date')">
+                        <mat-icon>clear</mat-icon>
+                    </button>
+                </mat-form-field>
+            </div>
+            <div class="input-details col-3 mt-3">
+                <label class="input-heading">Subscription Start Time</label>
+                <mat-form-field class="custom-mat-form-field" appearance="outline">
+                    <input matInput type="time" name="startTime" [(ngModel)]="filterSubscriptionFields.startTime" placeholder="Select Time">
+                    <button mat-icon-button matSuffix *ngIf="filterSubscriptionFields.startTime" (click)="clearFilter('startTime')">
+                        <mat-icon>clear</mat-icon>
+                    </button>
+                </mat-form-field>
+            </div>
+            <div class="input-details col-3 mt-3">
+                <label class="input-heading">Subscription End Date</label>
+                <mat-form-field class="custom-mat-form-field" appearance="outline">
+                    <input matInput (click)="endDate.open()" [matDatepicker]="endDate"  [(ngModel)]="filterSubscriptionFields.endDate"  name="endDate" placeholder="Select date">
+                    <mat-datepicker-toggle matSuffix [for]="endDate"></mat-datepicker-toggle>
+                    <mat-datepicker #endDate></mat-datepicker>
+                    <button mat-icon-button matSuffix *ngIf="filterSubscriptionFields.endDate" (click)="clearFilter('date')">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
+        <div class="input-details col-3 mt-3">
+            <label class="input-heading">Subscription End Time</label>
+            <mat-form-field class="custom-mat-form-field" appearance="outline">
+                <input matInput type="time" name="endTime" [(ngModel)]="filterSubscriptionFields.endTime" placeholder="Select Time">
+                <button mat-icon-button matSuffix *ngIf="filterSubscriptionFields.endTime" (click)="clearFilter('endTime')">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
+        <div class="col-2 mt-4 ms-2">
+            <button class="buttons br-50" (click)="getSubscriptions(true)">Apply Filter</button>
+        </div>
+    </div>
+    </div>
+
+
+
+    <main class="subscription-plans-wrapper__content mt-5">
+        <table class="w-100" mat-table [dataSource]="subscriptionsList" matSort multiTemplateDataRows>
+
+            <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Subscription ID</th>
+                <td mat-cell *matCellDef="let row">
+                    <span class="d-flex align-items-center gap-3">
+                        <span class="singleline-ellipsis">{{row.id}}</span>
+                    <img class="cursor-enabled" title="Copy" src="assets/icons/copy-icon.svg" height="15" width="15" [appCopyToClipboard]="row.id">
+                    </span>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="planName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Plan Name</th>
+                <td mat-cell *matCellDef="let row">
+                    <span class="d-flex gap-3 align-items-center">
+                        <p class="m-0 singleline-ellipsis"><strong>{{row.planName}}</strong></p>
+                        <img class="cursor-enabled" title="Copy" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.planName">
+                    </span>
+                    <span class="d-flex gap-3 align-items-center">
+                        <p class="m-0 singleline-ellipsis">{{row.planId}}</p>
+                        <img class="cursor-enabled" title="Copy" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.planId">
+                    </span>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="outletName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Outlet Name</th>
+                <td mat-cell *matCellDef="let row">
+
+                    <span class="d-flex gap-3 align-items-center">
+                        <p class="m-0 singleline-ellipsis"><strong class="cursor-enabled text-decoration-underline" (click)="navigateToOutletDetailsInNewWindow(row.outletId, row.outletName)" title="See Outlet Details">{{row.outletName}}</strong></p>
+                        <img class="cursor-enabled" title="Copy" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.outletName">
+                    </span>
+                    <span class="d-flex gap-3 align-items-center">
+                        <p class="m-0 singleline-ellipsis">{{row.outletId}}</p>
+                        <img class="cursor-enabled" title="Copy" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.outletId">
+                    </span>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="planType">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Plan Type </th>
+                <td mat-cell *matCellDef="let row">{{row.planType}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="startDate">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Start Date </th>
+                <td mat-cell *matCellDef="let row">{{row.startDate ? (row.startDate | date: dateShortTimeFormat) : 'N/A'}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="endDate">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>End Date </th>
+                <td mat-cell *matCellDef="let row">{{row.endDate ? (row.endDate | date: dateShortTimeFormat) : 'N/A'}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="currentCycle">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Current Cycle </th>
+                <td mat-cell *matCellDef="let row">{{row.currentCycle !== null ? row.currentCycle : 'N/A'}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Status </th>
+                <td mat-cell *matCellDef="let row">{{row.status}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="action">
+                <th class="cursor-disable" mat-header-cell *matHeaderCellDef>Action </th>
+                <td mat-cell *matCellDef="let row">
+                    <button mat-icon-button (click)="expandedRow = expandedRow === row ? null : row">
+                        <mat-icon>{{row === expandedRow ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="expandedDetail">
+                <td *matCellDef="let row" [attr.colspan]="displayedColumns.length">
+                    <app-subscription-details class="expanded-row-details" [ngClass]="row === expandedRow ? 'expanded' : 'collapsed'" [subscriptionDetails]="row" (takeAction)="takeAction($event, row)">
+                    </app-subscription-details>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+                    There is no matching data !!!
+                </td>
+            </tr>
+        </table>
+
+        <mat-paginator #paginatorRef [length]="totalSubscriptionsRecords" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)"></mat-paginator>
+    </main>
+</section>

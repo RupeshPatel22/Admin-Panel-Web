@@ -1,0 +1,177 @@
+<section class="payouts-wrapper">
+    <app-page-title [pageTitle]="'Payouts'"></app-page-title>
+    <div class="payouts-wrapper__tools w-100">
+        <div class="row align-items-end">
+            <div class="col-4 input-details">
+                <label for="search" class="input-heading">Search by payout id...</label>
+                <input type="text" class="input-field" placeholder="Enter Payout ID" name="search"
+                    [(ngModel)]="filterPayoutFields.payoutId" (keyup.enter)="getPayoutsData(true)">
+            </div>
+            <div class="col-2">
+                <button class="buttons buttons--filter w-100"
+                    (click)="showFilterFields ? clearFilter('all') : showFilterFields = true">
+                    {{showFilterFields ? 'Clear Filters' : 'Add Filters'}}
+                    <img src="assets/icons/filter.svg" class="ms-4" alt="add-icon" />
+                </button>
+            </div>
+            <div class="col-2">
+                <button class="buttons w-100" (click)="exportOrdersInCsv()">Export in csv
+                </button>
+            </div>
+            <div class="col-2" *ngIf="service === Services.Food">
+                <button class="buttons w-100" (click)="openPayoutReportModal()">Receive report on email
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row align-items-end mt-4" *ngIf="showFilterFields">
+        <div class="col-3 input-details">
+            <label for="id" class="input-heading">Outlet IDs</label>
+            <input type="text" class="input-field" placeholder="Enter comma separated ids" name="search"
+                [(ngModel)]="filterPayoutFields.outletIds" (keydown.enter)="getPayoutsData(true)" appMoveCursorAtEnd>
+        </div>
+        <div class="col-2 input-details">
+            <label for="id" class="input-heading">Status</label>
+            <ng-select [multiple]="true" [closeOnSelect]="false" [items]="payoutStatusList | keyvalue" bindValue="key"
+                bindLabel="value" placeholder="Select Statuses" [(ngModel)]="filterPayoutFields.status"
+                (clear)="clearFilter()"></ng-select>
+        </div>
+        <div class="col-2 input-details">
+            <label class="input-heading">Start Date</label>
+            <input class="input-field" type="datetime-local" [(ngModel)]="filterPayoutFields.startDate" />
+        </div>
+
+        <div class="col-2 input-details">
+            <label class="input-heading">End Date</label>
+            <input class="input-field" type="datetime-local" [(ngModel)]="filterPayoutFields.endDate" />
+        </div>
+        <div class="col-4 input-details mt-2">
+            <label class="input-heading">Processed On Duration (Start Date - End Date)</label>
+            <span class="d-flex align-items-center">
+                <input class="input-field" type="date" [(ngModel)]="filterPayoutFields.processedOnStartDate" />
+                <span class="mx-2">-</span>
+                <input class="input-field" type="date" [(ngModel)]="filterPayoutFields.processedOnEndDate" />
+            </span>
+        </div>
+
+        <div class="col-2">
+            <button class="buttons br-50" (click)="getPayoutsData(true)">Apply Filter</button>
+        </div>
+    </div>
+    <main class="payout-wrapper__content mt-5">
+        <table class="w-100" mat-table [dataSource]="payoutsList" matSort multiTemplateDataRows>
+            <ng-container matColumnDef="payoutId">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Payout ID </th>
+                <td class="cursor-enabled text-decoration-underline" mat-cell *matCellDef="let row">
+                    <span class="d-flex align-items-center gap-3">
+                        <strong (click)="navigateToOrdersPageInNewWindow(row.payoutId)" title="See All Orders"
+                            class="singleline-ellipsis">{{row.payoutId}} </strong>
+                        <img class="cursor-enabled" title="Copy" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.payoutId">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="restaurantName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Outlet Details </th>
+                <td mat-cell *matCellDef="let row">
+                    <b class="cursor-enabled text-decoration-underline" title="See Outlet Info"
+                        (click)="navigateToOutletDetailsInNewWindow(row.restaurantId, row.restaurantName)">{{row.restaurantName}}</b>
+                    <p class="m-0 d-flex align-items-center gap-3">
+                        <label class="singleline-ellipsis" for="">{{row.restaurantId}}</label>
+                        <img class="cursor-enabled" title="Copy" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.restaurantId">
+                    </p>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="startDate">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Start Date </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.startDate | date: dateLongTimeFormat}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="endDate">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>End Date </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.endDate | date: dateLongTimeFormat}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="amountPaidToVendor">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Amount</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">{{row.amountPaidToVendor}} </td>
+            </ng-container>
+            <ng-container matColumnDef="payoutCompletedTime">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Processed On </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.payoutCompletedTime ?
+                    (row.payoutCompletedTime | date: dateLongTimeFormat) : 'N/A'}} </td>
+            </ng-container>
+            <ng-container matColumnDef="payoutStatus">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Status </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.payoutStatus}} </td>
+            </ng-container>
+            <ng-container matColumnDef="action">
+                <th class="cursor-disable" mat-header-cell *matHeaderCellDef>Action </th>
+                <td mat-cell *matCellDef="let row">
+                    <button mat-icon-button (click)="toggleTableRow(row.payoutId)">
+                        <mat-icon>{{row.payoutId === expandedRow ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}
+                        </mat-icon>
+                    </button>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="expandedDetail">
+                <td *matCellDef="let row" [attr.colspan]="displayedColumns.length">
+                    <app-payout-details class="expanded-row-details"
+                        [ngClass]="row.payoutId === expandedRow ? 'expanded' : 'collapsed'" [payoutDetails]="row"
+                        (takeAction)="takeAction($event, row)" *ngIf="row.payoutId === expandedRow">
+                    </app-payout-details>
+                </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+                    There is no matching data !!!
+                </td>
+            </tr>
+        </table>
+        <mat-paginator #paginatorRef [length]="totalPayoutRecords" [pageSize]="pageSize"
+            [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)"></mat-paginator>
+    </main>
+</section>
+
+<!-- payout report modal -->
+<div class="modal hide drawer right-align" id="changeModalRight" role="dialog" aria-hidden="true" *ngIf="showPayoutReportModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <label class="modal-title border-0" id="exampleModalLabel">Payout Report</label>
+                <mat-icon (click)="closePayoutReportModal()" data-dismiss="modal">close</mat-icon>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex flex-column">
+                    <div class="input-details">
+                        <label for="id" class="input-heading">Outlet IDs</label>
+                        <input type="text" class="input-field" placeholder="Enter comma separated ids" name="search"
+                        [(ngModel)]="payoutReport.outletIds" appMoveCursorAtEnd>
+                    </div>
+                    <span class="row mt-3">
+                        <div class="col-6 input-details">
+                            <label class="input-heading">Start Date</label>
+                            <input class="input-field" type="datetime-local" [(ngModel)]="payoutReport.startDate" />
+                        </div>                       
+                        <div class="col-6 input-details">
+                            <label class="input-heading">End Date</label>
+                            <input class="input-field" type="datetime-local" [(ngModel)]="payoutReport.endDate" />
+                        </div>
+                    </span>
+                    <div class="input-details mt-3">
+                        <label for="id" class="input-heading">Email IDs</label>
+                        <input type="text" class="input-field" placeholder="Enter comma separated email ids" name="search"
+                        [(ngModel)]="payoutReport.receiverEmailId" appMoveCursorAtEnd>
+                    </div>
+                    <div class="mt-4">
+                        <button class="buttons br-50 w-100" (click)="sendPayoutReportOnEmail()">Send Report</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

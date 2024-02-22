@@ -1,0 +1,63 @@
+<section *ngIf="showMapForPolygon">
+    <div class="d-flex align-items-baseline">
+        <img src="assets/icons/back-icon.svg" class="me-2 cursor-enabled" width="16" height="18"
+            (click)="closeMapView()">
+        <app-page-title [pageTitle]="pageHeading"></app-page-title>
+    </div>
+    <!-- Polygon Create -->
+    <main>
+        <form [formGroup]="polygonForm" class="row align-items-end mb-3">
+            <div class="input-details col-3 mb-2" [ngClass]="{'hide-search-input': polygonAction === 'View' || polygonAction === 'View All'}">
+                <label class="input-heading">Search</label>
+                <input type="text" class="input-field" placeholder="Search Location" #search>
+            </div>
+            <div class="input-details col-3">
+                <label class="input-heading">Operational City</label>
+                <ng-select id="city" name="city" formControlName="opCityId" [items]="opCityList" bindLabel="name"
+                    bindValue="id" placeholder="Select operational city" (change)="getAllZonesByCityId()">
+                </ng-select>
+                <app-form-error-msg [control]="polygonForm.controls.opCityId"></app-form-error-msg>
+            </div>
+            <div class="input-details col-3" *ngIf="polygonAction !== 'View All'">
+                <label for="Area Name" class="input-heading">Zone Name</label>
+                <input type="text" class="input-field" name="Area name" placeholder="Enter Name"
+                    formControlName="name">
+                <app-form-error-msg [control]="polygonForm.controls.name"></app-form-error-msg>
+            </div>
+            <div class="input-details col-3" *ngIf="polygonAction !== 'View All'">
+                <label for="Area Name" class="input-heading">Banner Factor Upper Limit</label>
+                <input type="number" class="input-field" name="Banner Factor Upper Limit" placeholder="Enter Banner Factor Upper Limit"
+                    formControlName="bannerFactorUpperLimit">
+                <app-form-error-msg [control]="polygonForm.controls.bannerFactorUpperLimit"></app-form-error-msg>
+            </div>
+            <div class="input-details col-3" *ngIf="polygonAction !== 'View All'">
+                <label for="Area Name" class="input-heading">Banner Factor Lower Limit</label>
+                <input type="number" class="input-field" name="Banner Factor Lower Limit" placeholder="Enter Banner Factor Lower Limit"
+                    formControlName="bannerFactorLowerLimit">
+                <app-form-error-msg [control]="polygonForm.controls.bannerFactorLowerLimit"></app-form-error-msg>
+            </div>
+            <div class="col-3" *ngIf="polygonAction === 'Create' || polygonAction === 'Edit'">
+                <button class="buttons br-50" (click)="submitPolygon()">Save Polygon</button>
+            </div>
+        </form>
+        <section class="row align-items-end mb-3">
+            <div class="input-details col-2">
+                <label class="input-heading">Latitude</label>
+                <input type="number" class="input-field" placeholder="Enter latitude" [(ngModel)]="markerCoords.lat" (keydown.enter)="showLocationMarker()">
+            </div>
+            <div class="input-details col-2">
+                <label class="input-heading">Longitude</label>
+                <input type="number" class="input-field" placeholder="Enter longitude" [(ngModel)]="markerCoords.lng" (keydown.enter)="showLocationMarker()">
+            </div>
+            <div class="col-2" >
+                <button class="buttons br-50" (click)="showLocationMarker()">Check</button>
+            </div>
+        </section>
+        <agm-map id="map" [latitude]="lat" [longitude]="long" (mapReady)="onMapReady($event)"
+            [zoom]="zoom">
+        </agm-map>
+    </main>
+</section>
+
+<app-operational-zone-list *ngIf="!showMapForPolygon" (showMap)="initialiseMapDetails($event)">
+</app-operational-zone-list>

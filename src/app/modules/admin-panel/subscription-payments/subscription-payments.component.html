@@ -1,0 +1,117 @@
+<section class="subscription-payments-wrapper">
+    <app-page-title [pageTitle]="'Subscription Payments'"></app-page-title>
+    <div class="subscription-payments-wrapper__tools">
+        <div class="row align-items-end w-75">
+            <div class="col-6 input-details">
+                <label for="search" class="input-heading">Search by plan or outlet name ...</label>
+                <input type="text" class="input-field" placeholder="Enter plan or outlet name" name="search" [(ngModel)]="filterSubscriptionPaymentFields.planOrOutletName" (keyup.enter)="getSubscriptionPayments(true)">
+            </div>
+            <div class="col-3">
+                <button class="buttons buttons--filter w-100" (click)="showFilterFields ? clearFilter('all') : showFilterFields = true">
+                    {{showFilterFields ? 'Clear Filters' : 'Add Filters'}}
+                    <img src="assets/icons/filter.svg" class="ms-4" alt="add-icon" />
+                </button>
+            </div>
+        </div>
+        <div class="row align-items-end mt-4" *ngIf="showFilterFields">
+            <div class="col-2 mt-3 input-details">
+                <label for="id" class="input-heading">Payment ID</label>
+                <input type="text" class="input-field" placeholder="Enter payment id" name="filterByPaymentId" [(ngModel)]="filterSubscriptionPaymentFields.paymentId" (keydown.enter)="getSubscriptionPayments(true)">
+            </div>
+            <div class="col-2 mt-3 input-details">
+                <label for="id" class="input-heading">Subscription ID</label>
+                <input type="text" class="input-field" placeholder="Enter subscription id" name="filterBySubscriptionId" [(ngModel)]="filterSubscriptionPaymentFields.subscriptionId" (keydown.enter)="getSubscriptionPayments(true)">
+            </div>
+            <div class="col-2 mt-3 input-details">
+                <label for="id" class="input-heading">Outlet ID</label>
+                <input type="text" class="input-field" placeholder="Enter outlet id" name="filterByOutletId" [(ngModel)]="filterSubscriptionPaymentFields.outletId" (keydown.enter)="getSubscriptionPayments(true)">
+            </div>
+            <div class="col-2 input-details">
+                <label for="id" class="input-heading">Status</label>
+                <ng-select [items]="subscriptionPaymentStatus | keyvalue" [multiple]="true" [closeOnSelect]="false" bindValue="key" bindLabel="value" placeholder="Select status" [(ngModel)]="filterSubscriptionPaymentFields.status" (clear)="clearFilter()"></ng-select>
+            </div>
+            <div class="col-2">
+                <button class="buttons br-50" (click)="getSubscriptionPayments(true)">Apply Filter</button>
+            </div>
+        </div>
+    </div>
+    <main class="subscription-payments-wrapper__content mt-5">
+        <table class="w-100" mat-table [dataSource]="subscriptionPaymentsList" matSort>
+            <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Payment ID </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row; let i= index">
+                    <span class="d-flex align-items-center gap-3">
+                        <strong>{{row.id}}</strong>
+                        <img class="cursor-enabled" title="Copy" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.id">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="subscriptionId">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Subscription ID</th>
+                <td mat-cell *matCellDef="let row">
+                    <strong>{{row.name}}</strong>
+                    <span class="d-flex align-items-center gap-3">
+                        <p class="m-0 singleline-ellipsis">{{row.subscriptionId}}</p>
+                        <img class="cursor-enabled" title="Copy" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.subscriptionId">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="planName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Plan Name</th>
+                <td mat-cell *matCellDef="let row">
+                    <span class="d-flex align-items-center gap-3">
+                        <strong>{{row.planName}}</strong>
+                        <img class="cursor-enabled" title="Copy" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.planName">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="outletName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Outlet Name</th>
+                <td mat-cell *matCellDef="let row">
+                    <strong>{{row.outletName}}</strong>
+                    <span class="d-flex align-items-center gap-3">
+                        <p class="m-0 singleline-ellipsis">{{row.outletId}}</p>
+                        <img class="cursor-enabled" title="Copy" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.outletId">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="amount">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Amount</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.amount}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="scheduledDate">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Scheduled Date </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.scheduledDate ? (row.scheduledDate | date: dateShortTimeFormat) : 'N/A'}} </td>
+            </ng-container>
+            <ng-container matColumnDef="txnDate">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Txn Date </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.txnDate ? (row.txnDate | date: dateShortTimeFormat) : 'N/A'}} </td>
+            </ng-container>
+            <ng-container matColumnDef="currentCycle">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Cycle </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.currentCycle !== null ? row.currentCycle : 'N/A'}} </td>
+            </ng-container>
+            <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Status </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.status}} </td>
+            </ng-container>
+            <ng-container matColumnDef="failureReason">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Failure Reason </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.failureReason ? row.failureReason : 'N/A'}} </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+                    There is no matching data !!!
+                </td>
+            </tr>
+        </table>
+        <mat-paginator #paginatorRef [length]="totalSubscriptionPaymentsRecords" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)"></mat-paginator>
+    </main>
+</section>

@@ -1,0 +1,41 @@
+.input-field {
+    background: #b9b7d13e;
+}
+
+.input-field--white {
+    background: white;
+}
+
+.reason {
+    padding: 1.25em 1.25em 0.7em;
+    border-radius: 12px;
+    border: 1px solid #e7ecef;
+    color: #000;
+    width: 100%;
+    min-height: auto;
+    font-size: 14px;
+    background-color: #fff;
+}
+
+.reason.ng-touched.ng-invalid {
+    border: 2px solid #f44336;
+}
+
+.edit-rider-image-icon {
+    position: absolute;
+    left:100px;
+    top: 5px;
+    color: #fff;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mat-chip.mat-standard-chip {
+    background-color: #b9b7d13e !important;
+}

@@ -1,0 +1,11 @@
+<div class="download-wrapper">
+    <section class="download-wrapper__content mb-5 w-50" *ngFor="let data of downloadArr">
+        <div class="input-details mb-3">
+            <h3>{{data.title}}</h3>
+            <label>{{data.inputHeading}}</label>
+            <input type="text" class="input-field" placeholder="comma separated outlet ids"
+                [(ngModel)]="data.outletIds" (keydown.space)="$event.preventDefault();">
+        </div>
+        <button class="buttons br-50" (click)="downloadCSV(data)">Download</button>
+    </section>
+</div>

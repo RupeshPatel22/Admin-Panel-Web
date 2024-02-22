@@ -1,0 +1,33 @@
+<section class="dialog-wrapper">
+    <h4 class="mb-4">When will the {{data.openedFor}} next be available for customer? </h4>
+    <form [formGroup]="offlineForm">
+        <mat-radio-group formControlName="slotSelection" (change)="slotSelectionChange()" class="mt-2">
+            <mat-radio-button [value]="false" class="input-heading me-3">Available tomorrow</mat-radio-button>
+            <mat-radio-button [value]="true" class="input-heading my-3">Select custom date & time</mat-radio-button>
+        </mat-radio-group>
+        <div class="row mb-3" *ngIf="showCustomDateTimeFields">
+            <div class="input-details col-6">
+                <label class="input-heading">Date</label>
+                <mat-form-field appearance="outline">
+                    <input matInput (click)="customDate.open()" [matDatepicker]="customDate" [min]="currentDate"
+                        [readonly]="true" name="customDate" formControlName="date" placeholder="Select date">
+                    <mat-datepicker-toggle matSuffix [for]="customDate" matSuffix></mat-datepicker-toggle>
+                    <mat-datepicker #customDate></mat-datepicker>
+                </mat-form-field>
+                <app-form-error-msg [control]="offlineForm.controls.date"></app-form-error-msg>
+            </div>
+            <div class="input-details col-6">
+                <label class="input-heading">Time</label>
+                <mat-form-field appearance="outline">
+                    <input matInput type="text" [ngxTimepicker]="customTime" readonly name="customTime"
+                        formControlName="time" placeholder="Select time">
+                    <ngx-material-timepicker-toggle matSuffix [for]="customTime"></ngx-material-timepicker-toggle>
+                    <ngx-material-timepicker #customTime [defaultTime]="currentTime"></ngx-material-timepicker>
+                </mat-form-field>
+                <app-form-error-msg [control]="offlineForm.controls.time"></app-form-error-msg>
+            </div>
+        </div>
+    </form>
+    <button class="buttons active-button h-3 w-100 mb-2" mat-button (click)="onConfirm()"> Save</button>
+    <button class="buttons buttons--white h-3 w-100 mb-2" mat-button (click)="onDismiss()"> Dismiss</button>
+</section>

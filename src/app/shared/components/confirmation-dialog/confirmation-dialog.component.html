@@ -1,0 +1,11 @@
+<section class="dialog-wrapper">
+    <header class="heading"> 
+        <img src="{{icon}}" alt="" width="30" height="30" *ngIf="icon">
+        {{title}}
+        <p class="message">{{message}}</p>
+    </header>
+   <div class="d-flex justify-content-center">
+    <button class="buttons buttons--white br-50 me-2" (click) = "onDismiss()" [ngStyle]="{'display': dismissBtnText ? 'block' : 'none'}">{{dismissBtnText}}</button>
+    <button class="buttons br-50" (click) = "onConfirm()">{{confirmBtnText}}</button>
+   </div>
+</section>

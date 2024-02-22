@@ -1,0 +1,247 @@
+<section class="subscription-plans-wrapper">
+    <app-page-title [pageTitle]="'Subscription Plans'"></app-page-title>
+    <div class="subscription-plans-wrapper__tools">
+        <div class="row align-items-end w-75">
+            <div class="col-6 input-details">
+                <label for="search" class="input-heading">Search by plan name...</label>
+                <input type="text" class="input-field" placeholder="Enter plan name" name="search" [(ngModel)]="filterSubscriptionPlanFields.planName" (keyup.enter)="getSubscriptionPlans(true)">
+            </div>
+            <div class="col-3">
+                <button class="buttons buttons--filter w-100" (click)="showFilterFields ? clearFilter('all') : showFilterFields = true">
+                    {{showFilterFields ? 'Clear Filters' : 'Add Filters'}}
+                    <img src="assets/icons/filter.svg" class="ms-4" alt="add-icon" />
+                </button>
+            </div>
+            <div class="col-3">
+                <button class="buttons" (click)="openPlanModal('Add')">
+                    Add Plan
+                    <img src="assets/icons/add.svg" class="ms-2" alt="add-icon">
+                </button>
+            </div>
+        </div>
+        <div class="row align-items-end mt-4" *ngIf="showFilterFields">
+            <div class="col-2 input-details">
+                <label for="id" class="input-heading">Plan Type</label>
+                <ng-select [items]="planType | keyvalue: originalOrder" bindValue="key" bindLabel="value" placeholder="Select" [(ngModel)]="filterSubscriptionPlanFields.planType" (clear)="clearFilter()">
+                </ng-select>
+            </div>
+            <div class="col-2 input-details">
+                <label for="id" class="input-heading">Plan Category</label>
+                <ng-select [multiple]="true" [closeOnSelect]="false" [items]="planCategory | keyvalue: originalOrder" bindValue="key" bindLabel="value" placeholder="Select" [(ngModel)]="filterSubscriptionPlanFields.planCategory" (clear)="clearFilter()"></ng-select>
+            </div>
+            <div class="col-2 input-details">
+                <label for="id" class="input-heading">Plan Interval</label>
+                <ng-select [multiple]="true" [closeOnSelect]="false" [items]="planIntervalType | keyvalue: originalOrder" bindValue="key" bindLabel="value" placeholder="Select" [(ngModel)]="filterSubscriptionPlanFields.planIntervalType" (clear)="clearFilter()">
+                </ng-select>
+            </div>
+            <div class="col-2">
+                <button class="buttons br-50" (click)="getSubscriptionPlans(true)">Apply Filter</button>
+            </div>
+        </div>
+    </div>
+    <main class="subscription-plans-wrapper__content mt-5">
+        <table class="w-100" mat-table [dataSource]="subscriptionPlansList" matSort>
+            <ng-container matColumnDef="sr no">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Sr No </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row; let i= index"> {{ (paginatorRef.pageIndex * paginatorRef.pageSize) + (i + 1) }} </td>
+            </ng-container>
+            <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Plan Name & Id</th>
+                <td mat-cell *matCellDef="let row">
+                    <strong>{{row.name}}</strong>
+                    <span class="d-flex gap-3 align-items-center">
+                        <p class="m-0 singleline-ellipsis">{{row.id}}</p>
+                        <img class="cursor-enabled" title="Copy" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.id">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="type">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Type </th>
+                <td mat-cell *matCellDef="let row">{{planType[row.type]}}</td>
+            </ng-container>
+            <ng-container matColumnDef="category">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Category</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{planCategory[row.category]}} </td>
+            </ng-container>
+            <ng-container matColumnDef="intervalType">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Interval Type </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{planIntervalType[row.intervalType]}} </td>
+            </ng-container>
+            <ng-container matColumnDef="ordersCount">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Orders Count </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.ordersCount}} </td>
+            </ng-container>
+            <ng-container matColumnDef="gracePeriodOrdersCount">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Grace Period Orders Count </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.gracePeriodOrdersCount}} </td>
+            </ng-container>
+            <ng-container matColumnDef="amount">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Amount </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> &#8377; {{row.amount}}</td>
+            </ng-container>
+            <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Status </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    <input class="me-3" type="checkbox" [ngClass]="{'active': row.isActive}" role="switch" name="toggle" (click)="changePlanStatus(row)">
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="action">
+                <th class="cursor-disable" mat-header-cell *matHeaderCellDef>Action </th>
+                <td mat-cell *matCellDef="let row">
+                    <button mat-icon-button [matMenuTriggerFor]="menu">
+                        <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <mat-menu #menu="matMenu">
+                        <div class="d-flex justify-content-between mb-3 cursor-enabled" (click)="openPlanModal('View', row)">
+                            View
+                            <mat-icon class="ms-3">remove_red_eye</mat-icon>
+                        </div>
+                        <div class="d-flex justify-content-between cursor-enabled mb-3" (click)="openPlanModal('Edit', row)">
+                            Edit
+                            <mat-icon class="ms-3">edit</mat-icon>
+                        </div>
+                        <div class="d-flex justify-content-between cursor-enabled" (click)="openSubscriptionModal(row.id)">
+                            Create Subscription
+                            <mat-icon class="ms-3">add</mat-icon>
+                        </div>
+                    </mat-menu>
+                </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+                    There is no matching data !!!
+                </td>
+            </tr>
+        </table>
+        <mat-paginator #paginatorRef [length]="totalSubscriptionPlans" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)"></mat-paginator>
+    </main>
+</section>
+<!-- Plan Modal -->
+<div class="modal hide drawer right-align" id="changeModalRight" role="dialog" aria-hidden="true" *ngIf="showPlanModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <label class="modal-title border-0" id="exampleModalLabel">{{action}} Plan</label>
+                <mat-icon (click)="closePlanModal()" data-dismiss="modal">close</mat-icon>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="planForm">
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Plan Name</label>
+                        <input type="text" class="input-field" formControlName="name" placeholder="Enter plan name" />
+                        <app-form-error-msg [control]="planForm.controls.name"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Type</label>
+                        <ng-select class="modal-ng-select w-100" formControlName="type" (change)="onPlanTypeChange()" [items]="planType | keyvalue: originalOrder" bindValue="key" bindLabel="value" placeholder="Select type">
+                        </ng-select>
+                        <app-form-error-msg [control]="planForm.controls.type"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Category</label>
+                        <ng-select class="modal-ng-select w-100" formControlName="category" [items]="planCategory | keyvalue: originalOrder" bindValue="key" bindLabel="value" placeholder="Select category">
+                        </ng-select>
+                        <app-form-error-msg [control]="planForm.controls.category"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Interval Type</label>
+                        <ng-select class="modal-ng-select w-100" formControlName="intervalType" [items]="planIntervalType | keyvalue: originalOrder" bindValue="key" bindLabel="value" placeholder="Select interval type">
+                        </ng-select>
+                        <app-form-error-msg [control]="planForm.controls.intervalType"></app-form-error-msg>
+                    </div>
+                    <ng-container *ngIf="showFormFields">
+                        <div class="input-details">
+                            <label class="input-heading mt-3">Max Cycles</label>
+                            <input type="text" class="input-field" formControlName="maxCycles" placeholder="Enter max cycles count" />
+                            <app-form-error-msg [control]="planForm.controls.maxCycles"></app-form-error-msg>
+                        </div>
+                        <div class="input-details">
+                            <label class="input-heading mt-3">Amount (in &#8377;)</label>
+                            <input type="text" class="input-field" formControlName="amount" placeholder="Enter amount" />
+                            <app-form-error-msg [control]="planForm.controls.amount"></app-form-error-msg>
+                        </div>
+                    </ng-container>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Orders Count</label>
+                        <input type="text" class="input-field" formControlName="ordersCount" placeholder="Enter count" />
+                        <app-form-error-msg [control]="planForm.controls.ordersCount"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Grace Period Orders Count</label>
+                        <input type="text" class="input-field" formControlName="gracePeriodOrdersCount" placeholder="Enter count" />
+                        <app-form-error-msg [control]="planForm.controls.gracePeriodOrdersCount"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Description</label>
+                        <input type="text" class="input-field" formControlName="description" placeholder="Enter description" />
+                        <app-form-error-msg [control]="planForm.controls.description"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Terms and Conditions</label>
+                        <textarea class="reason" placeholder="Type here..." formControlName="tnc"></textarea>
+                        <app-form-error-msg [control]="planForm.controls.tnc"></app-form-error-msg>
+                    </div>
+                    <div class="d-flex mt-3" *ngIf="action !== 'View'">
+                        <button type="button" class="buttons buttons--white br-50 w-100 h-3 me-3" (click)="closePlanModal()">Dismiss
+                        </button>
+                        <button type="button" class="buttons br-50 w-100 h-3" (click)="submitPlan()">{{action === 'Edit'
+                            ?
+                            'Save' : 'Add'}}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Subscription Modal -->
+<div class="modal hide drawer right-align" id="changeModalRight" role="dialog" aria-hidden="true" *ngIf="showSubscriptionModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <label class="modal-title border-0" id="exampleModalLabel">Create Subscription</label>
+                <mat-icon (click)="closeSubscriptionModal()" data-dismiss="modal">close</mat-icon>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="subscriptionForm">
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Plan ID</label>
+                        <input type="text" class="input-field" formControlName="planId" placeholder="Enter plan id" />
+                        <app-form-error-msg [control]="subscriptionForm.controls.planId"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Outlet ID</label>
+                        <input type="text" class="input-field" formControlName="outletId" placeholder="Enter outlet id" />
+                        <app-form-error-msg [control]="subscriptionForm.controls.outletId"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Vendor Name</label>
+                        <input type="text" class="input-field" formControlName="customerName" placeholder="Enter Vendor Name" />
+                        <app-form-error-msg [control]="subscriptionForm.controls.customerName"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Vendor Email</label>
+                        <input type="text" class="input-field" formControlName="customerEmail" placeholder="Enter Vendor Email" />
+                        <app-form-error-msg [control]="subscriptionForm.controls.customerEmail"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Vendor Phone</label>
+                        <input type="text" class="input-field" formControlName="customerPhone" placeholder="Enter Vendor phone" />
+                        <app-form-error-msg [control]="subscriptionForm.controls.customerPhone"></app-form-error-msg>
+                    </div>
+                    <div class="d-flex mt-3" *ngIf="!subscriptionAuthorizationLink">
+                        <button type="button" class="buttons buttons--white br-50 w-100 h-3 me-3" (click)="closeSubscriptionModal()">Dismiss
+                        </button>
+                        <button type="button" class="buttons br-50 w-100 h-3" (click)="submitSubscription()">Add</button>
+                    </div>
+                </form>
+                <div *ngIf="subscriptionAuthorizationLink">
+                    <label class="input-heading mt-3">Authorization Link</label>
+                    <p>{{subscriptionAuthorizationLink}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

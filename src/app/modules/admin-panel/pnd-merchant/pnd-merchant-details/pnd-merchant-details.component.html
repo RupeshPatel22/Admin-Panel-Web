@@ -1,0 +1,67 @@
+<section class="row" [formGroup]="merchantDetailsForm">
+    <div class="fixed-button d-flex justify-content-end gap-3" *ngIf="merchantDetailsForm.dirty">
+        <button class="buttons buttons--white br-50" (click)="onCancel()">Cancel</button>
+        <button class="buttons br-50" (click)="onAction(merchantDetails.merchantId)">Save</button>
+    </div>
+        <div class="input-details col-4 mb-2">
+            <label class="input-heading">Business Name</label>
+            <input type="text" class="input-field mt-2" placeholder="Business Name" formControlName="businessName">
+            <app-form-error-msg [control]="merchantDetailsForm.controls.businessName"></app-form-error-msg>
+        </div>
+        <div class="input-details col-4 mb-2">
+            <label class="input-heading">Phone</label>
+            <input type="text" class="input-field mt-2" placeholder="Phone" formControlName="phone">
+            <app-form-error-msg [control]="merchantDetailsForm.controls.phone"></app-form-error-msg>
+        </div>
+        <div class="input-details col-4 mb-2">
+            <label class="input-heading">Email</label>
+            <input type="text" class="input-field mt-2" placeholder="email" formControlName="email">
+            <app-form-error-msg [control]="merchantDetailsForm.controls.email"></app-form-error-msg>
+        </div>
+        <div class="input-details col-4 mb-2">
+            <label class="input-heading">Expected Delivery In Day</label>
+            <input type="text" class="input-field mt-2" placeholder="Expected Delivery In Day" formControlName="expectedDeliveryInDay">
+            <app-form-error-msg [control]="merchantDetailsForm.controls.expectedDeliveryInDay"></app-form-error-msg>
+        </div>
+        <div class="input-details col-4 mb-2">
+            <label class="input-heading">Category</label>
+            <ng-select [items]="categoryList" bindLabel="name" bindValue="id" placeholder="Category" formControlName="categoryIds"
+                     [multiple]="true"></ng-select>
+            <app-form-error-msg [control]="merchantDetailsForm.controls.categoryIds"></app-form-error-msg>
+        </div>
+        <div class="input-details col-4 mb-2">
+            <label class="input-heading">Max Order Drop Location</label>
+            <input type="text" class="input-field mt-2" placeholder="Max Order Drop Location" formControlName="maxOrderDropLocation">
+            <app-form-error-msg [control]="merchantDetailsForm.controls.maxOrderDropLocation"></app-form-error-msg>
+        </div>
+        <div class="input-details col-4 mb-2">
+            <label class="input-heading">Max Order Pod Collection Amount</label>
+            <input type="text" class="input-field mt-2" placeholder="Max Order Pod Collection Amount" formControlName="maxOrderPodCollectionAmount">
+            <app-form-error-msg [control]="merchantDetailsForm.controls.bankName"></app-form-error-msg>
+        </div>
+        <div class="input-details col-4 mb-2">
+            <label class="input-heading">Additional Per Drop Charges</label>
+            <input type="text" class="input-field mt-2" placeholder="Additional Per Drop Charges" formControlName="additionalPerDropCharges">
+            <app-form-error-msg [control]="merchantDetailsForm.controls.bankName"></app-form-error-msg>
+        </div>
+        <div class="input-details col-4 mb-2">
+            <label class="input-heading">Bank Name</label>
+            <input type="text" class="input-field mt-2" placeholder="Bank Name" formControlName="bankName">
+            <app-form-error-msg [control]="merchantDetailsForm.controls.bankName"></app-form-error-msg>
+        </div>
+        <div class="input-details col-4 mb-2">
+            <label class="input-heading">Bank Account Number</label>
+            <input type="text" class="input-field mt-2" placeholder="Account Number" formControlName="bankAccountNumber">
+            <app-form-error-msg [control]="merchantDetailsForm.controls.bankAccountNumber"></app-form-error-msg>
+        </div>
+        <div class="input-details col-4 mb-2">
+            <label class="input-heading">Bank IFSC Code</label>
+            <input type="text" class="input-field mt-2" placeholder="IFSC Code" formControlName="bankIfsc">
+            <app-form-error-msg [control]="merchantDetailsForm.controls.bankIfsc"></app-form-error-msg>
+        </div>
+        <div class="input-details col-4 mb-2">
+            <label class="input-heading">UPI Id</label>
+            <input type="text" class="input-field mt-2" placeholder="UPI Id" formControlName="upiId">
+            <app-form-error-msg [control]="merchantDetailsForm.controls.upiId"></app-form-error-msg>
+        </div>
+</section>

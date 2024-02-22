@@ -1,0 +1,144 @@
+<section class="rider-shifts-wrapper">
+    <app-page-title [pageTitle]="'Master Shifts'"></app-page-title>
+    <div class="payouts-wrapper__tools w-75">
+        <div class="row align-items-end">
+            <div class="col-6 input-details">
+                <label for="search" class="input-heading">Search by shift id and shift name...</label>
+                <input type="text" class="input-field" placeholder="Enter shift id and shiftname" name="search" [ngModel]="globalFilter" (ngModelChange)="globalSearch($event)">
+            </div>
+            <div class="col-3">
+                <button class="buttons buttons--filter w-100" (click)="showFilterFields ? clearFilter('all') : showFilterFields = true">
+            {{showFilterFields ? 'Clear Filters' : 'Add Filters'}}
+            <img src="assets/icons/filter.svg" class="ms-4" alt="add-icon" />
+          </button>
+            </div>
+            <div class="col-3">
+                <button class="buttons" (click)="openRiderShiftModal('Add'); showId=false">
+            Add Shift
+            <img src="assets/icons/add.svg" class="ms-2" alt="add-icon">
+          </button>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row align-items-end mt-4" *ngIf="showFilterFields">
+        <div class="col-3 input-details">
+            <label class="input-heading">Shift Id</label>
+            <ng-select [items]="riderShiftsData" bindLabel="id" bindValue="id" placeholder="Select Shift Id" [(ngModel)]="filterRiderShifts.id" (clear)="clearFilter()"></ng-select>
+        </div>
+        <div class="col-3 input-details">
+            <label class="input-heading">Shifts</label>
+            <ng-select [items]="riderShiftsData" bindLabel="name" bindValue="name" placeholder="Select Shift" [(ngModel)]="filterRiderShifts.name" (clear)="clearFilter()"></ng-select>
+        </div>
+        <div class="col-3">
+            <button class="buttons br-50" (click)="applyFilter()">Apply Filter</button>
+        </div>
+    </div>
+    <main class="rider-wrapper__content mt-5">
+        <table class="w-100" mat-table [dataSource]="riderList" matSort multiTemplateDataRows>
+            <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Shift Id</th>
+                <td mat-cell *matCellDef="let row">
+                    <span>
+              <span class="d-flex gap-3 align-items-center">
+                <strong matTooltipClass="custom-tooltip">{{row.id}}</strong>
+                <img class="cursor-enabled" src="assets/icons/copy-icon.svg" width="15" height="15" alt=""
+                  [appCopyToClipboard]="row.id">
+              </span></span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Shift Name </th>
+                <td mat-cell *matCellDef="let row">
+                    <b title="See Outlet Info">{{row.name}}</b>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="type">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+                <td mat-cell *matCellDef="let row">
+                    <b title="See Outlet Info">{{row.type}}</b>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="start_time">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Start Time</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.start_time}} </td>
+            </ng-container>
+            <ng-container matColumnDef="end_time">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>End Time</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.end_time}} </td>
+            </ng-container>
+            <ng-container matColumnDef="min_guarantee_in_rupees">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Min Guarantee </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">&#8377; {{row.min_guarantee_in_rupees}} </td>
+            </ng-container>
+            <ng-container matColumnDef="delete">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Action</th>
+                <td class="" mat-cell *matCellDef="let row">{{row.delete}}
+                    <mat-icon (click)="openRiderShiftModal('Edit', row)">edit</mat-icon>
+                    <mat-icon (click)="deleteRiderShifts(row)">delete</mat-icon>
+                </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+                    There is no matching data !!!
+                </td>
+            </tr>
+        </table>
+        <mat-paginator #paginatorRef [pageSizeOptions]="pageSizeOptions"></mat-paginator>
+    </main>
+</section>
+
+<div class="modal hide drawer right-align" id="changeModalRight" role="dialog" aria-hidden="true" *ngIf="showRiderShiftModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <label class="modal-title border-0">{{action === 'Edit'?'Edit Rider Shift' : 'Create Rider
+                      Shift'}}</label>
+                <mat-icon (click)="closeRiderShiftModal()" data-dismiss="modal">close</mat-icon>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="riderShiftForm">
+                    <div class="input-details" *ngIf="showId">
+                        <label class="input-heading mt-3">Shift Id</label>
+                        <input type="text" class="input-field" formControlName="id" placeholder="Enter Shift id" />
+                        <app-form-error-msg [control]="riderShiftForm.controls.id"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Shift Name</label>
+                        <input type="text" class="input-field" formControlName="name" placeholder="Enter Shift Name" />
+                        <app-form-error-msg [control]="riderShiftForm.controls.name"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Shift Type</label>
+                        <input type="text" class="input-field" formControlName="type" placeholder="Enter Shift type" />
+                        <app-form-error-msg [control]="riderShiftForm.controls.type"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Start Time</label>
+                        <input type="time" class="input-field" formControlName="start_time" min="00:00:00" max="23:59:59" step="1" placeholder="Enter Start Time" />
+                        <app-form-error-msg [control]="riderShiftForm.controls.start_time"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">End Time</label>
+                        <input type="time" class="input-field" formControlName="end_time" min="00:00:00" max="23:59:59" step="1" placeholder="Enter End Time" />
+                        <app-form-error-msg [control]="riderShiftForm.controls.end_time"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Minimum Guarantee Payment (in &#8377;)</label>
+                        <input type="text" class="input-field" formControlName="min_guarantee_in_rupees" placeholder="Enter Minimum Guarantee Payment" />
+                        <app-form-error-msg [control]="riderShiftForm.controls.min_guarantee_in_rupees"></app-form-error-msg>
+                    </div>
+                    <div class="d-flex mt-3">
+                        <button type="button" class="buttons buttons--white br-50 w-100 h-3 me-3" (click)="closeRiderShiftModal()">Dismiss
+              </button>
+                        <button type="button" class="buttons br-50 w-100 h-3" (click)="submitRiderShift()">{{action ===
+                              'Edit'?'Save' : 'Add'}}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,219 @@
+<main>
+    <section class="row mb-3">
+        <h3>Customer Details</h3>
+        <div class="input-details col-3">
+            <label class="input-heading">Name</label>
+            <p class="input-field">{{subscriptionDetails.customerName}}</p>
+        </div>
+        <div class="input-details col-3">
+            <label class="input-heading">Phone</label>
+            <p class="input-field">{{subscriptionDetails.customerPhone}}</p>
+        </div>
+        <div class="input-details col-3">
+            <label class="input-heading">Email</label>
+            <p class="input-field">{{subscriptionDetails.customerEmail}}</p>
+        </div>
+    </section>
+    <section class="row mb-3" *ngIf="subscriptionDetails.planType === planType.periodic">
+        <h3>Authorization Details</h3>
+        <div class="input-details col-3">
+            <label class="input-heading">Link</label>
+            <p class="input-field">{{subscriptionDetails.authLink}}</p>
+        </div>
+        <div class="input-details col-3">
+            <label class="input-heading">Amount</label>
+            <p class="input-field">{{subscriptionDetails.authAmount}}</p>
+        </div>
+        <div class="input-details col-3">
+            <label class="input-heading">Status</label>
+            <p class="input-field">{{subscriptionDetails.authStatus}}</p>
+        </div>
+        <div class="input-details col-3">
+            <label class="input-heading">Failure Reason (if any)</label>
+            <p class="input-field">{{subscriptionDetails.authFailureReason ? subscriptionDetails.authFailureReason :
+                'N/A'}}</p>
+        </div>
+        <div class="input-details col-3">
+            <label class="input-heading">Time</label>
+            <p class="input-field">{{subscriptionDetails.authDate ? (subscriptionDetails.authDate | date: dateShortTimeFormat) : 'N/A'}}</p>
+        </div>
+    </section>
+    <section class="row mb-3" *ngIf="subscriptionDetails.status === subscriptionStatus.cancelled">
+        <h3>Cancellation Details</h3>
+        <div class="input-details col-3">
+            <label class="input-heading">Cancelled By</label>
+            <p class="input-field">{{subscriptionDetails.cancelledBy}}</p>
+        </div>
+        <div class="input-details col-3">
+            <label class="input-heading">Cancellation User ID</label>
+            <p class="input-field">{{subscriptionDetails.cancellationUserId}}</p>
+        </div>
+        <div class="input-details col-3">
+            <label class="input-heading">Cancellation Reason</label>
+            <p class="input-field">{{subscriptionDetails.cancellationReason}}</p>
+        </div>
+    </section>
+    <section class="row mb-3">
+        <h3>Additional Details</h3>
+        <div class="input-details col-3">
+            <label class="input-heading">Orders Bought</label>
+            <p class="input-field">{{subscriptionDetails.ordersBought !== null ? subscriptionDetails.ordersBought : 'N/A'}}</p>
+        </div>
+        <div class="input-details col-3">
+            <label class="input-heading">Grace Orders Allotted</label>
+            <p class="input-field">{{subscriptionDetails.allottedGracePeriodOrders !== null ?
+                subscriptionDetails.allottedGracePeriodOrders : 'N/A'}}</p>
+        </div>
+        <div class="input-details col-3">
+            <label class="input-heading">Orders Consumed</label>
+            <p class="input-field">{{subscriptionDetails.ordersConsumed !== null ? subscriptionDetails.ordersConsumed : 'N/A'}}
+            </p>
+        </div>
+        <div class="input-details col-3">
+            <label class="input-heading">Remaining Orders</label>
+            <p class="input-field">{{subscriptionDetails.remainingOrders !== null ? subscriptionDetails.remainingOrders : 'N/A'}}
+            </p>
+        </div>
+        <div class="input-details col-3">
+            <label class="input-heading">Remaining Grace Orders</label>
+            <p class="input-field">{{subscriptionDetails.remainingGracePeriodOrders !== null ?
+                subscriptionDetails.remainingGracePeriodOrders : 'N/A'}}</p>
+        </div>
+        <div class="input-details col-3">
+            <label class="input-heading">On Grace Period ?</label>
+            <p class="input-field">{{subscriptionDetails.onGracePeriod ? 'Yes' : 'No'}}</p>
+        </div>
+        <div class="input-details col-3">
+            <label class="input-heading">Next Payment Date</label>
+            <p class="input-field">{{subscriptionDetails.nextPaymentDate ? (subscriptionDetails.nextPaymentDate | date: dateShortTimeFormat) : 'N/A'}}</p>
+        </div>
+        <div class="input-details col-3">
+            <label class="input-heading">Exteranl Subscription ID</label>
+            <p class="input-field">{{subscriptionDetails.externalSubscriptionId ?
+                subscriptionDetails.externalSubscriptionId : 'N/A'}}</p>
+        </div>
+    </section>
+    <section class="row" *ngIf="![subscriptionStatus.cancelled, subscriptionStatus.completed].includes(subscriptionDetails.status)">
+        <div class="col-4 input-details">
+            <h3 class="m-0">Subscription Action</h3>
+            <ng-select class="modal-ng-select" placeholder="Select"(change)="showSubscriptionActionFields = true"  [dropdownPosition]="'top'"
+            (clear)="showSubscriptionActionFields = false" [(ngModel)]="subsAction">
+                <ng-container *ngFor="let action of subscriptionAction | keyvalue">
+                    <ng-option [value]="action.value" *ngIf="actionsToShowInDropdown[action.value]">
+                        {{action.value}}
+                    </ng-option>
+                </ng-container>
+            </ng-select>
+        </div>
+
+        <div class="input-details col-4" *ngIf="showSubscriptionActionFields">
+            <ng-container *ngIf="subsAction === subscriptionAction.Cancel; else otherSubscriptionAction">
+                <label class="input-heading">Reason</label>
+                <textarea class="reason" placeholder="Type here..." [formControl]="cancellationReason"></textarea>
+                <app-form-error-msg [control]="cancellationReason"></app-form-error-msg>
+            </ng-container>
+
+            <ng-template #otherSubscriptionAction>
+                <label class="input-heading">Next Payment Date (Optional)</label>
+                <div class="row">
+                    <mat-form-field class="col-6" appearance="outline">
+                        <input matInput (click)="date.open()" [matDatepicker]="date" [readonly]="true"
+                            name="date" placeholder="Select date" [min]="currentDate" [formControl]="nextPaymentDate">
+                        <mat-datepicker-toggle matSuffix [for]="date" matSuffix></mat-datepicker-toggle>
+                        <mat-datepicker #date></mat-datepicker>
+                    </mat-form-field>
+                    <mat-form-field class="col-6" appearance="outline">
+                        <input matInput type="text" [ngxTimepicker]="time" readonly name="time"
+                            [formControl]="nextPaymentTime" placeholder="Select time">
+                        <ngx-material-timepicker-toggle matSuffix [for]="time"></ngx-material-timepicker-toggle>
+                        <ngx-material-timepicker #time></ngx-material-timepicker>
+                    </mat-form-field>
+                </div>
+            </ng-template>
+            
+            <div class="d-flex justify-content-end gap-3 mt-3">
+                <button class="buttons buttons--white br-50 w-25"
+                    (click)="onClear()">Clear</button>
+                <button class="buttons br-50 w-25" (click)="onConfirm()"> Ok</button>
+            </div>
+        </div>
+
+
+        <!-- Cancel Subscription-->
+        <!-- <div class="input-details col-4"
+            *ngIf="![subscriptionStatus.cancelled, subscriptionStatus.completed].includes(subscriptionDetails.status)">
+            <h3>{{subscriptionAction.Cancel}}</h3>
+            <label class="input-heading">Reason</label>
+            <textarea class="reason" placeholder="Type here..." [formControl]="cancellationReason"></textarea>
+            <app-form-error-msg [control]="cancellationReason"></app-form-error-msg>
+            <div class="d-flex justify-content-end gap-3 mt-3">
+                <button class="buttons buttons--white br-50 w-25"
+                    (click)="onClear(subscriptionAction.Cancel)">Clear</button>
+                <button class="buttons br-50 w-25" (click)="onConfirm(subscriptionAction.Cancel)"> Ok</button>
+            </div>
+        </div> -->
+        <!-- Retry Payment -->
+        <!-- <div class="col-8" *ngIf="subscriptionDetails.status === subscriptionStatus.on_hold">
+            <h3 class="col-12">{{subscriptionAction.RetryPayment}} / {{subscriptionAction.Activate}}</h3>
+            <div class="row">
+                <div class="col-4 input-details">
+                    <label class="input-heading">Subscription Action</label>
+                    <ng-select class="modal-ng-select" [items]="[subscriptionAction.RetryPayment, subscriptionAction.Activate]" placeholder="Select" 
+                        [formControl]="subsAction" (change)="showNextPaymentField = true" (clear)="showNextPaymentField = false">
+                    </ng-select>
+                </div>
+                <section class="col-8" *ngIf="showNextPaymentField">
+    
+                    <label class="input-heading">Next Payment Date (Optional)</label>
+                    <div class="row">
+                        <mat-form-field class="col-6" appearance="outline">
+                            <input matInput (click)="date.open()" [matDatepicker]="date" [readonly]="true"
+                                name="date" placeholder="Select date" [min]="currentDate" [formControl]="nextPaymentDate">
+                            <mat-datepicker-toggle matSuffix [for]="date" matSuffix></mat-datepicker-toggle>
+                            <mat-datepicker #date></mat-datepicker>
+                        </mat-form-field>
+                        <mat-form-field class="col-6" appearance="outline">
+                            <input matInput type="text" [ngxTimepicker]="time" readonly name="time"
+                                [formControl]="nextPaymentTime" placeholder="Select time">
+                            <ngx-material-timepicker-toggle matSuffix [for]="time"></ngx-material-timepicker-toggle>
+                            <ngx-material-timepicker #time></ngx-material-timepicker>
+                        </mat-form-field>
+                    </div>
+                    <div class="d-flex justify-content-end gap-3 mt-4">
+                        <button class="buttons buttons--white br-50 w-25"
+                            (click)="onClear(subscriptionAction.RetryPayment)">Clear</button>
+                        <button class="buttons br-50 w-25" (click)="onConfirm(subscriptionAction.RetryPayment)"> 
+                            'Retry'
+                        </button>
+                    </div>
+                </section>
+            </div>
+        </div> -->
+        <!-- Activate Subscription-->
+        <!-- <div class="input-details col-6" *ngIf="subscriptionDetails.status === subscriptionStatus.on_hold">
+            <h3>{{subscriptionAction.Activate}}</h3>
+            <label class="input-heading">Next Payment Date (Optional)</label>
+            <div class="row">
+                <mat-form-field class="col-6" appearance="outline">
+                    <input matInput (click)="activateDate.open()" [matDatepicker]="activateDate" [readonly]="true"
+                        name="activateDate" placeholder="Select date" [min]="currentDate"
+                        [formControl]="activateSubscriptionDate">
+                    <mat-datepicker-toggle matSuffix [for]="activateDate" matSuffix></mat-datepicker-toggle>
+                    <mat-datepicker #activateDate></mat-datepicker>
+                </mat-form-field>
+                <mat-form-field class="col-6" appearance="outline">
+                    <input matInput type="text" [ngxTimepicker]="activateTime" readonly name="activateTime"
+                        [formControl]="activateSubscriptionTime" placeholder="Select time">
+                    <ngx-material-timepicker-toggle matSuffix [for]="activateTime"></ngx-material-timepicker-toggle>
+                    <ngx-material-timepicker #activateTime></ngx-material-timepicker>
+                </mat-form-field>
+            </div>
+            <div class="d-flex justify-content-end gap-3 mt-4">
+                <button class="buttons buttons--white br-50 w-25"
+                    (click)="onClear(subscriptionAction.Activate)">Clear</button>
+                <button class="buttons br-50 w-25" (click)="onConfirm(subscriptionAction.Activate)"> Activate</button>
+            </div>
+        </div> -->
+        
+    </section>
+</main>

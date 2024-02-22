@@ -1,0 +1,17 @@
+.download-wrapper {
+    margin-top: 50px;
+
+    &__content {
+        h3 {
+            font-weight: 400;
+        }
+
+        p,
+        span,
+        label {
+            font-size: 18px;
+            color: #a7a8ae;
+            font-weight: 400;
+        }
+    }
+}

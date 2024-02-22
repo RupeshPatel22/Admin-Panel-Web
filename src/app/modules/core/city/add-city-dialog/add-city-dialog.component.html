@@ -1,0 +1,14 @@
+<section class="dialog-wrapper">
+   <h4 class="mb-4">Add City</h4>
+   <label class="input-heading">City Name</label>
+   <div class="input-details mb-3">
+      <mat-form-field appearance="outline" class="w-100">
+         <input type="text" matInput name="name" [formControl]="cityName" placeholder="Enter Name">
+      </mat-form-field>
+      <app-form-error-msg [control]="cityName"></app-form-error-msg>
+   </div>
+   <div class="d-flex justify-content-between">
+      <button class="buttons br-50" (click)="addCity()"> Add</button>
+      <button class="buttons buttons--white br-50" (click)="onDismiss()">Not Now</button>
+   </div>
+</section>

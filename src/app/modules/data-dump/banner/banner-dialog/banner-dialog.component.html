@@ -1,0 +1,36 @@
+<section class="dialog-wrapper">
+    <h4 class="mb-4">{{!bannerDetails ? 'Add' : 'Edit'}} Banner</h4>
+ 
+    <form [formGroup]="bannerForm">
+       <label class="input-heading">Title</label>
+       <div class="input-details mb-3">
+          <mat-form-field appearance="outline" class="w-100">
+             <input type="text" matInput name="title" formControlName="title" placeholder="Enter title">
+          </mat-form-field>
+          <app-form-error-msg [control]="bannerForm.controls.title"></app-form-error-msg>
+       </div>
+       <label class="input-heading">Banner Link</label>
+       <div class="input-details mb-3">
+         <mat-form-field appearance="outline" class="w-100">
+            <input type="text" matInput name="bannerLink" formControlName="bannerLink" placeholder="Enter banner link">
+         </mat-form-field>
+         <app-form-error-msg [control]="bannerForm.controls.bannerLink"></app-form-error-msg>
+      </div>
+ 
+       <label class="input-heading mb-2">Image</label>
+       <ng-container *ngIf="bannerDetails">
+          <a class="ms-5" href="{{bannerDetails.imageUrl}}" target="_blank">View</a>
+       </ng-container>
+       <div class="d-flex align-items-center">
+          <input [hidden]="true" type="file" accept="all/*" (click)="$event.target.value = null"
+                (change)="getFileUploadUrl($event.target.files)" #chooseFile>
+          <button class="choose-file-button" (click)="chooseFile.click()">Choose File</button>
+          <span>{{imageName}}</span>
+       </div>
+       <app-form-error-msg [control]="bannerForm.controls.imageName"></app-form-error-msg>
+       <div class="d-flex justify-content-end gap-3 mt-4">
+          <button class="buttons buttons--white br-50" (click)="onDismiss()">Dismiss</button>
+          <button class="buttons br-50" (click)="submitBanner()"> {{!bannerDetails? 'Add' : 'Save'}}</button>
+       </div>
+    </form>
+ </section>

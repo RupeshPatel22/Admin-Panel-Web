@@ -1,0 +1,59 @@
+<section class="area-wrapper">
+    <div class="d-flex align-items-baseline">
+        <img src="assets/icons/back-icon.svg" class="cursor-enabled me-2" (click)="navigateToAreaTable()" width="16" height="18"
+            *ngIf="areaLabel==='Add Polygon' || areaLabel==='View Polygon' || areaLabel === 'View All Polygon'">
+        <app-page-title [pageTitle]="areaLabel"></app-page-title>
+    </div>
+    <ng-container *ngIf="!addPolygon">
+        <app-area-lists (polygonAdd)="addPolygon = true; areaLabel='Add Polygon'"
+            (polygonView)="showPolygonInMap($event)" (polygonViewAll)="showAllPolygonInMap($event)"></app-area-lists>
+    </ng-container>
+    <!-- Polygon Create -->
+    <div *ngIf="addPolygon">
+        <div class="row mb-3">
+            <div class="input-details col-3" [ngClass]="{'hide-search-input': viewPolygon || viewAllPolygon}">
+                <label class="input-heading">Search</label>
+                <input type="text" class="input-field" placeholder="Search Area Location" #search>
+            </div>
+            <ng-container *ngIf="polygonCreate">
+                <form [formGroup]="polygonForm" class="row col-9 align-items-end">
+                    <div class="input-details col-3">
+                        <label class="input-heading">Select City</label>
+                        <ng-select id="city" name="city" formControlName="cityId" [items]="cityList" bindLabel="name"
+                            bindValue="id" placeholder="Select" [hideSelected]="true">
+                        </ng-select>
+                        <app-form-error-msg [control]="polygonForm.controls.cityId"></app-form-error-msg>
+                    </div>
+                    <div class="input-details col-3">
+                        <label for="Area Name" class="input-heading">Area Name</label>
+                        <input type="text" class="input-field" name="Area name" placeholder="Enter Area Name"
+                            formControlName="areaName">
+                        <app-form-error-msg [control]="polygonForm.controls.areaName"></app-form-error-msg>
+                    </div>
+                    <div class="col-3">
+                        <button class="buttons br-50" (click)="savePolygon()">Save Polygon</button>
+                    </div>
+                </form>
+            </ng-container>
+            <ng-container *ngIf="viewPolygon">
+                <div class="input-details col-3">
+                    <label class="input-heading">City Name</label>
+                    <input type="text" class="input-field" name="city name"
+                        [(ngModel)]="currentViewPolygonDetails.cityName">
+                </div>
+                <div class="input-details col-3">
+                    <label class="input-heading">Area ID</label>
+                    <input type="text" class="input-field" name="area id" [(ngModel)]="currentViewPolygonDetails.id">
+                </div>
+                <div class="input-details col-3">
+                    <label class="input-heading">Area Name</label>
+                    <input type="text" class="input-field" name="area name"
+                        [(ngModel)]="currentViewPolygonDetails.areaName">
+                </div>
+            </ng-container>
+        </div>
+        <agm-map [latitude]="options.lat" (mapReady)="onMapReady($event)" [longitude]="options.lng" [zoom]="zoom"
+            #agmMap>
+        </agm-map>        
+    </div>
+</section>

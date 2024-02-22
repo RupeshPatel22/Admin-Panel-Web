@@ -1,0 +1,137 @@
+<div class="pos-details-wrapper w-100">
+    <form [formGroup]="posDetailForm">
+        <section class="pos-details-wrapper__content w-100 row">
+            <div *ngIf="isInitConnection">
+                <mat-expansion-panel class="pos-info" class="col-8">
+                    <mat-expansion-panel-header>
+                        <span class="d-flex align-items-center">
+                            <label>Connect With POS</label>
+                        </span>
+                    </mat-expansion-panel-header>
+
+                    <!-- Initial connection -->
+                    <div class="pos-id__container d-flex flex-column" *ngIf="isInitConnection">
+                        <div class="input-details">
+                            <label class="input-heading">POS Id</label>
+                            <input type="text" class="input-field mt-2" placeholder="Enter POS Restaurant Id" formControlName="posRestaurantId">
+                        </div>
+                        <button class="buttons" (click)="initializePosForOutlet()"><b>Initiate Connection With
+                            POS</b></button>
+                    </div>
+                </mat-expansion-panel>
+
+            </div>
+            <!-- Update POS status -->
+
+            <div *ngIf="isReadyStatus || isOnboardRestaurant || isGotPosIdStatus">
+                <mat-expansion-panel class="pos-info" class="col-8">
+                    <mat-expansion-panel-header>
+                        <span class="d-flex align-items-center">
+                            <label>Update Status With POS</label>
+                        </span>
+                    </mat-expansion-panel-header>
+
+                    <div class="pos-id__container d-flex flex-column">
+                        <div class="input-details">
+                            <label class="input-heading">POS Restaurant Id</label>
+                            <input type="text" class="input-field mt-2" placeholder="Enter POS Restaurant Id" formControlName="posRestaurantId">
+                            <label class="input-heading">POS Id</label>
+                            <input type="text" class="input-field mt-2" placeholder="Enter POS Id" formControlName="posId">
+                            <label class="input-heading">POS Status</label>
+                            <input type="text" class="input-field mt-2" placeholder="Enter POS Status" formControlName="posStatus">
+                        </div>
+                        <button class="buttons" (click)="updatePosStatus()" *ngIf="!isOnboardRestaurant || isDetachedStatus"><b>Update Status</b></button>
+                        <button class="buttons" (click)="onboardRestaurantOnPetPooja()" *ngIf="isOnboardRestaurant && !isDetachedStatus"><b>Onboard
+                            Restaurant On Pet Pooja</b></button>
+                    </div>
+                </mat-expansion-panel>
+
+            </div>
+            <!-- Sync Menu with POS -->
+            <!-- <div class="pos-info col-8 mt-4" *ngIf="isFetchMenu">
+                <button class="buttons" (click)="syncMenuWithPOS()"><b>Sync Menu With Pet Pooja</b></button>
+            </div> -->
+        </section>
+
+        <!-- Expansion Panel which shows POS details -->
+        <section class="row w-100 mt-4" *ngIf="!isInitConnection && !isReadyStatus && !isReadyStatus && !isOnboardRestaurant">
+            <mat-expansion-panel class="pos-info" class="col-8">
+                <mat-expansion-panel-header>
+                    <span class="d-flex align-items-center">
+                        <label>POS Details</label>
+                    </span>
+                </mat-expansion-panel-header>
+                <div class="pos-info__container d-flex flex-column">
+                    <div class="input-details">
+                        <label for="name" class="input-heading">Outlet Id</label>
+                        <span class="input-field mt-2 d-flex align-items-center">{{posDetailList.id? posDetailList.id : 'N/A'}}</span>
+                    </div>
+                </div>
+                <div class="pos-info__container d-flex flex-column mt-3">
+                    <div class="input-details">
+                        <label for="name" class="input-heading">POS Restaurant Id</label>
+                        <span class="input-field mt-2 d-flex align-items-center">{{posDetailList.posRestaurantId? posDetailList.posRestaurantId : 'N/A'}}</span>
+
+                    </div>
+                </div>
+                <div class="pos-info__container d-flex flex-column mt-3">
+                    <div class="input-details">
+                        <label for="name" class="input-heading">POS Id</label>
+                        <span class="input-field mt-2 d-flex align-items-center">{{posDetailList.posId? posDetailList.posId : 'N/A'}}</span>
+
+                    </div>
+                </div>
+                <div class="pos-info__container d-flex flex-column mt-3">
+                    <div class="input-details">
+                        <label for="name" class="input-heading">POS Status</label>
+                        <span class="input-field mt-2 d-flex align-items-center">{{posDetailList.posStatus? posDetailList.posStatus : 'N/A'}}</span>
+
+                    </div>
+                </div>
+                <div class="pos-info__container d-flex flex-column mt-3">
+                    <div class="input-details">
+                        <label for="name" class="input-heading">Details</label>
+                        <span class="input-field mt-2 d-flex align-items-center">{{posDetailList.details? posDetailList.details : 'N/A'}}</span>
+
+                    </div>
+                </div>
+                <div class="pos-info__container d-flex flex-column mt-3">
+                    <div class="input-details">
+                        <label for="name" class="input-heading">Intiate At</label>
+                        <span class="input-field mt-2 d-flex align-items-center">{{posDetailList.initiatedAt? posDetailList.initiatedAt : 'N/A'}}</span>
+
+                    </div>
+                </div>
+                <div class="pos-info__container d-flex flex-column mt-3">
+                    <div class="input-details">
+                        <label for="name" class="input-heading">Onboarded At</label>
+                        <span class="input-field mt-2 d-flex align-items-center">{{posDetailList.onboardedAt? posDetailList.onboardedAt : 'N/A'}}</span>
+
+                    </div>
+                </div>
+                <div class="pos-info__container d-flex flex-column mt-3">
+                    <div class="input-details">
+                        <label for="name" class="input-heading">Menu Last Updated At</label>
+                        <span class="input-field mt-2 d-flex align-items-center">{{posDetailList.menuLastUpdatedAt? posDetailList.menuLastUpdatedAt : 'N/A'}}</span>
+
+                    </div>
+                </div>
+                <div class="pos-info__container d-flex flex-column mt-3">
+                    <div class="input-details">
+                        <label for="name" class="input-heading">Created At</label>
+                        <span class="input-field mt-2 d-flex align-items-center">{{posDetailList.createdAt? posDetailList.createdAt : 'N/A'}}</span>
+
+                    </div>
+                </div>
+                <div class="pos-info__container d-flex flex-column mt-3">
+                    <div class="input-details">
+                        <label for="name" class="input-heading">Updated At</label>
+                        <span class="input-field mt-2 d-flex align-items-center">{{posDetailList.updatedAt? posDetailList.updatedAt : 'N/A'}}</span>
+
+                    </div>
+                </div>
+                <button class="buttons mt-4" (click) = "detachRestaurantOnPetPooja()" *ngIf="isOnboardRestaurantCompleted"><b>Detach</b></button>
+            </mat-expansion-panel>
+        </section>
+    </form>
+</div>

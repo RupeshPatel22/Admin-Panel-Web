@@ -1,0 +1,40 @@
+.upload-wrapper {
+    margin-top: 50px;
+
+    &__content {
+        .choose-file-button {
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            background-color: #f5f9fc;
+            text-transform: capitalize;
+            min-width: 200px;
+            margin-right: 20px;
+            box-shadow: 2px 2px 3px 0px #ddd;
+        }
+
+        h3 {
+            font-weight: 400;
+        }
+
+        p,
+        span,
+        label {
+            font-size: 18px;
+            color: #a7a8ae;
+            font-weight: 400;
+        }
+
+        .download {
+            cursor: pointer;
+        }
+    }
+}
+
+.bg {
+    background-color: #fad9d9 !important;
+}
+
+.modal.drawer .modal-dialog {
+    max-width: 40% !important;
+}

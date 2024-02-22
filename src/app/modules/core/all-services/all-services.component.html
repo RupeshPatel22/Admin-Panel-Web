@@ -1,0 +1,154 @@
+<section class="all-services-wrapper">
+    <app-page-title [pageTitle]="'All Services'"></app-page-title>
+    <main class="all-services-wrapper__content mt-5">
+        <table class="w-100" mat-table [dataSource]="allServicesList" matSort>
+            <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Service Details</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    <span class="d-flex gap-3 align-items-center">
+                        <strong>{{row.name}}</strong>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.name">
+                    </span>
+                    <span class="d-flex gap-3 align-items-center">
+                        <p class="m-0">{{row.id}}</p>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.id">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="sequence">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Sequence</th>
+                <td class="" mat-cell *matCellDef="let row">
+                    <p class="m-0">{{row.sequence}}</p>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="showOnAndroid">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Show On Android</th>
+                <td class="" mat-cell *matCellDef="let row">
+                    <p class="m-0">{{row.showOnAndroid? 'Yes' : 'No'}}</p>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="showOnIos">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Show On IOS</th>
+                <td class="" mat-cell *matCellDef="let row">
+                    <p class="m-0">{{row.showOnIos? 'Yes' : 'No'}}</p>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="statusOnAndroid">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Status On Android</th>
+                <td class="" mat-cell *matCellDef="let row">
+                    <p class="m-0">{{row.statusOnAndroid === 'live'? 'Live' : 'Coming Soon'}}</p>
+                </td>
+            </ng-container> 
+            <ng-container matColumnDef="statusOnIos">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Status On IOS</th>
+                <td class="" mat-cell *matCellDef="let row">
+                    <p class="m-0">{{row.statusOnIos === 'live'? 'Live' : 'Coming Soon'}}</p>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="imageUrl">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Image</th>
+                <td class="" mat-cell *matCellDef="let row">
+                    <img class="cursor-enabled" [src]="row.imageUrl" height="40" width="40">
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="edit">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Edit</th>
+                <td class="" mat-cell *matCellDef="let row">
+                    <mat-icon (click)="openServiceDetailsModal(row)">edit</mat-icon>                
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="displayedColumns.length">There is no matching data !!!</td>
+            </tr>
+        </table>
+        <!-- <mat-paginator #paginatorRef [pageSizeOptions]="pageSizeOptions"></mat-paginator> -->
+    </main>
+</section>
+
+<!-- Service Details Modal -->
+<div class="modal hide drawer right-align" id="serviceDetailsModal" role="dialog" aria-labelledby="serviceDetailsModalLabel"
+    aria-hidden="true" *ngIf="showServiceDetailsModal">
+    <div class="modal-dialog" role="dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <label class="modal-title border-0" id="exampleModalLabel">Edit Service Details</label>
+                <mat-icon data-dismiss="modal" (click)="closeServiceDetailsModal()">close</mat-icon>
+            </div>
+            <div class="modal-body mt-2 gap-4">
+                <form [formGroup]="serviceFormGroup">
+                    <div class="input-details">
+                        <label class="input-heading">Name</label>
+                        <input type="text" class="input-field mt-2 w-100" formControlName="name" placeholder="Name">
+                        <app-form-error-msg [control]="serviceFormGroup.controls.name"></app-form-error-msg>
+                    </div>
+                    <div class="input-details mt-2">
+                        <label class="input-heading">Sequence</label>
+                        <input type="text" class="input-field mt-2 w-100" formControlName="sequence" placeholder="Sequence">
+                        <app-form-error-msg [control]="serviceFormGroup.controls.sequence"></app-form-error-msg>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="input-details col-6">
+                            <label class="input-heading">Show On Android</label>
+                            <div class="radio-buttons">
+                                <mat-radio-group class="d-flex gap-3" formControlName="showOnAndroid">
+                                    <mat-radio-button [value]="true" name="showOnAndroidGroup">Yes</mat-radio-button>
+                                    <mat-radio-button [value]="false" name="showOnAndroidGroup">No</mat-radio-button>
+                                </mat-radio-group>
+                            </div>
+                        </div>
+                        <div class="input-details col-6">
+                            <label class="input-heading">Show On IOS</label>
+                            <div class="radio-buttons">
+                                <mat-radio-group class="d-flex gap-3" formControlName="showOnIos">
+                                    <mat-radio-button [value]="true" name="showOnIosGroup">Yes</mat-radio-button>
+                                    <mat-radio-button [value]="false" name="showOnIosGroup">No</mat-radio-button>
+                                </mat-radio-group>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="input-details col-6">
+                            <label class="input-heading">Status On Android</label>
+                            <div class="radio-buttons">
+                                <mat-radio-group class="d-flex gap-3" formControlName="statusOnAndroid">
+                                    <mat-radio-button value="live">Live</mat-radio-button>
+                                    <mat-radio-button value="coming_soon">Coming Soon</mat-radio-button>
+                                </mat-radio-group>
+                            </div>
+                        </div>
+                        <div class="input-details col-6">
+                            <label class="input-heading">Status On IOS</label>
+                            <div class="radio-buttons">
+                                <mat-radio-group class="d-flex gap-3" formControlName="statusOnIos">
+                                    <mat-radio-button value="live">Live</mat-radio-button>
+                                    <mat-radio-button value="coming_soon">Coming Soon</mat-radio-button>
+                                </mat-radio-group>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-details mt-4">
+                        <label class="input-heading">Image</label>
+                        <input [hidden]="true" (change)="getFileUploadUrl($event.target.files)" type="file" accept="all/*" #editServiceImage>
+                            <div class="d-flex">
+                                <input type="text" readonly class="input-field border-0" formControlName="imageName" />
+                                <button (click)="editServiceImage.click()" class="upload-button">
+                                    upload
+                                </button>
+                            </div>
+                        <img class="mt-3" [src]="serviceFormGroup.get('imageUrl').value" alt="Image Preview">
+
+                    </div>
+                </form>
+                <div class="mt-4 d-flex">
+                    <button class="buttons buttons--white w-100 br-50 h-3" (click)="closeServiceDetailsModal()">DISMISS</button>
+                    <button class="buttons w-100 br-50 h-3 ms-3" (click)="updateServices(selectedService.id)">SAVE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

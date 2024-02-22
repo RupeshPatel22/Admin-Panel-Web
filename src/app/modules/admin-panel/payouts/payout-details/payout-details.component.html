@@ -1,0 +1,86 @@
+<section class="d-flex justify-content-end gap-3">
+    <button class="buttons br-50" (click)="actionOnPayout(payoutAction.Retry)"
+        *ngIf="payoutDetails.payoutStatus !== payoutStatusList.COMPLETE">
+        {{payoutAction.Retry}}
+    </button>
+    <button class="buttons br-50" (click)="actionOnPayout(payoutAction.StopRetry)"
+        *ngIf="payoutDetails.payoutStatus !== payoutStatusList.COMPLETE && payoutDetails.canRetry">
+        {{payoutAction.StopRetry}}
+    </button>
+    <button class="buttons br-50" (click)="actionOnPayout(payoutAction.MarkComplete)"
+        *ngIf="payoutDetails.payoutStatus !== payoutStatusList.COMPLETE">{{payoutAction.MarkComplete}}</button>
+    <button class="buttons br-50" (click)="actionOnPayout(payoutAction.ExportPDF)">
+        <mat-icon class="me-1">arrow_downward</mat-icon>
+        {{payoutAction.ExportPDF}}
+    </button>
+</section>
+<section class="row mb-3">
+    <h3> Bank Details </h3>
+    <div class="input-details col-3">
+        <label class="input-heading">Beneficiary Title</label>
+        <p class="input-field">{{payoutDetails.accountDetails.beneficiaryName}}</p>
+    </div>
+    <div class="input-details col-3">
+        <label class="input-heading">Account Number</label>
+        <p class="input-field">{{payoutDetails.accountDetails.accountNumber}}</p>
+    </div>
+    <div class="input-details col-3">
+        <label class="input-heading">IFSC Code</label>
+        <p class="input-field">{{payoutDetails.accountDetails.ifscCode}}</p>
+    </div>
+    <div class="input-details col-3" *ngIf="payoutDetails.reason">
+        <label class="input-heading">Failure Reason</label>
+        <p class="input-field">{{payoutDetails.reason}}</p>
+    </div>
+    <div class="input-details col-3" *ngIf="payoutDetails.transferReason">
+        <label class="input-heading">Reason</label>
+        <p class="input-field">{{payoutDetails.transferReason}}</p>
+    </div>
+    <div class="input-details col-3" *ngIf="payoutDetails.markedCompletedByAdminId">
+        <label class="input-heading">Marked Completed by Admin Id</label>
+        <p class="input-field">{{payoutDetails.markedCompletedByAdminId}}</p>
+    </div>
+</section>
+<section class=" w-75">
+    <h3>Detailed Report</h3>
+    <table class="report-table w-100">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Customer Paid</th>
+                <th>Vendor Payout</th>
+                <th>Actual Vendor Payout</th>
+                <th>Remarks</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let order of payoutDetails.payoutOrders">
+                <td class="cursor-enabled text-decoration-underline" matTooltip="open in One View Dashboard"
+                    matTooltipClass="custom-tooltip" (click)="goToOneViewWebsite(order.orderId)">
+                    <strong>{{order.orderId}}</strong></td>
+                <td>{{order.invoiceDetails.totalCustomerPayable}}</td>
+                <td>{{order.invoiceDetails.vendorPayoutAmount}}</td>
+                <td>{{order.orderStatus === orderStatusList.cancelled ? order.refundDetails?.vendorPayoutAmount :
+                    order.invoiceDetails.vendorPayoutAmount}}
+                </td>
+                <td>{{order.refundDetails?.remarksForVendor ? order.refundDetails?.remarksForVendor : 'N/A'}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <mat-paginator #paginatorRef showFirstLastButtons [length]="totalOrderRecords" [pageSize]="pageSize"
+        [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)"></mat-paginator>
+    <table class="report-table mt-4 w-50">
+        <tr>
+            <th>Total Order Amount</th>
+            <td>{{payoutDetails.totalOrderAmount}}</td>
+        </tr>
+        <tr>
+            <th>Transaction Changes </th>
+            <td>{{payoutDetails.txnCharges}}</td>
+        </tr>
+        <tr>
+            <th>Amount Paid</th>
+            <td>{{payoutDetails.amountPaidToVendor}}</td>
+        </tr>
+    </table>
+</section>

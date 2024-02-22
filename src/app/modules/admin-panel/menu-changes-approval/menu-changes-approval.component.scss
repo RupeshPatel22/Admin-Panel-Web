@@ -1,0 +1,25 @@
+tr.detail-row {
+    height: 0;
+}
+
+.mat-column-outletName {
+    white-space: nowrap;
+}
+
+.expanded-row-details {
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 2em;
+}
+
+.collapsed {
+    height: 0;
+    min-height: 0;
+}
+
+.expanded {
+    height: auto;
+    padding: 1em;
+    transition: 225ms cubic-bezier(0.4, 0.0, 0.2, 1);
+}

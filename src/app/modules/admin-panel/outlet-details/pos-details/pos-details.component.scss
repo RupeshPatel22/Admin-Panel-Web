@@ -1,0 +1,28 @@
+@import "../outlet-details.component.scss";
+.pos-details-wrapper {
+    padding-top: 1rem;
+    &__content {
+        width: 100%;
+        .pos-id {
+            &__container {
+                grid-gap: 2rem;
+                width: 75%;
+            }
+            .input-details {
+                padding: 0;
+                margin-left: 1rem;
+                &__checkboxes {
+                    font-size: 20px;
+                    label {
+                        color: black;
+                    }
+                }
+            }
+        }
+    }
+}
+
+agm-map {
+    height: 500px;
+    border-radius: 10px;
+}

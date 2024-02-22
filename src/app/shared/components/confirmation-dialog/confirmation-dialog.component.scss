@@ -1,0 +1,21 @@
+.dialog-wrapper {
+  margin: 0 auto;
+  padding: 2em;
+  text-align: center;
+  width: 400px;
+
+  .heading {
+    color: #0d1d28;
+    font-size: 1.5em;
+    font-weight: 600;
+
+    .message {
+      color: #acb8c1;
+      font-size: 0.7em;
+      font-weight: 400;
+      margin-top: 1em;
+      word-break: break-word;
+    }
+  }
+
+}

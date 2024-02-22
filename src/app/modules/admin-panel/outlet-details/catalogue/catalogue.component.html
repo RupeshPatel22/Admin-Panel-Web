@@ -1,0 +1,424 @@
+<div class="catalogue-wrapper  d-flex gap-5">
+    <section class="catalogue-wrapper__content row">
+        <form [formGroup]="catalogueForm" class="col-10">
+            <!-- Image -->
+            <mat-expansion-panel class="image">
+                <mat-expansion-panel-header>
+                    <label>Image</label>
+                </mat-expansion-panel-header>
+                <div #carouselHolder>
+                    <carousel class="carousel-container me-4" [width]="300" [cellsToShow]="1" *ngIf="isCarouselVisible"
+                        [lightDOM]="true">
+                        <div class="carousel-cell">
+                            <img [src]="outletPrimaryImage?.url" alt="">
+                        </div>
+                        <div class="carousel-cell" *ngFor="let outletImage of outletImages">
+                            <img [src]="outletImage.url" alt="">
+                        </div>
+                    </carousel>
+                </div>
+                <span class="edit-mat-icon p-3">
+                    <mat-icon class="" matTooltip="Edit Image" (click)="toggleImagesModal()">edit</mat-icon>
+                </span>
+
+            </mat-expansion-panel>
+            <!-- Operation Details -->
+            <mat-expansion-panel class="operation-details">
+                <mat-expansion-panel-header>
+                    <label>Operation Details</label>
+                </mat-expansion-panel-header>
+                <div class="image__container row">
+                    <!-- <div class="input-details">
+                        <label class="input-heading">Mimimum Order Amount</label>
+                        <input type="text" class="input-field mt-2" placeholder="0" formControlName="minOrderAmount">
+                    </div> -->
+                    <div class="input-details col-6">
+                        <label class="input-heading">Prep.Time(In Min)</label>
+                        <input type="text" class="input-field mt-2" placeholder="Enter Prep time"
+                            formControlName="defaultPrepTime">
+                        <app-form-error-msg [control]="catalogueForm.controls.defaultPrepTime"></app-form-error-msg>
+                    </div>
+                    <div class="input-details col-6">
+                        <ng-container *ngIf="service === Services.Food">
+                            <label class="input-heading">Cost For Two (&#8377;)</label>
+                            <input type="text" class="input-field mt-2" placeholder="" formControlName="costOfTwo">
+                        </ng-container>
+                    </div>
+                    <div class="input-details col-6">
+                        <label class="input-heading">Is Delivery Charges Paid by Outlet?</label>
+                        <mat-radio-group formControlName="isDeliveryChargesPaidByOutlet" class="mt-2"
+                            (change)="onDeliveryChargesPaidByOutletChange()">
+                            <mat-radio-button [value]="true" class="input-heading me-3">Yes</mat-radio-button>
+                            <mat-radio-button [value]="false" class="input-heading me-3">No</mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                    <div class="input-details col-6" *ngIf="showMinOrderValForFreeDeliveryByOutletField">
+                        <label class="input-heading">Min Order Value For Free Delivery</label>
+                        <input type="text" class="input-field mt-2" placeholder="Enter min order value"
+                            formControlName="minOrderValForFreeDeliveryByOutlet">
+                        <app-form-error-msg [control]="catalogueForm.controls.minOrderValForFreeDeliveryByOutlet">
+                        </app-form-error-msg>
+                    </div>
+                    <div class="input-details col-12">
+                        <label class="input-heading">Delivery Charges Paid By</label>
+                        <input type="text" class="input-field mt-2" placeholder="Delivery Charges Paid By"
+                            formControlName="deliveryChargesPaidBy" disabled>
+
+                        <!-- <mat-radio-group formControlName="deliveryChargesPaidBy" class="mt-2">
+                            <mat-radio-button [value]="'customer'" class="input-heading me-3">Customer</mat-radio-button>
+                            <mat-radio-button [value]="'speedyy'" class="input-heading me-3">Speedyy</mat-radio-button>
+                        </mat-radio-group> -->
+                    </div>
+                    <div class="input-details col-6" *ngIf="service === Services.Grocery">
+                        <label class="input-heading">Agreed Speedyy Charge Percentage</label>
+                        <input type="text" class="input-field mt-2" placeholder="Enter agreed speedyy charge percentage"
+                            formControlName="agreedSpeedyyChargePercentage">
+                        <app-form-error-msg [control]="catalogueForm.controls.agreedSpeedyyChargePercentage">
+                        </app-form-error-msg>
+                    </div>
+                </div>
+            </mat-expansion-panel>
+            <mat-expansion-panel class="packaging-detail">
+                <mat-expansion-panel-header>
+                    <label>Packaging Details</label>
+                </mat-expansion-panel-header>
+                <div class="image__container d-flex flex-column">
+                    <div class="input-details">
+                        <span class="row">
+                            <div class="col-6 d-flex flex-column">
+                                <label class="input-heading">Packaging Charges Type</label>
+                                <ng-select class="mt-2" [items]="packagingChargesTypesList | keyvalue: originalOrder"
+                                    [dropdownPosition]="'top'" bindLabel="value" bindValue="key"
+                                    placeholder="Select Packaging Charges Type" formControlName="packagingChargesType"
+                                    (change)="onPackagingChargesTypeChange()"></ng-select>
+                                <app-form-error-msg [control]="catalogueForm.controls.packagingChargesType">
+                                </app-form-error-msg>
+                            </div>
+                            <div class="col-6 d-flex flex-column" *ngIf="showPackagingChargesField">
+                                <label class="input-heading">Packaging Charges (in ₹)</label>
+                                <input type="text" class="input-field mt-2" placeholder="Packaging Charges"
+                                    formControlName="orderLevelPackagingCharges" appAllowTwoDecimalNumbers>
+                                <app-form-error-msg [control]="catalogueForm.controls.orderLevelPackagingCharges">
+                                </app-form-error-msg>
+                            </div>
+                        </span>
+                        <div class="input-details mt-2" *ngIf="service === Services.Food">
+                            <label for="name" class="input-heading">Packaging Charges Slab Applied</label>
+                            <mat-radio-group formControlName="packgingChargeSlabApplied" class="mt-2">
+                                <mat-radio-button [value]="true" class="input-heading me-3">Yes</mat-radio-button>
+                                <mat-radio-button [value]="false" class="input-heading">No</mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                    </div>
+                </div>
+            </mat-expansion-panel>
+
+            <!-- Delivery Splitting -->
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <label>Delivery Splitting</label>
+                </mat-expansion-panel-header>
+                <form [formGroup]="deliverySplittingForm">
+                    <section class="border border-1 rounded p-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="m-0">Normal</h4>
+                            <button type="button" class="buttons active-button"
+                                (click)="addNormalDeliverySplittingSlab()">
+                                Add
+                            </button>
+                        </div>
+                        <div formArrayName="normal">
+                            <div class="row" *ngFor="let row of normalDeliverySplittingArr['controls']; let i=index"
+                                [formGroupName]="i">
+                                <p class="d-flex align-items-center text-uppercase text-secondary my-3 col-12">slab
+                                    {{i+1}}
+                                    <mat-icon class="ms-2"
+                                        (click)="removeNormalDeliverySplittingSlab(i);deliverySplittingForm.markAsDirty()"
+                                        matTooltip="Delete" *ngIf="normalDeliverySplittingArr.length > 1">delete
+                                    </mat-icon>
+                                </p>
+                                <div class="input-details col-4 mb-3">
+                                    <label class="input-heading">Min Order Value</label>
+                                    <input class="input-field mt-2" formControlName="minOrderValue" type="number"
+                                        placeholder="Enter min value" />
+                                    <app-form-error-msg
+                                        [control]="normalDeliverySplittingArr['controls'][i]['controls']['minOrderValue']">
+                                    </app-form-error-msg>
+                                </div>
+                                <div class="input-details col-4 mb-3">
+                                    <label class="input-heading">Max Order Value</label>
+                                    <input class="input-field mt-2" formControlName="maxOrderValue" type="number"
+                                        placeholder="Enter max value" />
+                                    <app-form-error-msg
+                                        [control]="normalDeliverySplittingArr['controls'][i]['controls']['maxOrderValue']">
+                                    </app-form-error-msg>
+                                </div>
+                                <div class="input-details col-4 mb-3">
+                                    <label class="input-heading">Share Type</label>
+                                    <ng-select [items]="splittingShareType | keyvalue" bindLabel="value" bindValue="key"
+                                        placeholder="Select share type" formControlName="shareType"></ng-select>
+                                    <app-form-error-msg
+                                        [control]="normalDeliverySplittingArr['controls'][i]['controls']['shareType']">
+                                    </app-form-error-msg>
+                                </div>
+                                <div class="input-details col-4">
+                                    <label class="input-heading">Vendor Share</label>
+                                    <input class="input-field mt-2" formControlName="vendorShare" type="number"
+                                        placeholder="Enter vendor share" appAllowTwoDecimalNumbers />
+                                    <app-form-error-msg
+                                        [control]="normalDeliverySplittingArr['controls'][i]['controls']['vendorShare']">
+                                    </app-form-error-msg>
+                                </div>
+                                <div class="input-details col-4">
+                                    <label class="input-heading">Customer Share</label>
+                                    <input class="input-field mt-2" formControlName="customerShare" type="number"
+                                        placeholder="Enter customer share" appAllowTwoDecimalNumbers />
+                                    <app-form-error-msg
+                                        [control]="normalDeliverySplittingArr['controls'][i]['controls']['customerShare']">
+                                    </app-form-error-msg>
+                                </div>
+                                <div class="input-details col-4">
+                                    <label class="input-heading">Speedyy Share</label>
+                                    <input class="input-field mt-2" formControlName="speedyyShare" type="number"
+                                        placeholder="Enter speedyy share" appAllowTwoDecimalNumbers />
+                                    <app-form-error-msg
+                                        [control]="normalDeliverySplittingArr['controls'][i]['controls']['speedyyShare']">
+                                    </app-form-error-msg>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <section class="border border-1 rounded p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="m-0">Long Distance</h4>
+                            <button type="button" class="buttons active-button"
+                                (click)="!longDistanceDeliverySplittingGrp ? addLongDistanceDeliverySplitting() 
+                                    : removeLongDistanceDeliverySplitting();deliverySplittingForm.markAsDirty()">
+                                {{!longDistanceDeliverySplittingGrp ? 'Add' : 'Remove'}}
+                            </button>
+                        </div>
+                        <div formGroupName="longDistance" class="row" *ngIf="longDistanceDeliverySplittingGrp">
+                            <div class="input-details col-6 mb-3">
+                                <label class="input-heading">Share Type</label>
+                                <ng-select [items]="splittingShareType | keyvalue" bindLabel="value" bindValue="key"
+                                    placeholder="Select share type" formControlName="shareType"></ng-select>
+                                <app-form-error-msg
+                                    [control]="longDistanceDeliverySplittingGrp['controls']['shareType']">
+                                </app-form-error-msg>
+                            </div>
+                            <div class="input-details col-6 mb-3">
+                                <label class="input-heading">Vendor Share</label>
+                                <input class="input-field mt-2" formControlName="vendorShare" type="number"
+                                    placeholder="Enter vendor share" appAllowTwoDecimalNumbers />
+                                <app-form-error-msg
+                                    [control]="longDistanceDeliverySplittingGrp['controls']['vendorShare']">
+                                </app-form-error-msg>
+                            </div>
+                            <div class="input-details col-6">
+                                <label class="input-heading">Customer Share</label>
+                                <input class="input-field mt-2" formControlName="customerShare" type="number"
+                                    placeholder="Enter customer share" appAllowTwoDecimalNumbers />
+                                <app-form-error-msg
+                                    [control]="longDistanceDeliverySplittingGrp['controls']['customerShare']">
+                                </app-form-error-msg>
+                            </div>
+                            <div class="input-details col-6">
+                                <label class="input-heading">Speedyy Share</label>
+                                <input class="input-field mt-2" formControlName="speedyyShare" type="number"
+                                    placeholder="Enter speedyy share" appAllowTwoDecimalNumbers />
+                                <app-form-error-msg
+                                    [control]="longDistanceDeliverySplittingGrp['controls']['speedyyShare']">
+                                </app-form-error-msg>
+                            </div>
+                        </div>
+                    </section>
+                    <div class="d-flex justify-content-end gap-3 mt-3" *ngIf="deliverySplittingForm.dirty">
+                        <button class="buttons buttons--white br-50"
+                            (click)="onCancelDeliverySplitting()">Cancel</button>
+                        <button class="buttons br-50" (click)="updateDeliverySplitting()">Save</button>
+                    </div>
+                </form>
+            </mat-expansion-panel>
+
+            <!-- Charges -->
+            <!-- <mat-expansion-panel class="charges">
+                <mat-expansion-panel-header>
+                    <label>Charges</label>
+                </mat-expansion-panel-header>
+                <div class="image__container d-flex flex-column">
+
+                    <div class="input-details">
+                        <label class="input-heading">Delivery Charges Threshold</label>
+                        <input type="text" class="input-field mt-2" placeholder="250.00" formControlName="deliveryChargesThreshold">
+                    </div>
+                    <div class="input-details">
+                        <span class="row">
+                            <div class="col-6 d-flex flex-column">
+                                <label class="input-heading">COD Limit</label>
+                                <input type="text" class="input-field mt-2" placeholder="1000.00" formControlName="codLimit">
+                            </div>
+                            <div class="col-6 d-flex flex-column">
+                                <label class="input-heading">Minimum Charges</label>
+                                <input type="text" class="input-field mt-2" placeholder="100.00" formControlName="minimumCharges">
+                            </div>
+                        </span>
+                    </div>
+                    <div class="input-details">
+                        <span class="row">
+                            <div class="col-6 d-flex flex-column">
+                                <label class="input-heading">Packing Charges</label>
+                                <input type="text" class="input-field mt-2" placeholder="0.0" formControlName="packagingCharges">
+                            </div>
+                            <div class="col-6 d-flex flex-column">
+                                <label class="input-heading">Service Charges(%)</label>
+                                <input type="text" class="input-field mt-2" placeholder="0.0" formControlName="serviceCharges">
+                            </div>
+                        </span>
+                    </div>
+                    <div class="input-details">
+                        <span class="row">
+                            <div class="col-6 d-flex flex-column">
+                                <label class="input-heading">Delivery Charges</label>
+                                <input type="text" class="input-field mt-2" placeholder="35" formControlName="deliveryCharges">
+                            </div>
+                            <div class="col-6 d-flex flex-column">
+                                <label class="input-heading">Night Delivery Fees</label>
+                                <input type="text" class="input-field mt-2" placeholder="40" formControlName="nightDeliveryCharges">
+                            </div>
+                        </span>
+                    </div>
+                </div>
+            </mat-expansion-panel> -->
+            <!-- GST -->
+            <!-- <mat-expansion-panel class="gst">
+                <mat-expansion-panel-header>
+                    <label>GST</label>
+                </mat-expansion-panel-header>
+                <div class="image__container d-flex flex-column">
+                    <div class="input-details">
+                        <label class="input-heading">Item CGST</label>
+                        <input type="text" class="input-field mt-2" placeholder="0" formControlName="itemCGST">
+                        <label class="">This is a Central GST on item price, e.g. put 0.1 for 10%</label>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading">Item SGST/UTGST</label>
+                        <input type="text" class="input-field mt-2" placeholder="0" formControlName="itemSGST">
+                        <label class="">This is a State GST on item price, e.g. put 0.1 for 10%</label>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading">Item IGST</label>
+                        <input type="text" class="input-field mt-2" placeholder="0" formControlName="itemIGST">
+                        <label class="">This is a Interstate GST on item price, e.g. put 0.1 for 10%</label>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading">Item Inclusive</label>
+                        <mat-radio-group aria-label="Select an option" class="mt-2" formControlName="isItemInclusive">
+                            <mat-radio-button value="1" class="input-heading me-3">Yes</mat-radio-button>
+                            <mat-radio-button value="2" class="input-heading">No</mat-radio-button>
+                        </mat-radio-group>
+                        <label class="">If Yes, It means it will not be added in cart and it inclusive in item
+                            price</label>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading">Packing Charges CGST</label>
+                        <input type="text" class="input-field mt-2" placeholder="0" formControlName="packagingChargesCGST">
+                        <label>This is the Central GST on packing price e.g. put 0.1 for 10%</label>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading">Packing Charges SGST/UTGST</label>
+                        <input type="text" class="input-field mt-2" placeholder="0" formControlName="packagingChargesSGST">
+                        <label>This is the State GST on packing price e.g. put 0.1 for 10%</label>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading">Packing Charges IGST</label>
+                        <input type="text" class="input-field mt-2" placeholder="0" formControlName="packagingChargesIGST">
+                        <label>This is the Interstate GST on packing price e.g. put 0.1 for 10%</label>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading">Packing Charge Inclusive</label>
+                        <mat-radio-group aria-label="Select an option" class="mt-2" formControlName="isPackagingChargesInclusive">
+                            <mat-radio-button value="1" class="input-heading me-3">Yes</mat-radio-button>
+                            <mat-radio-button value="2" class="input-heading">No</mat-radio-button>
+                        </mat-radio-group>
+                        <label class="">If Yes, It means it will not be added in cart and it inclusive in Packing
+                            price</label>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading">Service CGST</label>
+                        <input type="text" class="input-field mt-2" placeholder="0" formControlName="serviceCGST">
+                        <label>This is the Central GST on Service price e.g. put 0.1 for 10%</label>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading">Service SGST/UTGST</label>
+                        <input type="text" class="input-field mt-2" placeholder="0" formControlName="serviceSGST">
+                        <label>This is the State GST on Service price e.g. put 0.1 for 10%</label>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading">Service IGST</label>
+                        <input type="text" class="input-field mt-2" placeholder="0" formControlName="serviceIGST">
+                        <label>This is the Interstate GST on Service price e.g. put 0.1 for 10%</label>
+                    </div>
+                </div>
+            </mat-expansion-panel> -->
+            <div class="fixed-button d-flex gap-3" *ngIf="catalogueForm.dirty">
+                <button class="buttons buttons--white br-50" (click)="onCancel()">Cancel</button>
+                <button class="buttons br-50" (click)="editOutletDetails()">Save</button>
+            </div>
+            <!-- <button class="buttons br-50 mt-3 fixed-button" *ngIf="catalogueForm.dirty"
+                (click)="editOutletDetails()">Save</button> -->
+        </form>
+    </section>
+    <section class="col-3 mt-2">
+        <!-- <app-tools></app-tools> -->
+    </section>
+</div>
+<div class="modal hide drawer right-align" id="helpModalRight" role="dialog" aria-labelledby="helpModalLabel"
+    aria-hidden="true" *ngIf="openImageActionModal">
+    <div class="modal-dialog" role="dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <label class="modal-title border-0" id="exampleModalLabel">Outlet Images</label>
+                <div class=" d-flex align-items-center gap-4">
+                    <input [hidden]="true" (click)="$event.target.value = null"
+                        (change)="getFileUploadUrl($event.target.files, 'AddAdditional')" type="file" accept="image/*"
+                        #outletImage>
+                    <p class="add-icon d-flex align-items-center" (click)="outletImage.click()">
+                        <mat-icon>camera_enhance</mat-icon>
+                        <span>Add Image</span>
+                    </p>
+                    <mat-icon (click)="toggleImagesModal()" data-dismiss="modal">close</mat-icon>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="images-grid p-2">
+                    <div class="position-relative">
+                        <input [hidden]="true" (click)="$event.target.value = null"
+                            (change)="getFileUploadUrl($event.target.files, 'EditPrimary')" type="file" accept="image/*"
+                            #primaryImage>
+                        <span class="edit-primary-image-icon p-2">
+                            <mat-icon class="img-icons" matTooltip="Edit Primary Image" matTooltipClass="custom-tooltip"
+                                (click)="primaryImage.click()">edit</mat-icon>
+                        </span>
+                        <img [src]="outletPrimaryImage?.url" width="300" height="200" alt="">
+                    </div>
+                    <div class="position-relative mt-3" *ngFor="let outletImage of outletImages; let i=index">
+                        <input [hidden]="true" (click)="$event.target.value = null"
+                            (change)="getFileUploadUrl($event.target.files, 'EditAdditional', i)" type="file"
+                            accept="image/*" #additionalImage>
+                        <span class="edit-primary-image-icon edit-additional-image-icon p-2">
+                            <mat-icon class="" matTooltip="Edit Image" matTooltipClass="custom-tooltip"
+                                (click)="additionalImage.click()">edit</mat-icon>
+                        </span>
+                        <span class="edit-primary-image-icon delete-additional-image-icon p-2">
+                            <mat-icon class="" matTooltip="Delete Image" matTooltipClass="custom-tooltip"
+                                (click)="deleteOutletImage(i);">close
+                            </mat-icon>
+                        </span>
+                        <img [src]="outletImage.url" width="300" height="200" alt="">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

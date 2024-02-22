@@ -1,0 +1,220 @@
+<section class="catalog-approval-wrapper">
+    <app-page-title [pageTitle]="'Catalog Approval'"></app-page-title>
+    <div class="catalog-approval-wrapper__tools w-75">
+        <div class="row align-items-end">
+            <div class="col-6 input-details">
+                <label for="search" class="input-heading">Search by outlet id or name...</label>
+                <input type="text" class="input-field" placeholder="Enter outlet id or name" name="search" [(ngModel)]="filterOutletFields.outletIdOrName" (keyup.enter)="getOutletsList(true)">
+            </div>
+            <div class="col-3">
+                <button class="buttons buttons--filter w-100" (click)="showFilterFields ? clearFilter('all') : showFilterFields = true">
+                    {{showFilterFields ? 'Clear Filters' : 'Add Filters'}}
+                    <img src="assets/icons/filter.svg" class="ms-4" alt="add-icon" />
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row align-items-end mt-4" *ngIf="showFilterFields">
+        <div class="col-2 input-details">
+            <label for="cityCode" class="input-heading">City</label>
+            <ng-select [items]="cityList" bindLabel="name" bindValue="id" placeholder="Select City" [(ngModel)]="filterOutletFields.cityId" (clear)="clearFilter()" (change)="setAreaList()"></ng-select>
+        </div>
+        <div class="col-2 input-details">
+            <label for="areaCode" class="input-heading">Area</label>
+            <ng-select [items]="areaList" bindLabel="name" bindValue="id" placeholder="Select Area" [multiple]="true" [closeOnSelect]="false" [(ngModel)]="filterOutletFields.areaIds" (clear)="clearFilter()"></ng-select>
+        </div>
+        <div class="col-2">
+            <button class="buttons br-50" (click)="getOutletsList(true)">Apply Filter</button>
+        </div>
+    </div>
+    <main class="catalog-approval-wrapper__content mt-5">
+        <table class="w-100" mat-table [dataSource]="outletsList" matSort>
+            <ng-container matColumnDef="sr no">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Sr No </th>
+                <td mat-cell *matCellDef="let row; let i= index"> {{ (paginatorRef.pageIndex * paginatorRef.pageSize) + (i + 1) }} </td>
+            </ng-container>
+            <ng-container matColumnDef="image">
+                <th class="cursor-disable" mat-header-cell *matHeaderCellDef>Image </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"><img src='{{row.outletPrimaryImage.url}}' alt="" width="50" height="50"></td>
+            </ng-container>
+            <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Outlet Name </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    <span class="d-flex align-items-center gap-3">
+                        <b>{{row.name}}</b>
+                        <img class="cursor-enabled" title="Copy" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.name">
+                    </span>
+                    <span class="d-flex align-items-center gap-3">
+                        <p class="m-0">{{row.id}}</p>
+                        <img class="cursor-enabled" title="Copy" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.id">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="area">
+                <th class="cursor-disable" mat-header-cell *matHeaderCellDef>Area </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">{{row.areaName}}</td>
+            </ng-container>
+            <ng-container matColumnDef="city">
+                <th class="cursor-disable" mat-header-cell *matHeaderCellDef>City </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">{{row.cityName}}</td>
+            </ng-container>
+            <ng-container matColumnDef="menu details">
+                <th class="cursor-disable" mat-header-cell *matHeaderCellDef>Menu Details</th>
+                <td class="" mat-cell *matCellDef="let row">
+                    <mat-icon class="ms-2" (click)="openMenuItemDetailsModal(row)">remove_red_eye</mat-icon>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="catalogue approval">
+                <th class="cursor-disable" mat-header-cell *matHeaderCellDef>Approve Catalog</th>
+                <td class="" mat-cell *matCellDef="let row">
+                    <mat-icon class="ms-2" (click)="approveCatalog(row.id, row.name)">gavel</mat-icon>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="upload data">
+                <th class="cursor-disable" mat-header-cell *matHeaderCellDef>Upload Data</th>
+                <td class="cursor-enabled text-decoration-underline" mat-cell *matCellDef="let row" (click)="toggleUploadDataModal()">UPLOAD DATA</td>
+            </ng-container>
+            <ng-container matColumnDef="approved by">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Approved By</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    <span class="d-flex align-items-center gap-3">
+                        <b>{{row.approvedByName}}</b>
+                        <img class="cursor-enabled" title="Copy" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.approvedByName">
+                    </span>
+                    <span class="d-flex align-items-center gap-3">
+                        <p class="m-0 singleline-ellipsis">{{row.approvedBy}}</p>
+                        <img class="cursor-enabled" title="Copy" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.approvedBy">
+                    </span>
+                </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+                    There is no matching data !!!
+                </td>
+            </tr>
+        </table>
+        <mat-paginator #paginatorRef [length]="totalOutletRecords" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)"></mat-paginator>
+    </main>
+</section>
+<!-- Menu-item Details Modal -->
+<div class="modal hide drawer right-align" id="changeModalRight" role="dialog" aria-labelledby="changePasswordModalLabel" aria-hidden="true" *ngIf="showMenuItemDetailsModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <label class="modal-title border-0" id="exampleModalLabel">Menu-Item Details</label>
+                <mat-icon (click)="closeMenuItemDetailsModal()" data-dismiss="modal">close</mat-icon>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="menuItemForm">
+                    <div class="input-details mb-2">
+                        <label class="input-heading mt-4">PACKING CHARGE TYPE</label>
+                        <input class="input-field mt-2 mb-3" formControlName="packingChargeType" type="text" placeholder="Enter packing charge" #packingChargeType />
+                    </div>
+                    <div class="input-details mb-2" *ngIf="packingChargeType.value === 'order'">
+                        <label class="input-heading mt-4">PACKING CHARGE (in &#8377;)</label>
+                        <input type="text" class="input-field mt-2 mb-3" formControlName="orderLevelPackagingCharges" />
+                    </div>
+
+                    <ng-container *ngIf="packingChargeType.value === 'item'">
+                        <div class="input-details mb-2">
+                            <mat-radio-group formControlName="customItemLevalPackagingCharges" class="mt-2">
+                                <mat-radio-button [value]="false" class="input-heading me-3">Apply max charges to all items
+                                </mat-radio-button>
+                                <mat-radio-button [value]="true" class="input-heading">Custom</mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                        <label class="input-heading">PLEASE NOTE THE SLAB</label>
+                        <div class="input-field slab">
+                            <div>
+                                <div class="slab__heading">ITEM PRICE (INR)</div>
+                                <div class="slab__content">0-50</div>
+                                <div class="slab__content">51-150</div>
+                                <div class="slab__content">151-300</div>
+                                <div class="slab__content">301-500</div>
+                                <div class="slab__content">501 and above</div>
+                            </div>
+                            <div>
+                                <div class="slab__heading">MAX. CHARGES</div>
+                                <div class="slab__content">5</div>
+                                <div class="slab__content">7</div>
+                                <div class="slab__content">10</div>
+                                <div class="slab__content">15</div>
+                                <div class="slab__content">20</div>
+                            </div>
+                        </div>
+                        <div formArrayName="itemRows">
+                            <div class="item-container" *ngFor="let itemRow of menuItemForm.controls['itemRows']['controls']; let i=index" [formGroupName]="i">
+                                <span class="item-heading">ITEM {{i+1}}</span>
+                                <div class="input-details">
+                                    <label class="input-heading mt-4">ITEM NAME</label>
+                                    <input class="input-field mt-2" formControlName="itemName" type="text" placeholder="Enter item name" />
+                                    <app-form-error-msg [control]="menuItemForm.get('itemRows')['controls'][i]['controls']['itemName']">
+                                    </app-form-error-msg>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="input-details">
+                                            <label class="input-heading mt-4">ITEM PRICE</label>
+                                            <input class="input-field mt-2" formControlName="itemPrice" type="text" placeholder="Enter item price" />
+                                            <app-form-error-msg [control]="menuItemForm.get('itemRows')['controls'][i]['controls']['itemPrice']">
+                                            </app-form-error-msg>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="input-details">
+                                            <label class="input-heading mt-4">ITEM PACKAGING CHARGES</label>
+                                            <input class="input-field mt-2" formControlName="itemPackagingCharges" type="text" placeholder="Enter item packaging charges" />
+                                            <app-form-error-msg [control]="menuItemForm.get('itemRows')['controls'][i]['controls']['itemPackagingCharges']">
+                                            </app-form-error-msg>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="input-details">
+                                    <label class="input-heading mt-4">ITEM PHOTO</label>
+                                    <div class="row gap-3">
+                                        <input formControlName="itemDoc" class="input-field col-8" type="text" placeholder="item image" />
+                                        <button (click)="viewFile('itemRows', 'itemDocUrl', i);" class="buttons col-3">
+                                            View
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+
+                    <label class="input-heading mt-4">OUTLET MENU</label>
+                    <div formArrayName="menuRows">
+                        <div *ngFor="let itemRow of menuItemForm.controls['menuRows']['controls']; let i=index" [formGroupName]="i">
+                            <div class="row gap-3 mt-2">
+                                <input formControlName="menuDoc" class="input-field col-8 ms-3" type="text" placeholder="item image" />
+                                <button (click)="viewFile('menuRows', 'menuDocUrl', i);" class="buttons col-3">
+                                    View
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Upload Data MOdal -->
+<div class="modal hide drawer right-align" id="changeModalRight" role="dialog" aria-hidden="true" *ngIf="showUploadDataModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <label class="modal-title border-0" id="exampleModalLabel">Upload Data</label>
+                <mat-icon (click)="toggleUploadDataModal()" data-dismiss="modal">close</mat-icon>
+            </div>
+            <div class="modal-body">
+                <app-upload-data></app-upload-data>
+            </div>
+        </div>
+    </div>
+</div>

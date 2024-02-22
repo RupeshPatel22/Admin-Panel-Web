@@ -1,0 +1,70 @@
+@import "./src/assets/styles/app";
+
+.header-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    &__header {
+        display: flex;
+        align-items: center;
+        gap: 1.5em;
+        background-color: #dbe2ef;
+        border-radius: 20px;
+        overflow: hidden;
+        padding: 1em;
+        .notification-badge {
+            position: absolute;
+            top: -11px;
+            right: -11px;
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            font-size: 12px;
+            color: #fff;
+        }
+        .user-profile {
+            .profile-name {
+                font-size: $label;
+            }
+            .profile-designation {
+                font-size: 12px;
+                font-style: italic;
+                text-align: right;
+                color: rgba(0, 0, 0, 0.7);
+                margin: 0;
+            }
+        }
+    }
+}
+
+.notification-card {
+    .service-name {
+        font-size: 12px;
+    }
+    .notification-time {
+        font-size: 12px;
+        color: #939da2;
+    }
+    .notification-status {
+        height: 10px;
+        width: 10px;
+        border-radius: 50%;
+        border: 1px solid #0052CC;
+    }
+    .notification-status--unread {
+        background-color: #0052CC;
+    }
+    .notification-body {
+        font-size: 14px;
+        color: #6d7e8b;
+    }
+}
+
+.notification-load-more {
+    border: 1px solid #6d7e8b;
+    border-radius: 12px;
+}

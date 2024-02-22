@@ -1,0 +1,28 @@
+<section class="dialog-wrapper">
+    <h4 class="mb-4">{{action === 'ADD' ? 'Add Cancellation Reason' : 'Update Cancellation Reason'}}</h4>
+
+    <form [formGroup]="cancellationReasonForm">
+        <div class="input-details mb-3">
+            <label class="input-heading">User Type</label>
+            <ng-select placeholder="Select user type" [searchable]="false" formControlName="userType">
+                <ng-option *ngFor="let item of userType | keyvalue" [value]="item.key"
+                    [disabled]="service === services.PND && item.value === userType.vendor">{{item.value}}</ng-option>
+            </ng-select>
+            <app-form-error-msg [control]="cancellationReasonForm.controls.userType"></app-form-error-msg>
+        </div>
+
+        <div class="input-details mb-3">
+            <label class="input-heading">Cancellation Reason</label>
+            <mat-form-field appearance="outline" class="w-100">
+                <input type="text" matInput name="cancellationReason" formControlName="cancellationReason"
+                    placeholder="Enter Name">
+            </mat-form-field>
+            <app-form-error-msg [control]="cancellationReasonForm.controls.cancellationReason"></app-form-error-msg>
+        </div>
+    </form>
+
+    <div class="d-flex justify-content-between">
+        <button class="buttons buttons--white br-50" (click)="onDismiss()">Not Now</button>
+        <button class="buttons br-50" (click)="onConfirm()"> {{action === 'ADD' ? 'Add' : 'Save'}}</button>
+    </div>
+</section>

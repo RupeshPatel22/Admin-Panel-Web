@@ -1,0 +1,33 @@
+header {
+    color: #828282;
+    font-size: 12px;
+  
+    span:hover {
+      color: #0f254d;
+    }
+  }
+  mat-expansion-panel-header {
+    background-color: #0f254d;
+    border-radius: 12px !important;
+    margin: 1em 0;
+    color: #fff;
+  
+    label {
+      font-size: 25px;
+    }
+  }
+  
+  mat-expansion-panel-header.mat-expanded {
+    background-color: #0f254d !important;
+  }
+  
+  .mat-expansion-panel:not(.mat-expanded) .mat-expansion-panel-header:hover:not([aria-disabled="true"]) {
+    background: #0f254d;
+  }
+  
+  .fixed-button {
+    position: fixed;
+    right: 2em;
+    bottom: 2em;
+  }
+  

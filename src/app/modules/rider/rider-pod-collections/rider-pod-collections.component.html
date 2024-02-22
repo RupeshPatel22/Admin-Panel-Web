@@ -1,0 +1,168 @@
+<section class="rider-orders-wrapper">
+    <app-page-title [pageTitle]="pageHeading"></app-page-title>
+    <div class="rider-orders-wrapper__tools">
+        <div class="row align-items-end w-75">
+            <div class="col-6 input-details">
+                <label for="search" class="input-heading">Search </label>
+                <input type="text" class="input-field" placeholder="search by comma separated rider Id" name="search"
+                    [(ngModel)]="filterRiderPodCollections.riderIds" (keyup.enter)="getRiderPodCollections(true)">
+            </div>
+            <!-- <div class="col-3">
+                <button class="buttons w-100"
+                    (click)="showFilterFields ? clearFilter('all') : showFilterFields = true">
+                    {{showFilterFields ? 'Clear Filters' : 'Export In CSV'}}
+                    <img src="assets/icons/filter-white.svg" class="ms-4" alt="add-icon" />
+                </button>
+            </div> -->
+            <div class="col-3">
+                <button class="buttons w-100" (click)="togglePodCollectionCsvModal()">
+                   Email POD Collection Report
+                    <img src="assets/icons/filter-white.svg" class="ms-4" alt="add-icon" />
+                </button>
+            </div>  
+        </div>
+        <!-- <div class="row align-items-end mt-4" *ngIf="showFilterFields">
+            <div class="row align-items-end w-75">
+                <div class="col-3 input-details mt-3">
+                    <label class="input-heading">Rider Shift Ids</label>
+                    <input type="text" class="input-field" placeholder="Enter rider shift ids" name="riderShiftIds" [(ngModel)]="filterRiderPodCollections.riderShiftIds">
+                </div>
+                <div class="col-3 input-details">
+                    <label class="input-heading">Rider Type</label>
+                    <ng-select [items]="riderTypeList | keyvalue" bindLabel="value" bindValue="key" placeholder="Select Rider Type" [(ngModel)]="filterRiderPodCollections.riderTypes"></ng-select>
+                </div>
+                <div class="input-details col-3 mt-3">
+                    <label class="input-heading">Start Date</label>
+                    <mat-form-field class="custom-mat-form-field" appearance="outline">
+                        <input matInput (click)="startDate.open()" [matDatepicker]="startDate" [readonly]="true" name="startDate" placeholder="Select date" [(ngModel)]="filterRiderPodCollections.startDate" ngDefaultControl>
+                        <mat-datepicker-toggle matSuffix [for]="startDate" matSuffix></mat-datepicker-toggle>
+                        <mat-datepicker #startDate></mat-datepicker>
+                    </mat-form-field>
+                </div>
+                <div class="input-details col-3 mt-3">
+                    <label class="input-heading">End Date</label>
+                    <mat-form-field class="custom-mat-form-field" appearance="outline">
+                        <input matInput (click)="endDate.open()" [matDatepicker]="endDate" [readonly]="true" name="endDate" placeholder="Select date" [min]="filterRiderPodCollections.startDate" [(ngModel)]="filterRiderPodCollections.endDate" ngDefaultControl>
+                        <mat-datepicker-toggle matSuffix [for]="endDate" matSuffix></mat-datepicker-toggle>
+                        <mat-datepicker #endDate></mat-datepicker>
+                    </mat-form-field>
+                </div>
+                <div class="col-3 input-details mt-3">
+                    <label class="input-heading">Client Order Ids</label>
+                    <input type="text" class="input-field" placeholder="Enter client order ids" name="clientOrderIds" [(ngModel)]="filterRiderPodCollections.clientOrderIds">
+                </div>
+                <div class="col-3">
+                    <button class="buttons w-100" (click)="exportPodCollectionInCsv()">Generate CSV
+                    </button>
+                </div>
+            </div>
+        </div> -->
+            
+        </div>
+        
+    <main class="rider-orders-wrapper__content mt-5">
+        <table class="w-100" mat-table [dataSource]="riderPodCollectionsList" matSort multiTemplateDataRows>
+            <ng-container matColumnDef="riderDetails">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Rider Details</th>
+                <td mat-cell *matCellDef="let row">
+                    <span>{{row.riderName ? row.riderName : 'N/A'}}
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" width="15" height="15" alt=""
+                        [appCopyToClipboard]="row.riderName">
+                    </span>
+                    <p class="m-0">
+                        <span class="d-flex gap-3 align-items-center">
+                            <strong>{{row.riderId ? row.riderId : ''}}</strong>
+                            <img class="cursor-enabled" src="assets/icons/copy-icon.svg" width="15" height="15" alt=""
+                                [appCopyToClipboard]="row.riderId">
+                        </span>
+                    </p>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="riderPhone">
+                <th mat-header-cell *matHeaderCellDef>Rider Phone Number </th>
+                <td mat-cell *matCellDef="let row">{{row.riderPhone}}</td>
+            </ng-container>
+            <!-- <ng-container matColumnDef="riderActiveStatus">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Rider Active Status </th>
+                <td mat-cell *matCellDef="let row">{{row.riderActiveStatus ? row.riderActiveStatus : 'N/A'}}
+                </td>
+            </ng-container> -->
+            <ng-container matColumnDef="podCollection">
+                <th mat-header-cell *matHeaderCellDef>POD Collection</th>
+                <td mat-cell *matCellDef="let row">{{formatNum(row.podCollection)}}</td>
+            </ng-container>
+            <ng-container matColumnDef="totalPodDeposit">
+                <th mat-header-cell *matHeaderCellDef>POD Deposit</th>
+                <td mat-cell *matCellDef="let row">{{formatNum(row.totalPodDeposit)}}</td>
+            </ng-container>
+            <ng-container matColumnDef="cashInHand">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Cash In Hand </th>
+                <td mat-cell *matCellDef="let row">{{formatNum(row.cashInHand)}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="action">
+                <th class="cursor-disable" mat-header-cell *matHeaderCellDef>Action</th>
+                <td mat-cell *matCellDef="let row">
+                    <button mat-icon-button (click)="expandedRow = expandedRow === row ? null : row">
+            <mat-icon>{{row === expandedRow ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}</mat-icon>
+          </button>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="expandedDetail">
+                <td *matCellDef="let row" [attr.colspan]="displayedColumns.length">
+                    <app-rider-pod-collections-details class="expanded-row-details" [ngClass]="row === expandedRow ? 'expanded' : 'collapsed'" [riderPodCollectionsDetail]="row" [action]="action" (takeAction)="takeAction($event)" *ngIf="expandedRow === row">
+                    </app-rider-pod-collections-details>
+                </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+                    There is no matching data !!!
+                </td>
+            </tr>
+        </table>
+        <mat-paginator #paginatorRef [length]="totalRiderPodCollectionRecords" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)"></mat-paginator>
+    </main>
+    <div class="modal hide drawer right-align" id="changeModalRight" role="dialog" aria-hidden="true" *ngIf="showPodCollectionReportModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <label class="modal-title border-0" id="exampleModalLabel">Pod Collection Report</label>
+                    <mat-icon (click)="togglePodCollectionCsvModal()" data-dismiss="modal">close</mat-icon>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex flex-column">
+                        <div class="input-details">
+                            <label class="input-heading">Rider Ids</label>
+                            <input type="text" class="input-field" placeholder="Enter By Comma Separated Rider Id" name="search"
+                    [(ngModel)]="filterRiderPodCollections.riderIds">
+                        </div>
+                        <span class="row mt-3">
+                            <div class="col-6 input-details">
+                                <label class="input-heading">Start Date</label>
+                                <mat-form-field class="mat-form-field-appearance-outline" appearance="outline">
+                                    <input matInput (click)="startDate.open()" [matDatepicker]="startDate" [readonly]="true" name="startDate" placeholder="Select date" [(ngModel)]="filterRiderPodCollections.startDate" ngDefaultControl>
+                                    <mat-datepicker-toggle matSuffix [for]="startDate" matSuffix></mat-datepicker-toggle>
+                                    <mat-datepicker #startDate></mat-datepicker>
+                                </mat-form-field>
+                            </div>                       
+                            <div class="col-6 input-details">
+                                <label class="input-heading">End Date</label>
+                                <mat-form-field class="mat-form-field-appearance-outline" appearance="outline">
+                                    <input matInput (click)="endDate.open()" [matDatepicker]="endDate" [readonly]="true" name="endDate" placeholder="Select date" [min]="filterRiderPodCollections.startDate" [(ngModel)]="filterRiderPodCollections.endDate" ngDefaultControl>
+                                    <mat-datepicker-toggle matSuffix [for]="endDate" matSuffix></mat-datepicker-toggle>
+                                    <mat-datepicker #endDate></mat-datepicker>
+                                </mat-form-field>
+                            </div>
+                        </span>
+                        <div class="mt-4">
+                            <button class="buttons br-50 w-100" (click)="exportPodCollectionInCsv()">Send Report To {{userAdminEmailId}}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

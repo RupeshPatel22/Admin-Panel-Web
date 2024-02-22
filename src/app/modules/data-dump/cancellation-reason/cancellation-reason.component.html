@@ -1,0 +1,77 @@
+<section class="cancellation-reason-wrapper">
+    <app-page-title [pageTitle]="'Cancellation Reason'"></app-page-title>
+
+    <div class="cancellation-reason-wrapper__tools w-75">
+        <div class="row align-items-end">
+            <div class="col-6 input-details">
+                <label for="search" class="input-heading">Search by user type or cancellation reason...</label>
+                <input type="text" class="input-field" placeholder="Enter user type or cancellation reason" name="search" [ngModel]="globalFilter" (ngModelChange)="globalSearch($event)">
+            </div>
+            <div class="col-3">
+                <button class="buttons" (click)="addCancellationReason()">
+                    Add Reason
+                    <img src="assets/icons/add.svg" class="ms-4" alt="add-icon">
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="cancellation-reason-wrapper__content mt-5">
+        <table class="w-100" mat-table [dataSource]="cancellationReasonList" matSort>
+
+            <!-- <ng-container matColumnDef="sr no">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Sr No </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row; let i= index"> {{ (paginatorRef.pageIndex * paginatorRef.pageSize) + (i + 1) }} </td>
+            </ng-container> -->
+
+            <ng-container matColumnDef="userType">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>User Type </th>
+                <td class="cursor-disable text-capitalize" mat-cell *matCellDef="let row">
+                    <span class="d-flex gap-3 align-items-center">
+                        <strong>{{row.userType}}</strong>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15"
+                        [appCopyToClipboard]="row.userType">
+                    </span>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="reasonId">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Reason Id</th>
+                <td class="cursor-disable text-capitalize" mat-cell *matCellDef="let row">
+                    <span class="d-flex gap-3 align-items-center">
+                        <strong>{{row.id}}</strong>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15"
+                        [appCopyToClipboard]="row.id">
+                    </span>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="cancellationReason">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Cancellation Reason</th>
+                <td class="" mat-cell *matCellDef="let row">
+                    <span class="d-flex gap-3 align-items-center">
+                        <strong>{{row.cancellationReason}}</strong>
+                        <img class="cursor-enabled" title="Copy" src="assets/icons/copy-icon.svg" height="15"
+                            width="15" [appCopyToClipboard]="row.cancellationReason">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="action">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
+                <td class="" mat-cell *matCellDef="let row">
+                    <mat-icon class="ms-2" matTooltip="Edit" (click)="updateCancellationReason(row)">edit</mat-icon>
+                    <mat-icon class="ms-2" matTooltip="Delete" (click)="deleteCancellationReason(row)">delete</mat-icon>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="displayedColumns.length">There is no matching data !!!</td>
+            </tr>
+        </table>
+
+        <mat-paginator #paginatorRef [pageSizeOptions]="pageSizeOptions"></mat-paginator>
+    </div>
+</section>

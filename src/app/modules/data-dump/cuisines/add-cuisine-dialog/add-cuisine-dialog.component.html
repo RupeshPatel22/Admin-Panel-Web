@@ -1,0 +1,38 @@
+<section class="dialog-wrapper">
+   <h4 class="mb-4">{{action === 'ADD' ? 'Add' : 'Edit'}} Cuisine</h4>
+
+   <form [formGroup]="cuisineForm">
+      <label class="input-heading">Name</label>
+      <div class="input-details mb-2">
+         <mat-form-field appearance="outline" class="w-100">
+            <input type="text" matInput name="name" formControlName="name" placeholder="Enter Name">
+         </mat-form-field>
+         <app-form-error-msg [control]="cuisineForm.controls.name"></app-form-error-msg>
+      </div>
+
+      <div class="input-details mb-2" *ngIf="service === Services.Paan">
+         <label class="input-heading">Age Restricted ?</label>
+         <mat-radio-group formControlName="ageRestricted">
+             <mat-radio-button [value]="true" class="input-heading me-3">Yes</mat-radio-button>
+             <mat-radio-button [value]="false" class="input-heading me-3">No</mat-radio-button>
+         </mat-radio-group>
+         <app-form-error-msg [control]="cuisineForm.controls.ageRestricted"></app-form-error-msg>
+     </div>
+
+      <label class="input-heading mb-2">Image (optional)</label>
+      <ng-container *ngIf="cuisineDet?.imageName">
+         <a class="ms-5" href="{{cuisineImageUrl}}" target="_blank">View</a>
+         <a class="ms-5 cursor-enabled" (click)="removeImage()">Remove</a>
+      </ng-container>
+      <div class="d-flex align-items-center">
+         <input [hidden]="true" type="file" accept="all/*" (click)="$event.target.value = null"
+               (change)="getFileUploadUrl($event.target.files)" #chooseFile>
+         <button class="choose-file-button" (click)="chooseFile.click()">Choose File</button>
+         <span>{{cuisineForm.get('imageName').value}}</span>
+      </div>
+      <div class="d-flex justify-content-end gap-3 mt-4">
+         <button class="buttons buttons--white br-50" (click)="onDismiss()">Dismiss</button>
+         <button class="buttons br-50" (click)="submitCuisine()"> {{action === 'ADD' ? 'Add' : 'Save'}}</button>
+      </div>
+   </form>
+</section>

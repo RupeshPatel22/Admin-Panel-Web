@@ -1,0 +1,108 @@
+<main>
+    <h3>Add Deposit</h3>
+    <form class="row mb-3" [formGroup]="addPodDepositForm">
+        <div class="input-details col-3">
+            <label class="input-heading">Amount (in ₹)</label>
+            <input type="text" class="input-field input-field--white" placeholder="Enter Amount" name="amount"
+                formControlName="amount" appAllowTwoDecimalNumbers>
+            <app-form-error-msg [control]="addPodDepositForm['controls']['amount']">
+            </app-form-error-msg>
+        </div>
+        <div class="input-details col-3">
+            <label class="input-heading">Deposit Method</label>
+            <ng-select class="modal-ng-select" [items]="depositMethodList | keyvalue" bindLabel="value" bindValue="key"
+                placeholder="Select Deposit Method" formControlName="depositMethod">
+            </ng-select>
+            <app-form-error-msg [control]="addPodDepositForm['controls']['depositMethod']">
+            </app-form-error-msg>
+        </div>
+        <div class="input-details col-3">
+            <label class="input-heading">Remarks</label>
+            <textarea class="reason" name="remarks" placeholder="Enter Remarks" formControlName="remarks"></textarea>
+            <app-form-error-msg [control]="addPodDepositForm['controls']['remarks']">
+            </app-form-error-msg>
+        </div>
+        <div class="col-3 d-flex align-items-center">
+            <button type="button" class="buttons br-50 w-25 h-3" (click)="addDeposit()">ADD</button>
+        </div>
+    </form>
+    <ng-container *ngFor="let shift of riderPodCollectionShiftsDetails; let shiftPayoutIndex = index">
+        <h3 class="text-uppercase"><strong>Rider Shift ID: </strong> {{shift.riderShiftId}}</h3>
+        <div class="row">
+            <div class="input-details col-3">
+                <label class="input-heading">Total POD Collection</label>
+                <span class="input-field">{{shift.totalPodCollection}}</span>
+            </div>
+            <div class="input-details col-3">
+                <label class="input-heading">Total POD Deposits</label>
+                <span class="input-field">{{shift.totalPodDeposit}}</span>
+            </div>
+            <div class="input-details col-3">
+                <label class="input-heading">Shift Name</label>
+                <span class="input-field">{{shift.shiftName}}</span>
+            </div>
+            <div class="input-details col-3">
+                <label class="input-heading">Date</label>
+                <span class="input-field">{{shift.firstPingAt}}</span>
+            </div>
+        </div>
+        <h4 class="mt-2">Order Details</h4>
+        <table class="report-table w-100 mb-3">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Client Order Id</th>
+                    <th>Delivery Status</th>
+                    <th>POD Collection Amount</th>
+                    <th>Rider Payout</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let order of shift.payoutOrders">
+                    <td class="cursor-enabled text-decoration-underline"
+                        (click)="navigateToRiderOrdersPage(order.orderId)"> <strong> {{order.orderId}} </strong> </td>
+                    <td>{{order.clientOrderId}}</td>
+                    <td>{{order.deliveryStatus}}</td>
+                    <td>{{order.totalAmount}}</td>
+                    <td>{{order.riderPayoutAmt}}</td>
+                </tr>
+                <tr *ngIf="shift.payoutOrders.length === 0">
+                    <td colspan="4" class="text-center">POD collection not available</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h4>Deposit Details</h4>
+        <table class="report-table w-100 mb-3">
+            <thead>
+                <tr>
+                    <th>Amount</th>
+                    <th>Deposit Method</th>
+                    <th>Remarks</th>
+                    <th>Collected At</th>
+                    <th>Collected By</th>
+                    <th>Cancelled At</th>
+                    <th>Cancelled By</th>
+                    <th>Cancellation Reason</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let deposit of shift.podDeposits; let podDepositIndex = index">
+                    <td>{{deposit.amount}}</td>
+                    <td>{{deposit.depositMethod}}</td>
+                    <td>{{deposit.remarks ? deposit.remarks : 'N/A'}}</td>
+                    <td>{{deposit.createdAt? (deposit.createdAt | date: dateLongTimeFormat): 'N/A'}}</td>
+                    <td>{{deposit.collectedBy}}</td>
+                    <td>{{ deposit.cancelledAt ? (deposit.cancelledAt | date: dateLongTimeFormat): 'N/A'}}</td>
+                    <td>{{deposit.cancelledBy ? deposit.cancelledBy : 'N/A'}}</td>
+                    <td>{{deposit.cancellationReason ? deposit.cancellationReason : 'N/A'}}</td>
+                </tr>
+                <tr *ngIf="!shift.podDeposits.length">
+                    <td colspan="7" class="text-center">Deposit details not available</td>
+                </tr>
+            </tbody>
+        </table>
+    </ng-container>
+    <mat-paginator #paginatorRef showFirstLastButtons [length]="totalRiderPodCollectionShiftsRecords" [pageSize]="pageSize"
+        [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)"></mat-paginator>
+</main>

@@ -1,0 +1,10 @@
+@import "./src/assets/styles/app";
+.page-title {
+    height: 50px;
+    width: 100%;
+    text-align: left;
+    vertical-align: center;
+    margin: 42px 0 10px 0;
+    font-size: $header;
+    cursor: context-menu;
+}

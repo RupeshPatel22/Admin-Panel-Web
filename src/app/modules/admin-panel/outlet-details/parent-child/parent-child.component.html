@@ -1,0 +1,68 @@
+<div class="parent-child-wrapper">
+    <section class="parent-child-wrapper__content">
+        <div class="d-flex justify-content-between">
+            <app-page-title [pageTitle]="isParentOutlet? 'Parent Outlet Details' : 'Child Outlet Details'"></app-page-title>
+            <div class="mt-5" *ngIf="!isParentOutlet">
+                <button class="buttons me-0" (click)="openAddNewDialog()">
+                    Add Child Outlet
+                    <img src="assets/icons/add.svg" class="ms-2" alt="add-icon">
+                </button>
+            </div>
+        </div>
+    </section>
+    <!-- <mat-accordion> -->
+    <div class="">
+        <!-- basic information -->
+        <table class="w-100" mat-table [dataSource]="parentChildDetail" matSort>
+            <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Outlet Id</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    {{row.id? row.id : 'N/A'}}
+                    <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15" [appCopyToClipboard]="row.id">
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="partnerId">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Partner Outlet Id</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    {{row.partnerId? row.partnerId : 'N/A'}}
+                    <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15" [appCopyToClipboard]="row.partnerId">
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="outletName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Outlet Name</th>
+                <td class="cursor-enabled" mat-cell *matCellDef="let row">
+                    <span class="d-flex gap-3 align-items-center">
+                        <strong class="cursor-enabled text-decoration-underline"
+                            (click)="navigateToOutletDetailsInNewWindow(row.id, row.outletName)"> {{row.outletName? row.outletName : 'N/A'}}</strong>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.outletName">
+                    </span>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Status </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    <input class="me-3" type="checkbox" [ngClass]="{'active': row.status === 'active'}" role="switch" name="toggle" (click)="changeStatus(row)">
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="action">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Action </th>
+                <td class="cursor-enabled" mat-cell *matCellDef="let row">{{row.delete}}
+                    <mat-icon *ngIf="isParentOutlet" (click)="navigateToOutletDetailsInNewWindow(row.id, row.outletName)">remove_red_eye</mat-icon>
+                    <mat-icon *ngIf="!isParentOutlet" (click)="deleteChildOutlet(row)">delete</mat-icon>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell align-self-center" colspan="5">There is no data !!!</td>
+            </tr>
+        </table>
+    </div>
+</div>

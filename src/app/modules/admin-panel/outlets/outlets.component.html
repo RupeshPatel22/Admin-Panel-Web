@@ -1,0 +1,234 @@
+<section class="home-wrapper">
+    <app-page-title [pageTitle]="'Vendors Search'"></app-page-title>
+    <div class="home-wrapper__tools w-75">
+        <div class="row align-items-end">
+            <div class="col-6 input-details">
+                <label for="search" class="input-heading">Search by Outlet Id or Name...</label>
+                <input type="text" class="input-field" placeholder="Enter Outlet Id or Name" name="search" id="search" [(ngModel)]="filterOutletFields.outletIdOrName" (keyup.enter)="getOutletsList(true)">
+            </div>
+            <div class="col-3">
+                <button class="buttons buttons--filter w-100" (click)="showFilterFields ? clearFilter('all') : showFilterFields = true">
+                    {{showFilterFields ? 'Clear Filters' : 'Add Filters'}}
+                    <img src="assets/icons/filter.svg" class="ms-4" alt="add-icon" />
+                </button>
+            </div>
+            <div class="col-3">
+                <button class="buttons w-100" (click)="exportOutletsInCsv()">Export in csv
+                </button>
+            </div>
+            <div class="col-2">
+                <button class="buttons buttons--filter w-100" [matMenuTriggerFor]="menu" *ngIf="selection.hasValue()">
+                    Actions
+                    <mat-icon>keyboard_arrow_down</mat-icon>
+                    <mat-menu #menu="matMenu" xPosition="before">
+                        <div>
+                            <table class="w-100">
+                                <tr>
+                                    <td class="me-4">Currently Open</td>
+                                    <td>
+                                        <input class="me-3" (change)="triggerModal($event.target.checked)"
+                                            type="checkbox" [ngClass]="{'active': true}" role="switch" name="toggle"
+                                            checked>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Enabled</td>
+                                    <td>
+                                        <input class="me-3" type="checkbox" [ngClass]="{'active': true}" role="switch"
+                                            name="toggle">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Archive</td>
+                                    <td>
+                                        <input class="me-3" type="checkbox" [ngClass]="{'active': true}" role="switch"
+                                            name="toggle">
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </mat-menu>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row align-items-end mt-4" *ngIf="showFilterFields">
+        <div class="col-2 input-details">
+            <label for="cityCode" class="input-heading">City</label>
+            <ng-select [items]="cityList" bindLabel="name" bindValue="id" placeholder="Select City" [(ngModel)]="filterOutletFields.cityId" (clear)="clearFilter('city')" (change)="setAreaList()"></ng-select>
+        </div>
+        <div class="col-2 input-details">
+            <label for="areaCode" class="input-heading">Area</label>
+            <ng-select [items]="areaList" bindLabel="name" bindValue="id" placeholder="Select Area" [multiple]="true" [closeOnSelect]="false" [(ngModel)]="filterOutletFields.areaIds" (clear)="clearFilter()"></ng-select>
+        </div>
+        <div class="col-2 input-details">
+            <label for="type" class="input-heading">Status</label>
+            <ng-select [items]="statusList" bindLabel="name" bindValue="id" placeholder="Select status" [(ngModel)]="filterOutletFields.status" (clear)="clearFilter()"></ng-select>
+        </div>
+        <div class="col-2 input-details" *ngIf="service === Services.Food">
+            <label for="type" class="input-heading">Outlet Type</label>
+            <ng-select [items]="typeList" bindLabel="name" bindValue="id" placeholder="Select type" [(ngModel)]="filterOutletFields.outletType" (clear)="clearFilter()"></ng-select>
+        </div>
+        <div class="col-2 input-details">
+            <label for="type" class="input-heading">Speedyy A/C Manager</label>
+            <ng-select [items]="adminNames" bindLabel="full_name" bindValue="id" placeholder="Select Name" [(ngModel)]="filterOutletFields.speedyyAccountManagerId" (clear)="clearFilter()"></ng-select>
+        </div>
+        <div class="col-2">
+            <button class="buttons br-50" (click)="getOutletsList(true)">Apply Filter</button>
+        </div>
+    </div>
+    <main class="home-wrapper__content mt-5" *ngIf="showTable">
+        <table class="w-100" mat-table [dataSource]="outletsList" matSort>
+            <ng-container matColumnDef="checkbox">
+                <th mat-header-cell *matHeaderCellDef>
+                    <mat-checkbox (change)="toggleSelectAll()" [checked]="isAllSelected()"></mat-checkbox>
+                </th>
+                <td mat-cell *matCellDef="let row">
+                    <mat-checkbox (change)="selection.toggle(row)" [checked]="selection.isSelected(row)">
+                    </mat-checkbox>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="image">
+                <th class="cursor-disable" mat-header-cell *matHeaderCellDef>Image </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"><img class="outlet-img" src='{{row.outletPrimaryImage.url}}' alt="" width="50" height="50"></td>
+            </ng-container>
+            <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Name </th>
+                <td mat-cell *matCellDef="let row">
+                    <span class="d-flex gap-3 align-items-center">
+                        <strong class="cursor-enabled text-decoration-underline"
+                            (click)="navigateToOutletDetailsInNewWindow(row.id, row.name)"> {{row.name}}</strong>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.name">
+                    </span>
+                    <span class="d-flex gap-3 align-items-center">
+                        <p class="m-0 singleline-ellipsis">{{row.id}}</p>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.id">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="branchName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Branch Name </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.branchName ? row.branchName : 'N/A'}} </td>
+            </ng-container>
+            <ng-container matColumnDef="posName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>POS Name </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.posName ? row.posName : 'N/A'}} </td>
+            </ng-container>
+            <!-- <ng-container matColumnDef="pocNumber">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>POC </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    {{row.pocNumber ? row.pocNumber : 'N/A'}}
+                    <a href="tel:{{row.pocNumber}}" class="cursor-enabled" matTooltip="{{row.pocNumber}}" matTooltipClass="custom-tooltip"
+                    (click)="copyMobileToClipboard(row.pocNumber);$event.stopPropagation()" *ngIf="row.pocNumber">
+                    <img class="align-text-bottom ms-2" src="../../../../assets/icons/telephone-icon.svg" width="20"
+                        height="30">
+                </a>
+                     </td>
+            </ng-container> -->
+            <ng-container matColumnDef="speedyyAccountManagerName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Speedyy A/C Manager </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    {{row.speedyyAccountManagerName ? row.speedyyAccountManagerName : 'N/A'}}
+                     </td>
+            </ng-container>
+            <ng-container matColumnDef="outletType">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Type </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.outletType}} </td>
+            </ng-container>
+            <ng-container matColumnDef="area">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Area </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.areaName}} </td>
+            </ng-container>
+            <ng-container matColumnDef="city">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>City </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.cityName}} </td>
+            </ng-container>
+            <ng-container matColumnDef="currentlyOpen">
+                <th mat-header-cell *matHeaderCellDef class="text-center">Currently Open</th>
+                <td class="cursor-disable text-center" mat-cell *matCellDef="let row">
+                    <span [matTooltip]="row.isOpen ? 'Open' : 'Next open at ' + (row.nextOpensAt | date: dateShortTimeFormat)"  matTooltipClass="custom-tooltip">
+                        <img src="assets/icons/enable-status.svg" alt="" *ngIf="row.isOpen">
+                    <img src="assets/icons/disable-status.svg" alt="" *ngIf="!row.isOpen">
+                    </span> 
+                </td>
+            </ng-container>
+            
+            <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Status </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    <input class="me-3" type="checkbox" [ngClass]="{'active': row.status === 'active'}" role="switch" name="toggle" (click)="changeStatus(row)" matTooltipClass="custom-tooltip" [matTooltip]="row.status === 'active' ? 'Active' :'Disable'">
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="action">
+                <th class="cursor-disable" mat-header-cell *matHeaderCellDef>Action </th>
+                <td mat-cell *matCellDef="let row">
+                    <button mat-icon-button [matMenuTriggerFor]="menu">
+                        <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <mat-menu #menu="matMenu">
+                        <div class="">
+                            <table>
+                                 <!-- <th>Vendor Status</th>
+                                <tr>
+                                    <td>Currently Open</td>
+                                    <td>
+                                        <ng-toggle [value]="true" [color]="{unchecked: '#FF1700',checked: '#04A971'}"
+                                            [width]="37" [height]="18" (change)="triggerModal($event.target.checked)">
+                                        </ng-toggle>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Enabled</td>
+                                    <td>
+                                        <ng-toggle [value]="true" [color]="{unchecked: '#FF1700',checked: '#04A971'}"
+                                            [width]="37" [height]="18"></ng-toggle>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Archive</td>
+                                    <td>
+                                        <ng-toggle [value]="true" [color]="{unchecked: '#FF1700',checked: '#04A971'}"
+                                            [width]="37" [height]="18"></ng-toggle>
+                                    </td>
+                                </tr> -->
+                                <tr (click)="navigateToOutletDetailsInNewWindow(row.id, row.name)" class="cursor-enabled">
+                                    <td>View</td>
+                                    <td>
+                                        <mat-icon (click)="navigateToOutletDetailsInNewWindow(row.id, row.name)">remove_red_eye
+                                        </mat-icon>
+                                    </td>
+                                </tr>
+                                <th class="cursor-disable">Downloads</th>
+                                <tr class="cursor-enabled">
+                                    <td (click)="downloadCSV('admin/menu/csv/menu_item',row.id)">Items</td>
+                                </tr>
+                                <tr class="cursor-enabled">
+                                    <td (click)="downloadCSV('admin/menu/csv/menu_item_addon',row.id)">Add-Ons</td>
+                                </tr>
+                                <tr class="cursor-enabled">
+                                    <td (click)="downloadCSV('admin/menu/csv/item_addon_group',row.id)">Add-Ons Groups
+                                    </td>
+                                </tr>
+                                <!-- <tr><td>Varients</td></tr>
+                                <tr><td>GST Sheet Covering</td></tr> -->
+                            </table>
+                        </div>
+                    </mat-menu>
+                </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="displayedColumns.length">There is no matching data !!!</td>
+            </tr>
+        </table>
+        <mat-paginator #paginatorRef [length]="totalOutletRecords" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)"></mat-paginator>
+    </main>
+</section>
+<!-- Page when user intially doesn't have any input in search field for home page -->
+<div class="d-flex flex-column justify-content-center align-items-center h-75" *ngIf="!showTable">
+    <img width="131" height="131" src="assets/icons/no-result-found-icon.svg">
+    <h6>Kindly enter, outlet id or name in search bar to find the outlets !!!</h6>
+</div>

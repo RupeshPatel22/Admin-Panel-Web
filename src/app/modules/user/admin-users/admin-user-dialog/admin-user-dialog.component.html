@@ -1,0 +1,14 @@
+<section class="dialog-wrapper">
+    <form>
+        <label class="input-heading">{{title}}</label>
+        <div class="form-details w-100">
+            <textarea class="reason" [formControl]="comments"></textarea>
+            <app-form-error-msg [control]="comments"></app-form-error-msg>
+        </div>
+    </form>
+    <hr>
+    <div class="d-flex w-100 justify-content-end">
+        <button class="buttons buttons--white br-50 me-2" (click)="onDismiss()">Discard</button>
+        <button class="buttons br-50" (click)="onConfirm()">Save</button>
+    </div>
+</section>

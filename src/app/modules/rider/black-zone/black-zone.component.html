@@ -1,0 +1,53 @@
+<section *ngIf="showMapForPolygon">
+    <div class="d-flex align-items-baseline">
+        <img src="assets/icons/back-icon.svg" class="me-2 cursor-enabled" width="16" height="18"
+            (click)="closeMapView()">
+        <app-page-title [pageTitle]="pageHeading"></app-page-title>
+    </div>
+    <!-- Polygon Create -->
+    <main>
+        <div class="row mb-3">
+            <div class="input-details col-2" [ngClass]="{'hide-search-input': polygonAction === 'View' || polygonAction === 'View All'}">
+                <label class="input-heading">Search</label>
+                <input type="text" class="input-field" placeholder="Search Location" #search>
+            </div>
+            <form [formGroup]="polygonForm" class="row col-10 align-items-end">
+                <div class="input-details col-2">
+                    <label class="input-heading">Operational City</label>
+                    <ng-select id="city" name="city" formControlName="opCityId" [items]="opCityList" bindLabel="name"
+                        bindValue="id" placeholder="Select operational city" (change)="getAllBlackZonesByCityId()">
+                    </ng-select>
+                    <app-form-error-msg [control]="polygonForm.controls.opCityId"></app-form-error-msg>
+                </div>
+                <div class="input-details col-2" *ngIf="polygonAction !== 'View All'">
+                    <label class="input-heading">Duration Type</label>
+                    <ng-select id="durationType" name="durationType" formControlName="durationType" [items]="blackZoneDurationType | keyvalue" bindLabel="value"
+                        bindValue="key" placeholder="Select duration type">
+                    </ng-select>
+                    <app-form-error-msg [control]="polygonForm.controls.durationType"></app-form-error-msg>
+                </div>
+                <div class="input-details col-3" *ngIf="polygonAction !== 'View All'">
+                    <label for="name" class="input-heading">Zone Name</label>
+                    <input type="text" class="input-field" name="name" placeholder="Enter name"
+                        formControlName="name">
+                    <app-form-error-msg [control]="polygonForm.controls.name"></app-form-error-msg>
+                </div>
+                <div class="input-details col-3" *ngIf="polygonAction !== 'View All'">
+                    <label for="description" class="input-heading">Description</label>
+                    <input type="text" class="input-field" name="description" placeholder="Enter description"
+                        formControlName="description">
+                    <app-form-error-msg [control]="polygonForm.controls.description"></app-form-error-msg>
+                </div>
+                <div class="col-2" *ngIf="polygonAction === 'Create' || polygonAction === 'Edit'">
+                    <button class="buttons br-50" (click)="submitPolygon()">Save Polygon</button>
+                </div>
+            </form>
+        </div>
+        <agm-map id="map" [latitude]="lat" [longitude]="long" (mapReady)="onMapReady($event)"
+            [zoom]="zoom">
+        </agm-map>
+    </main>
+</section>
+
+<app-black-zone-list *ngIf="!showMapForPolygon" (showMap)="initialiseMapDetails($event)">
+</app-black-zone-list>

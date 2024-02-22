@@ -1,0 +1,81 @@
+<section class="city-wrapper">
+    <app-page-title [pageTitle]="'City Search'"></app-page-title>
+    <div class="city-wrapper__tools w-75">
+        <div class="row align-items-end">
+            <div class="col-6 input-details">
+                <label for="search" class="input-heading">Search by city id or name...</label>
+                <input type="text" class="input-field" placeholder="Enter city id or name" name="search" [ngModel]="globalFilter" (ngModelChange)="globalSearch($event)">
+            </div>
+            <div class="col-3">
+                <button class="buttons buttons--filter w-100" (click)="showFilterFields ? clearFilter('all') : showFilterFields = true">
+                    {{showFilterFields ? 'Clear Filters' : 'Add Filters'}}
+                    <img src="assets/icons/filter.svg" class="ms-4" alt="add-icon" />
+                </button>
+            </div>
+            <div class="col-3">
+                <button (click)="openAddCityDialog()" class="buttons">
+                    Add City
+                    <img src="assets/icons/add.svg" class="ms-4" alt="add-icon">
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row align-items-end mt-4" *ngIf="showFilterFields">
+        <div class="col-3 input-details">
+            <label class="input-heading">City ID</label>
+            <ng-select [items]="cityDataArr" bindLabel="id" bindValue="id" placeholder="Select City ID" [(ngModel)]="filterCityFields.id" (clear)="clearFilter()"></ng-select>
+        </div>
+        <div class="col-3 input-details">
+            <label class="input-heading">City Name</label>
+            <ng-select [items]="cityDataArr" bindLabel="name" bindValue="name" placeholder="Select City Name" [(ngModel)]="filterCityFields.city" (clear)="clearFilter()"></ng-select>
+        </div>
+        <div class="col-3 input-details">
+            <label class="input-heading">Status</label>
+            <ng-select [items]="['active','inactive']" placeholder="Select Status" [(ngModel)]="filterCityFields.status" (clear)="clearFilter()"></ng-select>
+        </div>
+        <div class="col-3">
+            <button class="buttons br-50" (click)="applyFilter()">Apply Filter</button>
+        </div>
+    </div>
+    <main class="city-wrapper__content mt-5">
+        <table class="w-100" mat-table [dataSource]="cityList" matSort>
+            <ng-container matColumnDef="sr no">
+                <th mat-header-cell *matHeaderCellDef> Sr No </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row; let i= index"> {{ (paginatorRef.pageIndex * paginatorRef.pageSize) + (i + 1) }} </td>
+            </ng-container>
+            <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>City Details</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    <span class="d-flex gap-3 align-items-center">
+                        <strong>{{row.name}}</strong>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.name">
+                    </span>
+                    <span class="d-flex gap-3 align-items-center">
+                        <p class="m-0">{{row.id}}</p>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.id">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+                <td class="" mat-cell *matCellDef="let row">
+                    <input class="me-3" type="checkbox" [ngClass]="{'active': row.status === 'active'}" role="switch" name="toggle" (click)="changeStatus(row)">
+                </td>
+            </ng-container>
+            <!-- <ng-container matColumnDef="delete">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Action</th>
+                <td class="" mat-cell *matCellDef="let row">{{row.delete}}
+                    <mat-icon (click)="deleteCity(row)">delete</mat-icon>
+                </td>
+            </ng-container> -->
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="displayedColumns.length">There is no matching data !!!</td>
+            </tr>
+        </table>
+        <mat-paginator #paginatorRef [pageSizeOptions]="pageSizeOptions"></mat-paginator>
+    </main>
+</section>

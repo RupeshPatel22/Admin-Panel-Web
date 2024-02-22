@@ -1,0 +1,127 @@
+<main class="p-3">
+    <h4><strong>Other Details</strong></h4>
+    <section class="row">
+        <div class="input-details col-3 mb-3">
+            <label class="input-heading">Rejected Order Count</label>
+            <span class="input-field">{{allRiderShiftDetails.rejectedOrderCount ? allRiderShiftDetails.rejectedOrderCount :'N/A'}}</span>
+        </div>
+        <div class="input-details col-3 mb-3">
+            <label class="input-heading">Payout Transaction Id</label>
+            <span class="input-field">{{allRiderShiftDetails.payoutTransactionId ? allRiderShiftDetails.payoutTransactionId :'N/A'}}</span>
+        </div>
+        <div class="input-details col-3 mb-3">
+            <label class="input-heading">Payout Approved By User Id</label>
+            <span class="input-field">{{allRiderShiftDetails.payoutApprovedByUserId ? allRiderShiftDetails.payoutApprovedByUserId : 'N/A'}}</span>
+        </div>
+        <div class="input-details col-3 mb-3">
+            <label class="input-heading">Payout Amount</label>
+            <span class="input-field">{{allRiderShiftDetails.payoutAmount ? allRiderShiftDetails.payoutAmount :'N/A' }}</span>
+        </div>
+        <div class="input-details col-3 mb-3">
+            <label class="input-heading">Stop Payout Reason</label>
+            <span class="input-field">{{allRiderShiftDetails.stopPayoutReason ? allRiderShiftDetails.stopPayoutReason :'N/A'}}</span>
+        </div>
+        <div class="input-details col-3 mb-3">
+            <label class="input-heading">Blocked</label>
+            <span class="input-field">{{allRiderShiftDetails.isBlocked ? 'Yes' :'No'}}</span>
+        </div>
+        <div class="input-details col-3 mb-3" *ngIf="allRiderShiftDetails.isBlocked">
+            <label class="input-heading">Blocked By</label>
+            <span class="input-field">{{allRiderShiftDetails.blockedBy ? allRiderShiftDetails.blockedBy :'N/A'}}</span>
+        </div>
+        <div class="input-details col-3 mb-3" *ngIf="allRiderShiftDetails.isBlocked">
+            <label class="input-heading">Blocked Reason</label>
+            <span class="input-field">{{allRiderShiftDetails.blockedReason ? allRiderShiftDetails.blockedReason :'N/A'}}</span>
+        </div>
+        <div class="input-details col-3 mb-3">
+            <label class="input-heading">Phone</label>
+            <span class="input-field">{{allRiderShiftDetails.phone ? allRiderShiftDetails.phone :'N/A'}}</span>
+        </div>
+        <div class="input-details col-3 mb-3">
+            <label class="input-heading">Rider Level Hold Payout</label>
+            <span class="input-field">{{allRiderShiftDetails.holdPayout ? 'Yes' :'No'}}</span>
+        </div>
+        <div class="input-details col-3 mb-3">
+            <label class="input-heading">Shift Start Time</label>
+            <span class="input-field">{{allRiderShiftDetails.startTime ? allRiderShiftDetails.startTime :'N/A'}}</span>
+        </div>
+        <div class="input-details col-3 mb-3">
+            <label class="input-heading">Shift End Time</label>
+            <span class="input-field">{{allRiderShiftDetails.endTime ? allRiderShiftDetails.endTime :'N/A'}}</span>
+        </div>
+        <div class="input-details col-3 mb-3">
+            <label class="input-heading">Min Guarantee Payment</label>
+            <span class="input-field">&#8377;
+        {{allRiderShiftDetails.minGuaranteeInRupees ? allRiderShiftDetails.minGuaranteeInRupees :'N/A'}}</span>
+        </div>
+        <div class="input-details col-3 mb-3">
+            <label class="input-heading">POD Collection</label>
+            <span class="input-field">&#8377; {{allRiderShiftDetails.podCollection}}</span>
+        </div>
+        <ng-container *ngIf="allRiderShiftDetails.settledBy">
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">Settlement Amount</label>
+                <span class="input-field">&#8377; {{allRiderShiftDetails.settlementAmount}}</span>
+            </div>
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">Settlement Message</label>
+                <span class="input-field">{{allRiderShiftDetails.settlementMsg}}</span>
+            </div>
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">Settled By</label>
+                <span class="input-field">{{allRiderShiftDetails.settledBy}}</span>
+            </div>
+        </ng-container>
+    </section>
+
+    <ng-container>
+        <h4><strong>Order Details</strong></h4>
+        <table class="report-table w-100 mb-3">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Client ID</th>
+                    <th>Client Order ID</th>
+                    <th>Rider Payout</th>
+                    <th>Actual Rider Payout</th>
+                    <th>Remarks (if any)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let order of allRiderShiftDetails.riderOrders">
+                    <td class="cursor-enabled text-decoration-underline" matTooltip="Order Details" matTooltipClass="custom-tooltip" (click)="navigateToRiderOrdersPage(order.orderId)"> <strong> {{order.orderId}} </strong> </td>
+                    <td><strong> {{order.clientId}} </strong></td>
+                    <td> <strong> {{order.clientOrderId}} </strong></td>
+                    <td>{{order.riderPayoutAmt}}</td>
+                    <td>{{order.deliveryStatus === deliveryStatusList.CANCELLED ? order.riderPayoutSettlementAmt : order.riderPayoutAmt}}
+                    </td>
+                    <td>{{order.cancellationReason}}</td>
+                </tr>
+                <tr *ngIf="!allRiderShiftDetails.riderOrders.length">
+                    <td colspan="6" class="text-center">Data not available</td>
+                </tr>
+            </tbody>
+        </table>
+    </ng-container>
+
+    <!-- Settle shift -->
+    <ng-container *ngIf="allRiderShiftDetails.stopPayout && showSettleShiftForm">
+        <h4 class="mt-3"><strong>Settle Shift</strong></h4>
+        <form [formGroup]="settleShiftForm" class="row">
+            <div class="input-details col-4">
+                <label class="input-heading">Payout Amount</label>
+                <input type="text" class="input-field input-field--white" name="payoutAmt" formControlName="payoutAmt" placeholder="Enter payout amount">
+                <app-form-error-msg [control]="settleShiftForm.controls.payoutAmt"></app-form-error-msg>
+            </div>
+            <div class="input-details col-4">
+                <label class="input-heading">Settlement Message</label>
+                <textarea class="reason" placeholder="Type here..." formControlName="settlementMsg"></textarea>
+                <app-form-error-msg [control]="settleShiftForm.controls.settlementMsg"></app-form-error-msg>
+            </div>
+        </form>
+        <div class="d-flex justify-content-end gap-3 col-8 mt-3">
+            <button class="buttons buttons--white br-50 w-25" (click)="onClear()">Clear</button>
+            <button class="buttons br-50 w-25" (click)="onConfirm()"> Ok</button>
+        </div>
+    </ng-container>
+</main>

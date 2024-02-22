@@ -1,0 +1,479 @@
+<main>
+     <!-- Order Item Details -->
+     <ng-container>
+        <h4 class="d-flex justify-content-end">
+            <button class="buttons mt-2 br-50" *ngIf="action === riderOrderAction.ManualAssignment"
+            (click)="openAvailableRiderModal()">{{action}}</button>
+        </h4>
+        <section class=" w-75">            
+            <h3>Order Items Details</h3>     
+            <table class="report-table w-100">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Pickup Location Id</th>
+                        <th>Drop Location Id</th>
+                        <th>Items Name</th>
+                        <th>Item Price</th>
+                        <th>External Id</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let items of riderOrderDetails.orderItemDetails">
+                        <td><strong>{{items.id}}</strong></td>
+                        <td>{{items.pickupLocationId}}</td>
+                        <td>{{items.dropLocationId}}</td>
+                        <td>{{items.name}}</td>
+                        <td>{{items.price}}</td>
+                        <td>{{items.externalId}}</td>                        
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+    </ng-container>
+    <!-- <ng-container>
+        <h4 class="d-flex justify-content-between"><strong>Order Items</strong>
+            <button class="buttons mt-2 br-50" *ngIf="action === riderOrderAction.ManualAssignment"
+                (click)="openAvailableRiderModal()">{{action}}</button>
+        </h4>
+        <section class="col-3">
+            <div class="d-flex justify-content-between" *ngFor="let item of riderOrderDetails.orderItems">
+                <span>{{item.quantity}} x {{item.name}}</span>
+                <span>{{item.price}}</span>
+            </div>
+            <div class="d-flex justify-content-between mt-2 mb-4">
+                <span><strong>Total</strong></span>
+                <span>{{riderOrderDetails.totalAmount}}</span>
+            </div>
+
+        </section>
+
+    </ng-container> -->
+
+    <!-- Order Details -->
+    <ng-container>
+        <section class="row mt-3">
+            <h4><strong>Order Details</strong></h4>
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">Client ID</label>
+                <span class="input-field">{{riderOrderDetails.clientId}}</span>
+            </div>
+            <!-- <div class="input-details col-3 mb-3">
+                <label class="input-heading">Pickup Name</label>
+                <span class="input-field">{{riderOrderDetails.pickupName ? riderOrderDetails.pickupName : 'N/A'}}</span>
+            </div>
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">Pickup Contact</label>
+                <span class="input-field">{{riderOrderDetails.pickupContact ? riderOrderDetails.pickupContact : 'N/A'}}</span>
+            </div>
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">Pickup Address</label>
+                <span class="input-field">{{riderOrderDetails.pickupAddress ? riderOrderDetails.pickupAddress : 'N/A'}}</span>
+            </div>
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">Pickup ETA (in mins)</label>
+                <span class="input-field">{{riderOrderDetails.pickupETA ? riderOrderDetails.pickupETA : 'N/A'}}</span>
+            </div>
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">Drop Name</label>
+                <span class="input-field">{{riderOrderDetails.dropName ? riderOrderDetails.dropName : 'N/A'}}</span>
+            </div>
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">Drop Contact</label>
+                <span class="input-field">{{riderOrderDetails.dropContact ? riderOrderDetails.dropContact : 'N/A'}}</span>
+            </div>
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">Drop Address</label>
+                <span class="input-field">{{riderOrderDetails.dropAddress ? riderOrderDetails.dropAddress : 'N/A'}}</span>
+            </div>
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">Drop ETA (in mins)</label>
+                <span class="input-field">{{riderOrderDetails.dropETA ? riderOrderDetails.dropETA : 'N/A'}}</span>
+            </div> -->
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">Rider Rating</label>
+                <span class="input-field">{{riderOrderDetails.riderRating ? riderOrderDetails.riderRating :
+                    'N/A'}}</span>
+            </div>
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">Rider Review</label>
+                <span class="input-field">{{riderOrderDetails.riderReview ? riderOrderDetails.riderReview :
+                    'N/A'}}</span>
+            </div>
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">Take Drop Off Picture</label>
+                <span class="input-field">{{riderOrderDetails.takeDropOffPicture ? 'Yes' : 'No'}} </span>
+            </div>
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">No Free Rider Attempt</label>
+                <span class="input-field">{{riderOrderDetails.noFreeRiderAttempt ? riderOrderDetails.noFreeRiderAttempt : 'N/A'}} </span>
+            </div>
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">Last Assigned Rider Id</label>
+                <span class="input-field">{{riderOrderDetails.lastAssignedRiderId ? riderOrderDetails.lastAssignedRiderId : 'N/A'}} </span>
+            </div>
+            <ng-container *ngIf="riderOrderDetails.deliveryStatus === deliveryStatusList.CANCELLED">
+                <div class="input-details col-3 mb-3">
+                    <label class="input-heading">Cancelled By</label>
+                    <span class="input-field text-capitalize">{{riderOrderDetails.cancelledBy}}</span>
+                </div>
+                <div class="input-details col-3 mb-3">
+                    <label class="input-heading">Cancellation Reason</label>
+                    <span class="input-field">{{riderOrderDetails.cancellationReason}}</span>
+                </div>
+            </ng-container>
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">Rider Shift ID</label>
+                <span class="input-field">{{riderOrderDetails.riderShiftId ? riderOrderDetails.riderShiftId :
+                    'N/A'}}</span>
+            </div>
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">Rider Payout Amount</label>
+                <span class="input-field">{{riderOrderDetails.riderPayoutAmt}}</span>
+            </div>
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">Settlement Status</label>
+                <span class="input-field">{{riderOrderDetails.settlementStatus ? riderOrderDetails.settlementStatus :
+                    'N/A'}}</span>
+            </div>
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">Delivery Distance (in km)</label>
+                <span class="input-field">{{riderOrderDetails.deliveryDistance}} </span>
+            </div>
+            <ng-container *ngIf="riderOrderDetails.settlementStatus === settlementStatusList.settled">
+                <div class="input-details col-3 mb-3">
+                    <label class="input-heading">Settled By</label>
+                    <span class="input-field">{{riderOrderDetails.settledBy}}</span>
+                </div>
+                <div class="input-details col-3 mb-3">
+                    <label class="input-heading">Settlement Amount</label>
+                    <span class="input-field">{{riderOrderDetails.riderPayoutSettlementAmt}}</span>
+                </div>
+            </ng-container>
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">Amount</label>
+                <span class="input-field">{{riderOrderDetails.totalAmount}}</span>
+            </div>
+        </section>
+    </ng-container>
+
+    <!-- Order Locations -->
+    <ng-container>
+        <section class=" w-75 mt-3">
+            <h3>Order Location Details</h3>
+            <table class="report-table w-100">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Type</th>
+                        <th>Contact Name</th>                        
+                        <th>Contact Number</th>
+                        <th>Address</th>
+                        <th>Arrival ETA</th>
+                        <th>Client Pod Amount</th>
+                        <th>Visit Sequence</th>
+                        <th>Delivery Status</th>
+                        <th>Delivery Completed At</th>
+                        <th>Pod Status</th>
+                        <th>Cancellation Reason</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let location of riderOrderDetails.orderLocation">
+                        <td><strong>{{location.id}}</strong></td>
+                        <td>{{location.type | titlecase }}</td>
+                        <td>{{location.contactName}}</td>
+                        <td>{{location.contactNumber}}</td>
+                        <td>{{location.address}}</td>
+                        <td>{{location.arrivalEta}}</td>
+                        <td>{{location.clientPodAmount}}</td>
+                        <td>{{location.visitSequence}}</td>
+                        <td>{{location.deliveryStatus}}</td>
+                        <td>{{location.deliveryCompletedAt ? (location.deliveryCompletedAt | date: dateLongTimeFormat) : 'N/A'}}</td>
+                        <td>{{location.podStatus | titlecase}}</td>
+                        <td>{{location.cancellationReason?location.cancellationReason:'N/A'}}</td>
+
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+    </ng-container>
+
+    <ng-container *ngIf="![deliveryStatusList.PENDING, deliveryStatusList.DELIVERED, deliveryStatusList.CANCELLED]
+        .includes(riderOrderDetails.deliveryStatus)">
+        <h4 class="text-uppercase"><strong>Remove Rider</strong></h4>
+        <label>(Note: After this action order will be moved to manual rider allocation)</label>
+        <div class="input-details col-4">
+            <input type="text" class="input-field input-field--white" name="removeRiderReason" [formControl]="removeRiderReason"
+                placeholder="Enter reason">
+            <app-form-error-msg [control]="removeRiderReason"></app-form-error-msg>
+        </div>
+        <div class="d-flex justify-content-end gap-3 col-4 mt-3">
+            <button class="buttons buttons--white br-50 w-25" (click)="onRemoveRiderReasonClear()">Clear</button>
+            <button class="buttons br-50 w-25" (click)="onRemoveRider()">Ok</button>
+        </div>
+    </ng-container>
+
+    <ng-container>
+        <span class="d-flex justify-content-between align-items-center mt-3">
+            <h4 class="text-uppercase"><strong>Allocation History</strong></h4>
+        </span>
+        <section class="row alloc-history-border mb-1" *ngFor="let alloc of orderAllocationHistory">
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">Attempt</label>
+                <span class="input-field">{{alloc.attempt}}</span>
+            </div>
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">Rider ID</label>
+                <span class="input-field">{{alloc.riderId}}</span>
+            </div>
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">Rider Name</label>
+                <span class="input-field">{{alloc.riderName}}</span>
+            </div>
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">Rider Contact</label>
+                <span class="input-field">{{alloc.riderContact}}</span>
+            </div>
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">Status</label>
+                <span class="input-field text-capitalize">{{alloc.status}}</span>
+            </div>
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">Assigned At</label>
+                <span class="input-field">{{alloc.assignedAt | date: dateLongTimeFormat}}</span>
+            </div>
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">Action At</label>
+                <span class="input-field">{{alloc.actionAt | date: dateLongTimeFormat}}</span>
+            </div>
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">Initial Rider To Customer ETA (in mins)</label>
+                <span class="input-field">{{alloc.initialRiderToVendorEta}}</span>
+            </div>
+            <div class="input-details col-3 mb-3">
+                <label class="input-heading">Rider ETA From Vendor To Customer (in mins)</label>
+                <span class="input-field">{{alloc.initialRiderFromVendorToCustomerEta}}</span>
+            </div>
+            <span class="d-flex justify-content-between align-items-center mt-2">
+                <h4><strong>Rider Search Logs</strong></h4>
+            </span>
+            <table class="report-table w-100">
+                <tr>
+                    <th>Rider Id</th>
+                    <th>Rider Name</th>
+                    <th>Rider Status</th>
+                    <th>Rider Distance (in kms)</th>
+                    <th>Latitude</th>
+                    <th>Longitude</th>
+                    <th>POD Allowed</th>
+                    <th>POD Collection</th>
+                </tr>
+                <tr *ngFor="let r of alloc.riderSearchResult">
+                    <td>{{r.riderId}}</td>
+                    <td>{{r.riderName}}</td>
+                    <td>{{r.status}}</td>
+                    <td>{{r.distance}}</td>
+                    <td>{{r.latitude}}</td>
+                    <td>{{r.longitude}}</td>
+                    <td>{{r.podAllowed}}</td>
+                    <td>₹ {{r.podCollection}}</td>
+                </tr>
+                <tr *ngIf="!(alloc.riderSearchResult?.length)">
+                    <td colspan="8">Data not available</td>
+            </table>
+            <!-- <section *ngFor="let r of alloc.riderSearchResult" class="row">
+                <div class="input-details col-3 mb-3">
+                    <label class="input-heading">Rider Id</label>
+                    <span class="input-field">{{r.riderId}}</span>
+                </div>
+                <div class="input-details col-3 mb-3">
+                    <label class="input-heading">Rider Name</label>
+                    <span class="input-field">{{r.riderName}}</span>
+                </div>
+                <div class="input-details col-3 mb-3">
+                    <label class="input-heading">Rider Status</label>
+                    <span class="input-field">{{r.status}}</span>
+                </div>
+                <div class="input-details col-3 mb-3">
+                    <label class="input-heading">Rider Distance (in kms)</label>
+                    <span class="input-field">{{r.distance}}</span>
+                </div>
+                <div class="input-details col-3 mb-3">
+                    <label class="input-heading">Latitude</label>
+                    <span class="input-field">{{r.latitude}}</span>
+                </div>
+                <div class="input-details col-3 mb-3">
+                    <label class="input-heading">Longitude</label>
+                    <span class="input-field">{{r.longitude}}</span>
+                </div>
+                <div class="input-details col-3 mb-3">
+                    <label class="input-heading">POD Allowed</label>
+                    <span class="input-field">{{r.podAllowed}}</span>
+                </div>
+                <div class="input-details col-3 mb-3">
+                    <label class="input-heading">POD Collection</label>
+                    <span class="input-field">₹ {{r.podCollection}}</span>
+                </div>
+                <hr>
+            </section> -->
+            <h4 class="mt-2"><strong>Riders & Pickup Location</strong></h4>
+            <agm-map [latitude]="pickupLat" [longitude]="pickupLong" [zoom]="12">
+                <agm-marker [latitude]="pickupLat" [longitude]="pickupLong" [iconUrl]="{url:'assets/icons/map-pickup-icon.svg',
+                scaledSize:{
+                    width:30,
+                    height:30
+                }}">
+                    <agm-info-window class="d-flex align-items-center" [disableAutoPan]="true" [isOpen]="true">
+                        <span class="d-flex flex-column justify-content-between align-items-center">
+                            <label> <strong>Pickup Location</strong></label>
+                        </span>
+                    </agm-info-window>
+                </agm-marker>
+                <agm-marker *ngFor="let rider of alloc.riderSearchResult" [latitude]="rider.latitude"
+                    [longitude]="rider.longitude" [iconUrl]="{url:'assets/icons/map-rider-icon.svg',
+                scaledSize:{
+                    width:30,
+                    height:30
+                }}" (markerClick)="openMapfromPickupLocationToRiderDistance(rider.latitude,rider.longitude)">
+                    <agm-info-window class="d-flex align-items-center" [disableAutoPan]="true" [isOpen]="true">
+                        <span class="d-flex flex-column justify-content-between align-items-center">
+                            <label><strong>[{{ rider.riderName }}]</strong></label>
+                            <label><strong>Status: [{{ rider.status }}]</strong></label>
+                            <label><strong>Distance: [{{ rider.distance }}] km</strong></label>
+                        </span>
+                    </agm-info-window>
+                    <agm-polyline [strokeColor]="'black'" [strokeWeight]="1" [strokeDashArray]="[15, 15]">
+                        <agm-polyline-point [latitude]="pickupLat" [longitude]="pickupLong"></agm-polyline-point>
+                        <agm-polyline-point [latitude]="rider.latitude"
+                            [longitude]="rider.longitude"></agm-polyline-point>
+                    </agm-polyline>
+                </agm-marker>
+            </agm-map>
+        </section>
+    </ng-container>
+
+    <ng-container>
+        <section class=" w-75 mt-3">
+            <h3>Status History</h3>
+            <table class="report-table w-100">
+                <thead>
+                    <tr>
+                        <th>Order Location ID</th>
+                        <th>Order Location Delivery Status</th>
+                        <th>Order Delivery Status</th>
+                        <th>Created At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of orderStatusHistory">
+                        <td><strong>{{item.orderLocationId ? item.orderLocationId : 'N/A'}}</strong></td>
+                        <td>{{item.orderLocationDeliveryStatus ? (item.orderLocationDeliveryStatus | titlecase) : 'N/A' }}</td>
+                        <td>{{item.orderDeliveryStatus ? ( item.orderDeliveryStatus | titlecase) : 'N/A'}}</td>
+                        <td>{{item.time ? (item.time | date: dateLongTimeFormat ) : 'N/A'}}</td>
+
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+    </ng-container>
+
+    <!-- <ng-container>
+        <h4 class="mt-3"><strong>Status History</strong></h4>
+        <section class="row">
+            <div class="input-details col-3 mb-3" *ngFor="let item of orderStatusHistory">
+                <span class="input-field"> {{item.orderDeliveryStatus}} -> {{item.time | date: dateLongTimeFormat}}</span>
+            </div>
+        </section>
+    </ng-container> -->
+
+    <ng-container *ngIf="action === riderOrderAction.Settle" class="row">
+        <h4 class="mt-3"><strong>{{action}}</strong></h4>
+        <label>(GST is not included in this settlement amount)</label>
+        <div class="input-details col-4">
+            <!-- <label class="input-heading"> Rider Payout Settlement Amount </label> -->
+            <input type="text" class="input-field input-field--white" name="settlementAmt" [formControl]="settlementAmt"
+                placeholder="Enter Settlement Amount">
+            <app-form-error-msg [control]="settlementAmt"></app-form-error-msg>
+        </div>
+        <div class="d-flex justify-content-end gap-3 col-4 mt-3">
+            <button class="buttons buttons--white br-50 w-25" (click)="onClear()">Clear</button>
+            <button class="buttons br-50 w-25" (click)="onConfirm()"> Ok</button>
+        </div>
+    </ng-container>
+</main>
+
+<!-- Modal to show available rider when clicked on ManualAssignment -->
+<div class="modal hide drawer right-align" role="dialog" aria-labelledby="helpModalLabel" aria-hidden="true"
+    *ngIf="showAvailableRiderActionModal">
+    <div class="modal-dialog" role="dialog">
+        <div class="modal-content p-2">
+            <div class="modal-header">
+                <label class="modal-title border-0">Available Riders</label>
+
+                <div class="d-flex align-items-center gap-4">
+                    <button class="buttons" (click)="getAvailableRidersForManuallyAllocating()"
+                        data-dismiss="modal">Refresh</button>
+                    <mat-icon (click)="closeAvailableRiderModal()" data-dismiss="modal">close</mat-icon>
+                </div>
+            </div>
+            <section class="alloc-history-border mt-3 p-2" *ngFor="let rider of manualAllocationRiderList">
+                <div class="row">
+                    <div class="input-details col-6">
+                        <label class="input-heading">Rider Name</label>
+                        <span class="input-field">{{rider.riderName}}</span>
+                    </div>
+                    <div class="input-details col-6">
+                        <label class="input-heading">Rider Phone</label>
+                        <span class="input-field">{{rider.riderPhone}}</span>
+                    </div>
+                    <div class="input-details col-6">
+                        <label class="input-heading">Rider Type</label>
+                        <span class="input-field">{{rider.riderType}}</span>
+                    </div>
+                    <div class="input-details col-6">
+                        <label class="input-heading">Rider Distance (in km)</label>
+                        <span class="input-field">{{rider.riderDistance}}</span>
+                    </div>
+                </div>
+
+                <table class="report-table w-100 mb-3 mt-3">
+                    <thead>
+                        <tr>
+                            <th>Order id</th>
+                            <th>Attempt</th>
+                            <th>Status</th>
+                            <th>Assigned At</th>
+                            <th>Action At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let allocation of rider.allocationHistory">
+                            <td>{{allocation.orderId}}</td>
+                            <td>{{allocation.attempt}}</td>
+                            <td>{{allocation.status}}</td>
+                            <td>{{allocation.assignedAt | date: dateLongTimeFormat}}</td>
+                            <td>{{allocation.actionAt | date: dateLongTimeFormat}}</td>
+                        </tr>
+                        <tr *ngIf="rider.allocationHistory.length === 0">
+                            <td colspan="5" class="text-center">No attempts available</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+                <div class="float-end mt-2 mb-2">
+                    <button class="buttons" (click)="onRiderAllocation(rider.riderId)">Assign</button>
+                </div>
+            </section>
+            <div class="d-flex flex-column justify-content-center align-items-center mt-3"
+                *ngIf="manualAllocationRiderList.length === 0">
+                <img width="131" height="131" src="../../../../assets/icons/page404.svg">
+                <h3>Umm... no rider available!</h3>
+            </div>
+        </div>
+    </div>
+
+</div>

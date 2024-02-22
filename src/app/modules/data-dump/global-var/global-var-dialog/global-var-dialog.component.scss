@@ -1,0 +1,31 @@
+.dialog-wrapper {
+    margin: 0 auto;
+    padding: 2em;
+    width: 600px;
+
+    .reason {
+        padding: 1.25em 1.25em 0.7em;
+        border-radius: 12px;
+        border: 1px solid #e7ecef;
+        color: #000;
+        width: 100%;
+        min-height: auto;
+        font-size: 14px;
+        background-color: #fff;
+    }
+    
+    .reason.ng-touched.ng-invalid {
+        border: 2px solid #f44336;
+    }
+
+    .choose-file-button {
+        border: none;
+        padding: 10px 20px;
+        border-radius: 10px;
+        background-color: #f5f9fc;
+        text-transform: capitalize;
+        min-width: 200px;
+        margin-right: 20px;
+        box-shadow: 2px 2px 3px 0px #ddd;
+    }
+}

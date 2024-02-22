@@ -1,0 +1,19 @@
+tr.detail-row {
+    height: 0;
+}
+
+.expanded-row-details {
+    overflow: hidden;
+    display: block;
+}
+
+.collapsed {
+    height: 0;
+    min-height: 0;
+}
+
+.expanded {
+    height: auto;
+    padding: 1em;
+    transition: 225ms cubic-bezier(0.4, 0.0, 0.2, 1);
+}

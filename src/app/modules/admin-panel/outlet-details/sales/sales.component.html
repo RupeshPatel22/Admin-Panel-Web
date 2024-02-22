@@ -1,0 +1,132 @@
+<div class="main">
+    <section class="sales-wrapper__content row">
+        <div class="col-9">
+            <app-page-title [pageTitle]="'Sales Report'"></app-page-title>
+        </div>
+    </section>
+    <div class="mb-3">
+        <mat-radio-group [(ngModel)]="salesReportDurationType" (change)="salesReportDurationChange($event.value)">
+            <mat-radio-button [value]="'today'" class="input-heading me-3">Today</mat-radio-button>
+            <mat-radio-button [value]="'this_week'" class="input-heading me-3">This Week</mat-radio-button>
+            <mat-radio-button [value]="'this_month'" class="input-heading me-3">This Month</mat-radio-button>
+            <mat-radio-button [value]="'custom_range'" class="input-heading me-3">Custom</mat-radio-button>
+        </mat-radio-group>
+    </div>
+    <div class="row align-items-center w-75" *ngIf="showCustomDateFilterFields">
+        <div class="col-3 input-details">
+            <mat-form-field class="custom-mat-form-field" appearance="outline">
+                <input matInput (click)="fromDate.open()" [matDatepicker]="fromDate" [readonly]="true" name="fromDate" [(ngModel)]="filterSalesReportByStartTime" [max]="currentDate" placeholder="Start Date">
+                <mat-datepicker-toggle matSuffix [for]="fromDate"></mat-datepicker-toggle>
+                <mat-datepicker #fromDate></mat-datepicker>
+                <button mat-icon-button matSuffix *ngIf="filterSalesReportByStartTime" (click)="clearDateFilters()">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
+        <div class="col-3 input-details">
+            <mat-form-field class="custom-mat-form-field" appearance="outline">
+                <input matInput (click)="toDate.open()" [matDatepicker]="toDate" [readonly]="true" name="toDate" [(ngModel)]="filterSalesReportByEndTime" [min]="filterSalesReportByStartTime" [max]="currentDate" placeholder="End Date">
+                <mat-datepicker-toggle matSuffix [for]="toDate"></mat-datepicker-toggle>
+                <mat-datepicker #toDate></mat-datepicker>
+                <button mat-icon-button matSuffix *ngIf="filterSalesReportByEndTime" (click)="clearDateFilters()">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
+        <div class="col-2">
+            <button class="buttons br-50" (click)="getSalesReport()">Apply Filter</button>
+        </div>
+    </div>
+    <section class="mt-5">
+        <p class="d-flex justify-content-center align-items-center w-100" *ngIf="showSelectCustomDateRangeIcon && salesReportDurationType==='custom_range'">
+            <ng-container *ngTemplateOutlet="kindlySelectDateRange">
+            </ng-container>
+        </p>
+        <table class="w-100" mat-table [dataSource]="salesReportList" matSort *ngIf="!showSelectCustomDateRangeIcon">
+
+            <ng-container matColumnDef="displayDate">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="duration">Duration </th>
+                <td class="cursor-disable duration" mat-cell *matCellDef="let row">
+                    {{row.displayDate}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="salesAmount">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Sales Amount</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    &#8377; {{row.totalVendorSalesAmount}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="ordersCount">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Orders Count</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    <span>{{row.ordersCount}}</span>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="customerCancelledOrdersCount">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Customer Cancelled Orders</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    {{row.customerCancelledOrdersCount}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="vendorCancelledOrdersCount">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Vendor Cancelled Orders</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    {{row.vendorCancelledOrdersCount}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="deliveryPartnerCancelledOrdersCount">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Delivery Partner Cancelled Orders</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    {{row.deliveryPartnerCancelledOrdersCount}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="avgOrdersRating">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Avg. Orders Rating </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.avgOrdersRating}} </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="displayedColumns.length">There is no matching data !!!</td>
+            </tr>
+        </table>
+
+        <mat-paginator #paginatorRef [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+    </section>
+
+    <!-- <section class="chart">
+        <div class="d-flex gap-3">
+            <span class="bar-label red">Total Payout</span>
+            <span class="bar-label purple">Completed Orders</span>
+            <span class="bar-label blue">Cancelled Orders</span>
+            <span class="bar-label yellow">Customer Payout</span>
+            <span class="bar-label orange">Delivery Partner Payout</span>
+        </div>
+        <div class=" d-flex justify-content-between align-items-end gap-3 w-100 overflow-auto mt-3">
+            <section class="bars-data" *ngFor="let sale of salesReportList.data">
+                <div class="bars d-flex align-items-end gap-1">
+                    <div class="bar bar--red" title="Amount: {{sale.totalVendorPayout}}&#013;Orders: {{sale.ordersCount}}" [ngStyle]="{height: (sale.totalPayoutBarHeight) + '%' }"></div>
+                    <div class="bar bar--purple" title="Amount: {{sale.totalVendorCompletedOrdersPayout}}&#013;Orders: {{sale.completedOrdersCount}}" [ngStyle]="{height: (sale.totalCompletedOrdersPayoutBarHeight) + '%' }"></div>
+                    <div class="bar bar--blue" title="Amount: {{sale.totalVendorCancelledOrdersPayout}}&#013;Orders: {{sale.cancelledOrdersCount}}" [ngStyle]="{height: (sale.totalCancelledOrdersPayoutBarHeight) + '%' }"></div>
+                    <div class="bar bar--yellow" title="Amount: {{sale.totalCustomerPayout}}" [ngStyle]="{height: (sale.totalCustomerPayoutBarHeight) + '%' }"></div>
+                    <div class="bar bar--orange" title="Amount: {{sale.totalDeliveryPartnerPayout}}" [ngStyle]="{height: (sale.totalDeliveryPartnerBarHeight) + '%' }"></div>
+                </div>
+                <div class="card-content">{{sale.displayDate}}</div>
+                <div>Total Payout: <strong>&#8377; {{sale.totalVendorPayout}}</strong></div>
+                <div>Cancelled by Customer: <strong>{{sale.customerCancelledOrdersCount}}</strong></div>
+                <div>Cancelled by Vendor: <strong>{{sale.vendorCancelledOrdersCount}}</strong></div>
+                <div>Cancelled by Delivery-partner: <strong>{{sale.deliveryParnterCancelledOrdersCount}}</strong></div>
+                <div>Pending Orders: <strong>{{sale.pendingOrdersCount}}</strong></div>
+            </section>
+        </div>
+    </section> -->
+</div>
+
+<ng-template #kindlySelectDateRange>
+    <section class="d-flex flex-column justify-content-center align-items-center">
+        <img width="100" height="100" src="assets/icons/select-date-range-icon.svg">
+        <h4>Kindly select date range</h4>
+    </section>
+</ng-template>

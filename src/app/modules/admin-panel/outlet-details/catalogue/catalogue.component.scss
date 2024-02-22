@@ -1,0 +1,80 @@
+@import "../outlet-details.component.scss";
+.catalogue-wrapper {
+    padding-top: 1rem;
+    &__content {
+        width: 100%;
+        .image {
+            &__container {
+                width: 75%;
+                .input-details {
+                    margin-bottom: 1rem;
+                    &__checkboxes {
+                        font-size: 20px;
+                        label {
+                            color: black;
+                        }
+                    }
+                }
+            }
+        }
+        .edit-mat-icon {
+            top: 120px;
+            left: 287px;
+            position: absolute;
+            color: #fff;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+}
+
+.carousel-container {
+    z-index: 0;
+}
+
+.carousel-arrow {
+    background-color: transparent !important;
+}
+.add-icon {
+    font-size: 17px;
+    margin: 0;
+    gap: 0.5rem;
+    border-radius: 5px;
+    background-color: #0f254d;
+    width: fit-content;
+    padding: 0.2rem 1rem;
+    cursor: pointer;
+    color: #fff;
+    margin-top: 0.5rem;
+}
+
+.edit-primary-image-icon {
+    position: absolute;
+    left: 264px;
+    top: 10px;
+    color: #fff;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.edit-additional-image-icon {
+    left: 225px !important;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}

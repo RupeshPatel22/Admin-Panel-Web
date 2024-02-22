@@ -1,0 +1,41 @@
+.input-field {
+    background: #b9b7d13e;
+}
+
+.input-field--white {
+    background: white;
+}
+
+.reason {
+    padding: 1.25em 1.25em 0.7em;
+    border-radius: 12px;
+    border: 1px solid #e7ecef;
+    color: #000;
+    width: 100%;
+    min-height: auto;
+    font-size: 14px;
+    background-color: #fff;
+}
+
+.reason.ng-touched.ng-invalid {
+    border: 2px solid #f44336;
+}
+
+.alloc-history-border {
+    border: 1px solid #aaa;
+    border-radius: 10px;
+}
+.report-table {
+    border: 1px solid #aaa;
+    tr {
+        text-align: center;
+        th,td {
+            border: 1px solid #aaa;
+            padding: 8px;
+        }
+    }
+}
+agm-map {
+    height: 500px;
+    width: 100%;
+}

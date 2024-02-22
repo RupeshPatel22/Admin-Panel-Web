@@ -1,0 +1,86 @@
+<div class="discount-wrapper">
+    <app-page-title [pageTitle]="'Discount Rate'"></app-page-title>
+    <div class="row w-100 align-items-center mb-3">
+    <h5 class="col-2">Select Discount level : </h5>
+    <ng-select [(ngModel)]="selectedOption" placeholder="Select an option" class="col-5 p-0 me-4" [disabled]="!hasEditAccess">
+            <ng-option value="restaurant">Outlet Level</ng-option>
+            <ng-option value="category">Category Level</ng-option>
+            <ng-option value="subcategory">Subcategory Level</ng-option>
+            <ng-option value="item">Item Level</ng-option>
+    </ng-select>
+        <button class="buttons col-3" (click)="addDiscountRate()" *ngIf="selectedOption === 'restaurant' || (selectedOption && menuList?.length)">
+           <mat-icon class="me-2">save</mat-icon> Save Discount Rates
+        </button>
+    </div>
+  
+<div class="main">
+    <div class="d-flex align-items-baseline justify-content-end">
+        <div class="w-100 d-flex align-items-center" *ngIf="selectedOption === 'restaurant'">
+            <h6 class="m-0">Enter discount rate for restaurant (in %): </h6>
+            <input class="input-field m-2 fs-5" type="text" name="isOutletDiscountRate" placeholder="Add Discount Rate (%)"
+                [value]="outletDetails.discountRate" [disabled]="!hasEditAccess"
+                (change)="setDiscountRate('outlet', outletDetails.id, ($event.target.value))">
+        </div>
+        </div>
+
+       
+    </div>
+
+<div [formGroup] *ngIf="menuList?.length">
+    <mat-expansion-panel class="category-panel" *ngIf="selectedOption === 'category'">
+        <mat-expansion-panel-header class="category-panel-header">
+            <h5>Enter discount rate for categories (in %): </h5>
+        </mat-expansion-panel-header>
+        <table class="w-100">
+            <tr class="mat-row" *ngFor="let category of menuList; let i = index">
+                <td>
+                    <strong class="ms-2 fs-5">{{category.categoryName}}</strong>
+                </td>
+                <td align="right">
+                    <input class="input-field m-2 fs-5" type="text" name="categoryDiscountRate"
+                        placeholder="Add Discount Rate (%)" [value]="category.discountRate" [disabled]="!hasEditAccess"
+                        (change)="setDiscountRate('category', category.categoryId, ($event.target.value))">
+                </td>
+            </tr>
+        </table>
+    </mat-expansion-panel>
+    <mat-expansion-panel class="category-panel" *ngIf="selectedOption === 'subcategory'">
+        <mat-expansion-panel-header class="category-panel-header">
+            <h5>Enter discount rate for sub categories (in %): </h5>
+        </mat-expansion-panel-header>
+        <table class="w-100">
+            <tr class="mat-row" *ngFor="let subcategory of subCategoryList">
+                <td>
+                    <strong class="ms-2 fs-5">{{subcategory.subCategoryName}}</strong>
+                </td>
+                <td align="right">
+                    <input class="input-field m-2 fs-5" name="subCategoryDiscountRate" type="text"
+                        placeholder="Add Discount Rate (%)" [value]="subcategory.discountRate" [disabled]="!hasEditAccess"
+                        (change)="setDiscountRate('subcategory', subcategory.subCategoryId, ($event.target.value))">
+                </td>
+            </tr>
+        </table>
+    </mat-expansion-panel>
+    <mat-expansion-panel class="category-panel" *ngIf="selectedOption === 'item'">
+        <mat-expansion-panel-header class="category-panel-header">
+            <h5>Enter discount rate for items (in %): </h5>
+        </mat-expansion-panel-header>
+        <table class="w-100">
+            <tr class="mat-row" *ngFor="let items of menuItemList">
+                <td>
+                    <strong class="ms-2 fs-5">{{items.itemName}}</strong>
+                </td>
+                <td align="right">
+                    <input class="input-field m-2 fs-5" type="text" name="itemDiscountRate"
+                        placeholder="Add Discount Rate (%)" [value]="items.discountRate" [disabled]="!hasEditAccess"
+                        (change)="setDiscountRate('item', items.itemId, ($event.target.value))">
+                </td>
+            </tr>
+        </table>
+    </mat-expansion-panel>
+</div>
+<div class="d-flex flex-column justify-content-center align-items-center" *ngIf="!(selectedOption === 'restaurant' || (selectedOption && menuList?.length))">
+    <img width="131" height="131" src="../../../../assets/icons/page404.svg">
+    <h3>Umm...no data found!</h3>
+</div>
+</div>

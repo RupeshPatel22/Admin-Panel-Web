@@ -1,0 +1,25 @@
+<div class="menu-cloning-wrapper d-flex gap-5">
+    <section class="menu-cloning-wrapper__content">
+        <div class="row align-items-end">
+            <div class="col-6">
+                <app-page-title [pageTitle]="'Clone Menu'"></app-page-title>
+                <label class="input-heading mb-3">Enter the restaurant IDS in comma seperated format.
+                    The BRAND ID should match both From and To ID.
+                </label>
+                <div class="input-details mb-3">
+                    <label for="from-id" class="input-heading">From ID</label>
+                    <input type="text" class="input-field mt-2" placeholder="From ID" name="from-id" id="from-id"
+                        disabled>
+                </div>
+                <div class="input-details mb-3">
+                    <label for="to-id" class="input-heading">To ID</label>
+                    <input type="text" class="input-field mt-2" placeholder="To ID" name="to-id" id="to-id" disabled>
+                </div>
+                <button type="submit" class="buttons br-50">Clone</button>
+            </div>
+        </div>
+    </section>
+    <section class="menu-cloning-wrapper__tools">
+        <app-tools></app-tools>
+    </section>
+</div>

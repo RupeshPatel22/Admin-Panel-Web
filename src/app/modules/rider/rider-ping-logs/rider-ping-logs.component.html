@@ -1,0 +1,251 @@
+<section class="rider-wrapper">
+    <app-page-title [pageTitle]="pageTitle"></app-page-title>
+    <div class="rider-wrapper__tools w-100">
+        <div class="row align-items-end">
+            <div class="col-4 input-details">
+                <label for="search" class="input-heading">Search by rider shift id</label>
+                <input type="text" class="input-field" placeholder="Enter rider shift id" name="search" [(ngModel)]="filterRiderFields.riderShiftId" (keyup.enter)="getRiderLogsList()">
+            </div>
+            <div class="col-2">
+                <button class="buttons buttons--filter w-100" (click)="showFilterFields ? clearFilter('all') : showFilterFields = true">
+                    {{showFilterFields ? 'Clear Filters' : 'Add Filters'}}
+                    <img src="assets/icons/filter.svg" class="ms-4" alt="add-icon" />
+                </button>
+            </div>
+            <div class="col-12 d-flex gap-4 mt-3">
+                <div>
+                    <button class="buttons" (click)="showPingLogs = !showPingLogs">
+                      <ng-container *ngIf="showPingLogs; else hideChart">
+                        <img class="me-2" src="assets/icons/hide_ping_logs.svg" alt="Show Chart" width="30" height="30"/>
+                        Show Chart
+                      </ng-container>
+                      <ng-template #hideChart>
+                        <img class="me-2" src="assets/icons/hide_ping_logs.svg" alt="Hide Chart" width="30" height="30" />
+                        Hide Chart
+                      </ng-template>
+                    </button>
+                  </div>
+                  
+                  <div>
+                    <button class="buttons" (click)="showPingLogsMap = !showPingLogsMap">
+                        <ng-container *ngIf="showPingLogsMap">
+                          <img class="me-2" src="assets/icons/show_ping_logs_map.svg" width="30" height="30" alt="" />
+                          Hide Ping Logs Map
+                        </ng-container>
+                        <ng-container *ngIf="!showPingLogsMap">
+                          <img class="me-2" src="assets/icons/show_ping_logs_map.svg" width="30" height="30" alt="" />
+                           Show Ping Logs Map
+                        </ng-container>
+                      </button>
+                </div>
+                <div>
+                    <button class="buttons" (click)="toggleShiftDetail()">
+                      <ng-container>
+                        <img class="me-2" src="assets/icons/show_shift_details.svg" alt="Show Shift Detail" width="30" height="30"/>
+                        Show Shift Detail
+                      </ng-container>
+                    </button>
+                  </div>
+                  
+                <div>
+                    <button class="buttons" (click)="getRiderLogsList()">
+                        <ng-container>
+                            <img class="me-2" src="assets/icons/show_all_pings.svg" alt="Show Shift Detail" width="30" height="30"/>
+                            Show All Pings
+                          </ng-container>
+                        </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    <div class="row align-items-end mt-4" *ngIf="showFilterFields">
+        <div class="input-details col-2">
+            <label class="input-heading">Rider ID</label>
+            <input type="text" class="input-field" placeholder="Enter Rider ID" name="filterByRiderId" [(ngModel)]="filterRiderFields.riderId" (keydown.enter)="getRiderLogsList()">
+        </div>
+        <div class="col-2 input-details">
+            <label class="input-heading">Rider Status</label>
+            <ng-select [items]="riderActiveStatusList | keyvalue" bindLabel="value" bindValue="key" placeholder="Select Status" [multiple]="true" [closeOnSelect]="false" [(ngModel)]="filterRiderFields.riderActiveStatus" (clear)="clearFilter()"></ng-select>
+        </div>
+        <form [formGroup]="filterDateTimeForm" class="row mt-4 align-items-center">
+
+        <div class="input-details col-2">
+            <label class="input-heading">Start Date</label>
+            <mat-form-field appearance="outline">
+                <input matInput (click)="startDate.open()" [matDatepicker]="startDate" [max]="maxDate" formControlName="startDate" name="startDate" placeholder="Select date">
+                <mat-datepicker-toggle matSuffix [for]="startDate"></mat-datepicker-toggle>
+                <mat-datepicker #startDate></mat-datepicker>
+                <button mat-icon-button matSuffix *ngIf="filterDateTimeForm.get('startDate').value" (click)="clearFilter('date')">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
+        <div class="input-details col-2">
+            <label class="input-heading">Start Time</label>
+            <mat-form-field appearance="outline">
+                <input matInput type="time" name="startTime" formControlName="startTime" placeholder="Select Time">
+                <button mat-icon-button matSuffix *ngIf="filterDateTimeForm.get('startTime').value" (click)="clearFilter('date')">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
+        <div class="input-details col-2">
+            <label class="input-heading">End Date</label>
+            <mat-form-field appearance="outline">
+                <input matInput (click)="endDate.open()" [matDatepicker]="endDate" [max]="maxDate" [min]="filterDateTimeForm.get('startDate').value" formControlName="endDate"  name="endDate" placeholder="Select date">
+                <mat-datepicker-toggle matSuffix [for]="endDate"></mat-datepicker-toggle>
+                <mat-datepicker #endDate></mat-datepicker>
+                <button mat-icon-button matSuffix *ngIf="filterDateTimeForm.get('endDate').value" (click)="clearFilter('date')">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
+        <div class="input-details col-2">
+            <label class="input-heading">End Time</label>
+            <mat-form-field appearance="outline">
+                <input matInput type="time" name="endTime" formControlName="endTime" placeholder="Select Time">
+                <button mat-icon-button matSuffix *ngIf="filterDateTimeForm.get('endTime').value" (click)="clearFilter('date')">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
+        <div class="col-2 mt-4 ms-2">
+            <button class="buttons br-50" (click)="getRiderLogsList()">Apply Filter</button>
+        </div>
+    </form>
+    </div>
+
+    <div class="mb-4" id="chartContainer" [hidden]="showPingLogs"></div>
+
+    <div class="map mt-4" *ngIf="showPingLogsMap">
+        <agm-map [latitude]="mapLatitude" [longitude]="mapLongitude" [zoom]="12">
+            <agm-marker *ngFor="let riderLogs of riderPingLogsMapList" [latitude]="riderLogs.latitude" [longitude]="riderLogs.longitude" [iconUrl]="getMarkerIcon(riderLogs.riderActiveStatus)" (markerClick)="openMapfromRiderLatLong(riderLogs.latitude, riderLogs.longitude)">
+                <agm-info-window class="d-flex align-items-center" [disableAutoPan]="true" [isOpen]="true">
+                    <span class="d-flex flex-column justify-content-between align-items-center">
+                        <label><strong>{{ riderLogs.riderActiveStatus }}</strong></label>
+                        <label><strong>[{{ riderLogs.createdAt }}]</strong></label>
+                    </span>
+                </agm-info-window>
+            </agm-marker>
+        </agm-map>
+    </div>
+    
+<div class="d-flex mt-2">
+    <label class="mt-2" *ngIf="showNote"><strong><em>* Showing rider ping logs for last one hour !!!</em></strong></label>
+    <div class="legend d-flex col-4 justify-content-end" *ngIf="showPingLogsMap">
+        <div class="legend-item">
+            <img src="https://maps.google.com/mapfiles/ms/icons/green-dot.png" alt="Idle">
+        <span>Idle</span>
+        </div>
+        <div class="legend-item">
+            <img src="https://maps.google.com/mapfiles/ms/icons/red-dot.png" alt="Busy">
+        <span>Busy</span>
+        </div>
+        <div class="legend-item">
+            <img src="https://maps.google.com/mapfiles/ms/icons/blue-dot.png" alt="Allocating">
+            <span>Allocating</span>
+        </div>
+        <div class="legend-item">
+            <img src="https://maps.google.com/mapfiles/ms/icons/pink-dot.png" alt="offline">
+            <span>offline</span>
+        </div>
+    </div>
+
+</div>
+    
+    <main class="rider-wrapper__content mt-3">
+        <table class="w-100" mat-table [dataSource]="riderLogList" matSort multiTemplateDataRows>
+            <ng-container matColumnDef="riderActiveStatus">
+                <th mat-header-cell *matHeaderCellDef>Rider Status </th>
+                <td mat-cell *matCellDef="let row">{{row.riderActiveStatus}}</td>
+            </ng-container>
+            <ng-container matColumnDef="latitude">
+                <th mat-header-cell *matHeaderCellDef>Latitude </th>
+                <td mat-cell *matCellDef="let row">{{row.latitude}}</td>
+            </ng-container>
+            <ng-container matColumnDef="longitude">
+                <th mat-header-cell *matHeaderCellDef>Longitude </th>
+                <td mat-cell *matCellDef="let row">{{row.longitude}}</td>
+            </ng-container>
+            <ng-container matColumnDef="createdAt">
+                <th mat-header-cell *matHeaderCellDef>Created At </th>
+                <td mat-cell *matCellDef="let row">{{row.createdAt}}</td>
+            </ng-container>
+            <ng-container matColumnDef="action">
+                <th class="cursor-disable" mat-header-cell *matHeaderCellDef>Action </th>
+                <td mat-cell *matCellDef="let row">
+                    <button mat-icon-button (click)="expandedRow = expandedRow === row ? null : row">
+                        <mat-icon>{{row === expandedRow ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="expandedDetail">
+                <td *matCellDef="let row" [attr.colspan]="displayedColumns.length">
+                    <div class="expanded-row-details" [ngClass]="row === expandedRow ? 'expanded' : 'collapsed'" *ngIf="expandedRow === row">
+                        <agm-map [latitude]="row.latitude" [longitude]="row.longitude" [zoom]="12">
+                            <agm-marker *ngFor="let rider of riderPingLogsMapList" [latitude]="row.latitude" [longitude]="row.longitude" [iconUrl]="getMarkerIcon(rider.riderStatus)" (markerClick)="openMapfromRiderLatLong(row.latitude,row.longitude)">
+                            <agm-info-window class="d-flex align-items-center" [disableAutoPan]="true" [isOpen]="true">
+                                <span class="d-flex flex-column justify-content-between align-items-center">
+                                    <label> <strong>Rider Location</strong></label>
+                                </span>
+                            </agm-info-window>
+                        </agm-marker>
+                        </agm-map>
+                    </div>
+                </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+                    There is no matching data !!!
+                </td>
+            </tr>
+        </table>
+    </main>
+</section>
+
+<!-- Rider shift detail modal -->
+<div class="modal hide drawer right-align" id="helpModalRight" role="dialog" aria-labelledby="helpModalLabel" aria-hidden="true" *ngIf="showShiftDetail">
+    <div class="modal-dialog" role="dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <label class="modal-title border-0" id="exampleModalLabel">{{riderShiftDetails[0].riderName}}'s Shift Detail</label>
+                <mat-icon (click)="toggleShiftDetail()" data-dismiss="modal">close</mat-icon>
+            </div>
+            <div class="modal-body">
+                    <div class="input-details mt-4">
+                        <label class="input-heading">Rider Id</label>
+                        <input type="text" class="input-field mt-2" name="riderId" [value]="riderShiftDetails[0].riderId" disabled>
+                    </div>
+                    <div class="input-details mt-4">
+                        <label class="input-heading">Rider Shift Id</label>
+                        <input type="text" class="input-field mt-2" name="riderShiftId" [value]="riderShiftDetails[0].riderShiftId" disabled>
+                    </div>
+                    <div class="input-details mt-4">
+                        <label class="input-heading">Shift Id</label>
+                        <input type="text" class="input-field mt-2" name="shiftId" [value]="riderShiftDetails[0].shiftId" disabled>
+                    </div>
+                    <div class="input-details mt-4">
+                        <label class="input-heading">Shift Name</label>
+                        <input type="text" class="input-field mt-2" name="shiftName" [value]="riderShiftDetails[0].shiftName" disabled>
+                    </div>
+                    <div class="input-details mt-4">
+                        <label class="input-heading">First Ping Epoch</label>
+                        <input type="text" class="input-field mt-2" name="firstPingEpoch" [value]="riderShiftDetails[0].firstPingEpoch" disabled>
+                    </div>
+                    <div class="input-details mt-4">
+                        <label class="input-heading">Last Ping Epoch</label>
+                        <input type="text" class="input-field mt-2" name="lastPingEpoch" [value]="riderShiftDetails[0].lastPingEpoch" disabled>
+                    </div>
+                    <div class="input-details mt-4">
+                        <label class="input-heading">Rejected Order Count</label>
+                        <input type="text" class="input-field mt-2" name="rejectedOrderCount" [value]="riderShiftDetails[0].rejectedOrderCount" disabled>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>

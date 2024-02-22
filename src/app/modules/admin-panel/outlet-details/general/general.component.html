@@ -1,0 +1,339 @@
+<div class="general-wrapper d-flex gap-5">
+    <section class="general-wrapper__content row">
+        <!-- <mat-accordion> -->
+        <form [formGroup]="generalForm" class="col-10">
+            <!-- basic information -->
+            <mat-expansion-panel class="basic-info">
+                <mat-expansion-panel-header>
+                    <label>Basic Information</label>
+                </mat-expansion-panel-header>
+                <div class="basic-info__container d-flex flex-column">
+                    <div class="input-details">
+                        <label class="input-heading">Name</label>
+                        <input type="text" class="input-field mt-2" placeholder="Outlet Name" formControlName="name">
+                        <app-form-error-msg [control]="generalForm.controls.name"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading">Branch Name</label>
+                        <input type="text" class="input-field mt-2" placeholder="Enter branch Name"
+                            formControlName="branchName">
+                        <app-form-error-msg [control]="generalForm.controls.branchName"></app-form-error-msg>
+                    </div>
+                    <div class="input-details col-12" *ngIf="service === Services.Food">
+                        <label class="input-heading">Outlet Type</label>
+                        <mat-radio-group formControlName="outletType" class="mt-2">
+                            <mat-radio-button [value]="'restaurant'"
+                                class="input-heading me-3">Restaurant</mat-radio-button>
+                            <mat-radio-button [value]="'tea_and_coffee'" class="input-heading me-3">Tea &
+                                Coffee</mat-radio-button>
+                            <mat-radio-button [value]="'bakery'" class="input-heading">Bakery</mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                    <div class="input-details col-12" *ngIf="service === Services.Food">
+                        <label class="input-heading">Has Sponsored Rider</label>
+                        <mat-radio-group formControlName="hasSponsoredRider" class="mt-2">
+                            <mat-radio-button [value]="true" class="input-heading me-3">Yes</mat-radio-button>
+                            <mat-radio-button [value]="false" class="input-heading">No</mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                    <div class="row">
+                        <div class="input-details col-6 mt-2">
+                            <label for="name" class="input-heading">Owner Email ID</label>
+                            <input type="text" class="input-field mt-2" placeholder="N/A" name="ownerEmail"
+                                formControlName="ownerEmailId">
+                        </div>
+                        <div class="input-details col-6">
+                            <label for="name" class="input-heading">Manager Email ID</label>
+                            <input type="text" class="input-field mt-2" placeholder="N/A" name="managerEmail"
+                                formControlName="managerEmailId">
+                        </div>
+                        <div class="input-details col-6">
+                            <label for="name" class="input-heading">Owner Contact Number</label>
+                            <input type="text" class="input-field mt-2" placeholder="N/A" name="ownerContactNumber"
+                                formControlName="ownerContactNumber">
+                        </div>
+                        <div class="input-details col-6">
+                            <label for="name" class="input-heading">Manager Contact Number</label>
+                            <input type="text" class="input-field mt-2" placeholder="N/A" name="managerContactNumber"
+                                formControlName="managerContactNumber">
+                        </div>
+                        <div class="input-details col-6">
+                            <label for="name" class="input-heading">Speedyy Account Manager Name</label>
+                            <ng-select class="mt-2" [items]="adminNames" bindValue="id" bindLabel="full_name"
+                                placeholder="Search for an admin..."
+                                formControlName="speedyyAccountManagerId"></ng-select>
+                        </div>
+                        <div class="input-details col-6">
+                            <label for="name" class="input-heading">Primary Manager ID</label>
+                            <input type="text" class="input-field mt-2" placeholder="N/A" name="primaryManagerId" formControlName="primaryManagerId">
+                        </div>
+                        <div class="input-details col-6">
+                            <label for="name" class="input-heading">Primary Manager Name</label>
+                            <input type="text" class="input-field mt-2" placeholder="N/A" name="primaryManagerName" formControlName="primaryManagerName">
+                        </div>
+                    </div>
+                    <div class="input-details" *ngIf="service !== Services.Grocery">
+                        <label for="name" class="input-heading">Cuisines</label>
+                        <ng-select formControlName="cuisines" [items]="cuisineList" bindValue="id" bindLabel="name"
+                            placeholder="Select Cuisines" [multiple]="true" [closeOnSelect]="false">
+                        </ng-select>
+                    </div>
+                    <div class="input-details" *ngIf="service === Services.Food">
+                        <label for="name" class="input-heading">Primary Cuisines</label>
+                        <ng-select formControlName="primaryCuisines" [items]="primaryCuisinesList" bindValue="id" bindLabel="name"
+                            placeholder="Select Primary Cuisines" [multiple]="true" [closeOnSelect]="false">
+                        </ng-select>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading">Status</label>
+                        <mat-radio-group formControlName="status" class="mt-2">
+                            <mat-radio-button value="active" class="input-heading me-3">Active</mat-radio-button>
+                            <mat-radio-button value="disable" class="input-heading">Disable</mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                    <!-- <div class="input-details">
+                        <label for="name" class="input-heading">Long Distance Order</label>
+                        <mat-radio-group formControlName="longDistanceAllowed" class="mt-2">
+                            <mat-radio-button [value]="true" class="input-heading me-3">Enabled</mat-radio-button>
+                            <mat-radio-button [value]="false" class="input-heading">Disabled</mat-radio-button>
+                        </mat-radio-group>
+                    </div> -->
+                    <!-- <div class="input-details">
+                            <label for="name" class="input-heading">Exclusive to Speedyy</label>
+                            <mat-radio-group aria-label="Select an option" class="mt-2">
+                                <mat-radio-button value="1" class="input-heading me-3">Yes</mat-radio-button>
+                                <mat-radio-button value="2" class="input-heading">No</mat-radio-button>
+                            </mat-radio-group>
+                        </div> -->
+                    <div class="input-details" *ngIf="service === Services.Food">
+                        <label for="name" class="input-heading">Restaurant Type</label>
+                        <mat-radio-group formControlName="isPureVeg" class="mt-2">
+                            <mat-radio-button [value]="true" class="input-heading me-3">Veg</mat-radio-button>
+                            <mat-radio-button [value]="false" class="input-heading">Non-Veg</mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                    <div class="input-details">
+                        <label for="name" class="input-heading">Genuine Price</label>
+                        <mat-radio-group formControlName="genuinePrice" class="mt-2">
+                            <mat-radio-button [value]="true" class="input-heading me-3">Yes</mat-radio-button>
+                            <mat-radio-button [value]="false" class="input-heading">No</mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                    <div class="input-details" *ngIf="service === Services.Food">
+                        <label for="name" class="input-heading">Turn On Debug Mode</label>
+                        <mat-radio-group formControlName="turnDebugModeOn" class="mt-2">
+                            <mat-radio-button [value]="true" class="input-heading me-3">Yes</mat-radio-button>
+                            <mat-radio-button [value]="false" class="input-heading">No</mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                </div>
+            </mat-expansion-panel>
+            <!-- end basic information -->
+            <!--POC Details-->
+            <mat-expansion-panel class="basic-info">
+                <mat-expansion-panel-header>
+                    <label>POC Details</label>
+                </mat-expansion-panel-header>
+                <div class="basic-info__container d-flex flex-column" formArrayName="pocList">
+                    <div *ngFor="let poc of pocListArray.controls; let i = index" [formGroupName]="i">
+                        <div class="row">
+                            <hr *ngIf="i > 0">
+                            <p class="heading heading--grey d-flex align-items-center"
+                                *ngIf="generalForm.controls['pocList'].length > 1">
+                                <mat-icon matTooltip="Delete" (click)="removePocEntry(i)">delete</mat-icon>
+                            </p>
+                            <div class="input-details col-6 mt-2">
+                                <label for="name" class="input-heading">Name</label>
+                                <input type="text" class="input-field mt-2" placeholder="Enter Name" name="id"
+                                    formControlName="name">
+                                <app-form-error-msg
+                                    [control]="pocListArray.controls[i].controls.name"></app-form-error-msg>
+                            </div>
+                            <div class="input-details col-6">
+                                <label for="name" class="input-heading">POC Number</label>
+                                <input type="text" class="input-field mt-2" placeholder="Enter POC Number" name="id"
+                                    formControlName="pocNumber">
+                                <app-form-error-msg
+                                    [control]="pocListArray.controls[i].controls.pocNumber"></app-form-error-msg>
+                            </div>
+                            <div class="input-details col-6">
+                                <label class="input-heading">Is Primary</label>
+                                <mat-radio-group formControlName="isPrimary" class="mt-2">
+                                    <mat-radio-button [value]="true" class="input-heading me-3">Yes</mat-radio-button>
+                                    <mat-radio-button [value]="false" class="input-heading me-3">No</mat-radio-button>
+
+                                </mat-radio-group>
+                                <app-form-error-msg
+                                    [control]="pocListArray.controls[i].controls.isPrimary"></app-form-error-msg>
+                            </div>
+                            <div class="input-details col-6">
+                                <label for="name" class="input-heading">Designation</label>
+                                <ng-select class="mt-2" [items]="restaurantPocDesignation | keyvalue: originalOrder"
+                                    [dropdownPosition]="'top'" bindLabel="value" bindValue="key"
+                                    placeholder="Select Designation" formControlName="designation">
+                                </ng-select>
+                                <app-form-error-msg
+                                    [control]="pocListArray.controls[i].controls.designation"></app-form-error-msg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="buttons active-button mt-3" (click)="addPocEntry()">
+                    Add
+                </button>
+            </mat-expansion-panel>
+            <!--End of POC Details-->
+            <!-- Speedyy Account Details -->
+            <mat-expansion-panel class="basic-info">
+                <mat-expansion-panel-header>
+                    <label>Speedyy Account Details</label>
+                </mat-expansion-panel-header>
+                <div class=" basic-info__container d-flex flex-column">
+                    <div class="input-details">
+                        <label for="name" class="input-heading">Outlet ID</label>
+                        <input type="text" class="input-field mt-2" placeholder="N/A" name="id" formControlName="id">
+                    </div>
+                    <!-- <div class="input-details">
+                        <label for="name" class="input-heading">Brand ID</label>
+                        <input type="text" class="input-field mt-2" placeholder="1234679" name="brandId"
+                            formControlName="brandId">
+                    </div> -->
+                    <div class="input-details">
+                        <div class="d-flex flex-column input-details">
+                            <label for="name" class="input-heading">Ratings</label>
+                            <!-- <input type="text" class="input-field mt-2" placeholder="" name="avgRating"
+                                formControlName="avgRating"> -->
+                            <span class="d-flex align-items-center gap-2 input-field mt-2 w-50">
+                                <div class="d-flex align-items-center">
+                                    <img class="me-2 " src="../../../../assets/icons/like-icon.svg" alt="" width="40"
+                                        height="30">
+                                    <input class="w-25 border-0" type="text" formControlName="likeCount"
+                                        name="likeCount" disable>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <img class="me-2" src="../../../../assets/icons/dislike-icon.svg" alt="" width="40"
+                                        height="30">
+                                    <input class="w-25 border-0" type="text" formControlName="dislikeCount"
+                                        name="dislikeCount" disable>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </mat-expansion-panel>
+            <!-- end Speedyy Account Details -->
+            <!-- Location Details -->
+            <mat-expansion-panel class="basic-info">
+                <mat-expansion-panel-header>
+                    <label>Location Details</label>
+                </mat-expansion-panel-header>
+                <div class=" basic-info__container row">
+                    <div class="input-details col-6">
+                        <label for="name" class="input-heading">City</label>
+                        <ng-select [items]="cityList" bindLabel="name" bindValue="id" placeholder="Select City"
+                            formControlName="cityId" (change)="setAreaList()"></ng-select>
+                    </div>
+                    <div class="input-details col-6">
+                        <label for="name" class="input-heading">Area</label>
+                        <ng-select [items]="areaList" bindLabel="name" bindValue="id" placeholder="Select Area"
+                            formControlName="areaId"></ng-select>
+                    </div>
+                    <div class="input-details col-12">
+                        <label for="name" class="input-heading">Address</label>
+                        <input type="text" (keydown.enter)="$event.preventDefault()" class="input-field mt-2 mb-2"
+                            #search placeholder="Outlet Address" name="address" formControlName="searchLocation">
+                        <agm-map [latitude]="generalForm.get('latitude').value"
+                            [longitude]="generalForm.get('longitude').value" (mapReady)="onMapReady()" [zoom]="16">
+                            <agm-marker [latitude]="lat" [longitude]="long" [markerDraggable]="true"
+                                (dragEnd)="markerDragged($event)">
+                            </agm-marker>
+                        </agm-map>
+                    </div>
+                    <div class="input-details col-6">
+                        <label class="input-heading">Latitude</label>
+                        <input type="text" class="input-field mt-2" name="latitude" formControlName="latitude"
+                            placeholder="Latitude" (blur)="latLongChange('lat')">
+                    </div>
+                    <div class="input-details col-6">
+                        <label class="input-heading">Longitude</label>
+                        <input type="text" class="input-field mt-2" name="longitude" formControlName="longitude"
+                            placeholder="Longitude" (blur)="latLongChange('long')">
+                    </div>
+                    <div class="input-details col-6">
+                        <label class="input-heading">Postal Code</label>
+                        <input class="input-field mt-2" type="text" name="postalCode" formControlName="postalCode"
+                            placeholder="Postal Code">
+                    </div>
+                    <div class="input-details col-6">
+                        <label class="input-heading">State</label>
+                        <input class="input-field mt-2" type="text" name="state" formControlName="state"
+                            placeholder="State">
+                    </div>
+                </div>
+            </mat-expansion-panel>
+
+            <!-- Drug license detail -->
+            <mat-expansion-panel class="Drug-License-detail" *ngIf="service === Services.Pharmacy">
+                <mat-expansion-panel-header>
+                    <label>Drug License Details</label>
+                </mat-expansion-panel-header>
+                <div class="d-flex flex-column">
+                    <div class="input-details">
+                            <div class="d-flex flex-column">
+                                <label class="input-heading">Drug License Number</label>
+                                <input type="text" class="input-field mt-2  w-75" placeholder="Drug license number"
+                                    formControlName="drugLicenseNumber">
+                                <app-form-error-msg [control]="generalForm.controls.drugLicenseNumber">
+                                </app-form-error-msg>
+                            </div>
+                    </div>
+                    <div class="input-details mt-3">
+                        <label class="input-heading">Drug Retail Document</label>
+                        <span class="d-flex align-items-center mt-1">
+                            <mat-form-field class="custom-mat-form-field w-75" appearance="outline">
+                                <input [hidden]="true" (click)="$event.target.value = null"
+                                    (change)="getFileUploadUrl($event.target.files, 'drugRetailDoc')" type="file" accept="all/*"
+                                    #drugRetailDoc>
+                                <input type="text" readonly matInput formControlName="drugRetailDoc" />
+                                <button matSuffix (click)="drugRetailDoc.click();" mat-raised-button
+                                    class="upload-button">
+                                    upload
+                                </button>
+                            </mat-form-field>
+                            <mat-icon class="ms-2" (click)="viewFile('drugRetailDocUrl')" matTooltip="View Document"
+                                *ngIf="!generalForm.controls.drugRetailDoc.dirty">open_in_new</mat-icon>
+                        </span>
+                        <app-form-error-msg [control]="generalForm.controls.drugRetailDoc"></app-form-error-msg>
+                    </div>
+                    <div class="input-details mt-3">
+                        <label class="input-heading">Drug Wholesale Document</label>
+                        <span class="d-flex align-items-center mt-1">
+                            <mat-form-field class="custom-mat-form-field w-75" appearance="outline">
+                                <input [hidden]="true" (click)="$event.target.value = null"
+                                    (change)="getFileUploadUrl($event.target.files, 'drugWholeSaleDoc')" type="file" accept="all/*"
+                                    #drugWholeSaleDoc>
+                                <input type="text" readonly matInput formControlName="drugWholeSaleDoc" />
+                                <button matSuffix (click)="drugWholeSaleDoc.click();" mat-raised-button
+                                    class="upload-button">
+                                    upload
+                                </button>
+                            </mat-form-field>
+                            <mat-icon class="ms-2" (click)="viewFile('drugWholeSaleDocUrl')" matTooltip="View Document"
+                                *ngIf="!generalForm.controls.drugWholeSaleDoc.dirty">open_in_new</mat-icon>
+                        </span>
+                        <app-form-error-msg [control]="generalForm.controls.drugWholeSaleDoc"></app-form-error-msg>
+                    </div>
+                </div>
+            </mat-expansion-panel>
+            <div class="fixed-button d-flex gap-3" *ngIf="generalForm.dirty">
+                <button class="buttons buttons--white br-50" (click)="onCancel()">Cancel</button>
+                <button class="buttons br-50" (click)="updateOutletDetails()">Save</button>
+            </div>
+        </form>
+        <!-- </mat-accordion> -->
+    </section>
+    <section class="col-3 mt-2">
+        <!-- <app-tools></app-tools> -->
+    </section>
+</div>

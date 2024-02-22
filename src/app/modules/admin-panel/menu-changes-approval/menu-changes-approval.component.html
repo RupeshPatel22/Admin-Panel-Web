@@ -1,0 +1,151 @@
+<section class="menu-changes-approval-wrapper">
+    <app-page-title [pageTitle]="isHistoryTab ? 'Menu Changes Review History' : 'Menu Changes Review'"></app-page-title>
+    <div class="menu-changes-approval-wrapper__tools w-75">
+        <div class="row align-items-end">
+            <div class="col-6 input-details">
+                <label for="search" class="input-heading">Search by review id...</label>
+                <input type="text" class="input-field" placeholder="Enter Review id" name="search" [(ngModel)]="filterMenuChangesFields.approvalId" (keyup.enter)="getMenuChangesApprovalData(true)">
+            </div>
+            <div class="col-3">
+                <button class="buttons buttons--filter w-100" (click)="showFilterFields ? clearFilter('all') : showFilterFields = true">
+                    {{showFilterFields ? 'Clear Filters' : 'Add Filters'}}
+                    <img src="assets/icons/filter.svg" class="ms-4" alt="add-icon" />
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row align-items-end mt-4" *ngIf="showFilterFields">
+        <div class="col-2 input-details">
+            <label for="id" class="input-heading">Outlet ID</label>
+            <input type="text" class="input-field" placeholder="Enter outlet id" name="search" [(ngModel)]="filterMenuChangesFields.outletId" (keydown.enter)="getMenuChangesApprovalData(true)">
+        </div>
+        <div class="col-2 input-details">
+            <label for="areaCode" class="input-heading">Action Type</label>
+            <ng-select [items]="actionTypes | keyvalue" bindLabel="value" bindValue="key" placeholder="Select" [multiple]="true" [closeOnSelect]="false" [(ngModel)]="filterMenuChangesFields.actionType" (clear)="clearFilter()">
+            </ng-select>
+        </div>
+        <div class="col-2 input-details">
+            <label for="cityCode" class="input-heading">Entity Type</label>
+            <ng-select [items]="entityTypes | keyvalue" bindLabel="value" bindValue="key" placeholder="Select" [multiple]="true" [closeOnSelect]="false" [(ngModel)]="filterMenuChangesFields.entityType" (clear)="clearFilter()"></ng-select>
+        </div>
+        <div class="input-details col-3 mt-3">
+            <label class="input-heading">Start Date</label>
+            <mat-form-field class="custom-mat-form-field" appearance="outline">
+                <input matInput (click)="startDate.open()" [matDatepicker]="startDate" [max]="maxDate" [(ngModel)]="filterMenuChangesFields.startDate" name="startDate" placeholder="Select date">
+                <mat-datepicker-toggle matSuffix [for]="startDate"></mat-datepicker-toggle>
+                <mat-datepicker #startDate></mat-datepicker>
+                <button mat-icon-button matSuffix *ngIf="filterMenuChangesFields.startDate" (click)="clearFilter('date')">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
+        <div class="input-details col-3 mt-3">
+            <label class="input-heading">Start Time</label>
+            <mat-form-field class="custom-mat-form-field" appearance="outline">
+                <input matInput type="time" name="startTime" [(ngModel)]="filterMenuChangesFields.startTime" placeholder="Select Time">
+                <button mat-icon-button matSuffix *ngIf="filterMenuChangesFields.startTime" (click)="clearFilter('startTime')">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
+        <div class="input-details col-3 mt-3">
+            <label class="input-heading">End Date</label>
+            <mat-form-field class="custom-mat-form-field" appearance="outline">
+                <input matInput (click)="endDate.open()" [matDatepicker]="endDate" [max]="maxDate" [(ngModel)]="filterMenuChangesFields.endDate"  name="endDate" placeholder="Select date">
+                <mat-datepicker-toggle matSuffix [for]="endDate"></mat-datepicker-toggle>
+                <mat-datepicker #endDate></mat-datepicker>
+                <button mat-icon-button matSuffix *ngIf="filterMenuChangesFields.endDate" (click)="clearFilter('date')">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
+        <div class="input-details col-3 mt-3">
+            <label class="input-heading">End Time</label>
+            <mat-form-field class="custom-mat-form-field" appearance="outline">
+                <input matInput type="time" name="endTime" [(ngModel)]="filterMenuChangesFields.endTime" placeholder="Select Time">
+                <button mat-icon-button matSuffix *ngIf="filterMenuChangesFields.endTime" (click)="clearFilter('endTime')">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
+        <div class="col-2 mt-4 ms-2">
+            <button class="buttons br-50" (click)="getMenuChangesApprovalData(true)">Apply Filter</button>
+        </div>
+    </div>
+    <main class="menu-changes-approval-wrapper__content mt-5">
+        <table class="w-100" mat-table [dataSource]="menuChangesApprovalList" matSort multiTemplateDataRows>
+            <ng-container matColumnDef="approvalId">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Review ID </th>
+                <td mat-cell *matCellDef="let row; let i= index">
+                    <span class="d-flex gap-3 align-items-center">
+                        <strong>{{ row.approvalId }}</strong>
+                        <img class="cursor-enabled" title="Copy" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.approvalId">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="outletName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Outlet Details </th>
+                <td mat-cell *matCellDef="let row; let i= index">
+                    <strong class="cursor-enabled text-decoration-underline" title="See Outlet Info" (click)="navigateToOutletDetailsInNewWindow(row.outletId, row.outletName)">{{row.outletName}}</strong>
+                    <span class="d-flex gap-3 align-items-center">
+                        <p class="singleline-ellipsis">{{ row.outletId }}</p>
+                        <img class="cursor-enabled mb-3" title="Copy" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.outletId">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="actionType">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Action Type</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">{{row.action}}</td>
+            </ng-container>
+            <ng-container matColumnDef="entityId">
+                <th class="cursor-disable" mat-header-cell *matHeaderCellDef>Entity ID </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">{{row.entityId}}</td>
+            </ng-container>
+            <ng-container matColumnDef="entityType">
+                <th class="cursor-disable" mat-header-cell *matHeaderCellDef>Entity Type </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">{{row.entityType}}</td>
+            </ng-container>
+            <ng-container matColumnDef="approvalStatus">
+                <th class="cursor-disable" mat-header-cell *matHeaderCellDef>Review Status </th>
+                <td class="cursor-disable text-capitalize" mat-cell *matCellDef="let row">{{row.approvalStatus}}</td>
+            </ng-container>
+            <ng-container matColumnDef="remarks">
+                <th class="cursor-disable" mat-header-cell *matHeaderCellDef>Remarks </th>
+                <td class="cursor-disable text-capitalize" mat-cell *matCellDef="let row">{{row.remarks ? row.remarks : 'N/A'}}</td>
+            </ng-container>
+            <ng-container matColumnDef="createdAt">
+                <th class="cursor-disable" mat-header-cell *matHeaderCellDef>Created At </th>
+                <td class="cursor-disable text-capitalize" mat-cell *matCellDef="let row">{{row.createdAt}}</td>
+            </ng-container>
+            <ng-container matColumnDef="action">
+                <th class="cursor-disable" mat-header-cell *matHeaderCellDef>Action </th>
+                <td mat-cell *matCellDef="let row">
+                    <button mat-icon-button (click)="expandedRow = expandedRow === row ? null : row">
+                        <mat-icon>{{row === expandedRow ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="expandedDetail">
+                <td *matCellDef="let row" [attr.colspan]="displayedColumns.length">
+                    <div class="expanded-row-details" [ngClass]="row === expandedRow ? 'expanded' : 'collapsed'">
+                        <app-menu-changes-details [menuChangesDetails]="row" [openedFor]="'previous entity'" [differentProps]="differentPropsInApprovalData[row.approvalId]" *ngIf="row.action === actionTypes.update">
+                        </app-menu-changes-details>
+                        <app-menu-changes-details [menuChangesDetails]="row" [openedFor]="'requested entity'" [differentProps]="differentPropsInApprovalData[row.approvalId]" (takeAction)="sendApprovalStatus($event)">
+                        </app-menu-changes-details>
+                    </div>
+                </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+                    There is no matching data !!!
+                </td>
+            </tr>
+        </table>
+        <mat-paginator #paginatorRef [length]="totalMenuChangesApprovalRecords" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)"></mat-paginator>
+    </main>
+</section>

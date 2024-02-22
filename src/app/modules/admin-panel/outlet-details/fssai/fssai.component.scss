@@ -1,0 +1,32 @@
+@import "../outlet-details.component.scss";
+.fssai-wrapper {
+    padding-top: 1rem;
+    &__content {
+        width: 100%;
+        .container {
+            margin: 0;
+            grid-gap: 2rem;
+            width: 75%;
+            .commission {
+                &__container {
+                    margin: 0;
+                    grid-gap: 2rem;
+                    width: 75%;
+                    .input-details {
+                        padding: 0;
+                        margin-left: 1rem;
+                    }
+                    .upload-button {
+                        background-color: #0d1d28;
+                        color: #fff;
+                        text-transform: uppercase;
+                        font-size: 11px;
+                        letter-spacing: 1px;
+                        border-radius: 6px;
+                        border: none;
+                    }
+                }
+            }
+        }
+    }
+}

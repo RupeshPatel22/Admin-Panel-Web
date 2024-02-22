@@ -1,0 +1,76 @@
+.main {
+    padding: 0 24px 16px;
+
+    // ::ng-deep .mat-sort-header-content {
+    //     flex-direction: column;
+    // }
+    td.mat-cell {
+        // white-space: nowrap;
+        text-align: left;
+    }
+
+    .duration {
+        text-align: left !important;
+        white-space: pre;
+    }
+}
+
+.chart {
+    border: 1px solid #aaa;
+    border-radius: 12px;
+    padding: 1.25em;
+
+    .bars-data {
+        white-space: nowrap;
+    }
+
+    .bar-label::before {
+        content: "";
+        display: inline-block;
+        width: 15px;
+        height: 15px;
+        margin-right: 5px;
+    }
+
+    .bar--red,
+    .red::before {
+        background-color: #ff0068;
+    }
+
+    .bar--purple,
+    .purple::before {
+        background-color: #ff81a8;
+    }
+
+    .bar--blue,
+    .blue::before {
+        background-color: #1196c3;
+    }
+
+    .bar--yellow,
+    .yellow::before {
+        background-color: #ffc89a;
+    }
+
+    .bar--orange,
+    .orange::before {
+        background-color: #ff955d;
+    }
+
+    .bars {
+        height: 200px;
+
+        .bar {
+            border-radius: 9px;
+            // background-color: #FCD400;
+            width: 15px;
+        }
+
+        .card-content {
+            color: #000;
+            // margin-top: 12px;
+            font-size: 12px;
+        }
+    }
+    
+}

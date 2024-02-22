@@ -1,0 +1,188 @@
+<section class="rider-surge-wrapper">
+    <app-page-title [pageTitle]="'Surge Mapping'"></app-page-title>
+    <div class="surge-wrapper__tools w-75">
+        <div class="row align-items-end">
+            <div class="col-6 input-details">
+                <label for="search" class="input-heading">Search by surge id...</label>
+                <input type="text" class="input-field" placeholder="Enter comma separated surge id" name="search"
+                    [(ngModel)]="filterSurgeMappingData.surgeIds" (keyup.enter)="getAllSurgeMappingDetails(true)">
+            </div>
+            <div class="col-3">
+                <button class="buttons buttons--filter w-100"
+                    (click)="showFilterFields ? clearFilter('all') : showFilterFields = true">
+                    {{showFilterFields ? 'Clear Filters' : 'Add Filters'}}
+                    <img src="assets/icons/filter.svg" class="ms-4" alt="add-icon" />
+                </button>
+            </div>
+            <div class="col-3">
+                <button class="buttons" (click)="toggleCreateSurgeMappingModal()">
+                    Create Surge Mapping
+                    <img src="assets/icons/add.svg" class="ms-2" alt="add-icon">
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row align-items-end mt-4" *ngIf="showFilterFields">
+        <div class="col-3 input-details">
+            <label class="input-heading">Types</label>
+            <ng-select bindLabel="value" [items]="masterSurgeTypeList | keyvalue: originalOrder" [multiple]="true"
+                [(ngModel)]="filterSurgeMappingData.types" bindValue="key" placeholder="Select Type"
+                (clear)="clearFilter()"></ng-select>
+        </div>
+        <div class="col-3 input-details">
+            <label class="input-heading">Client Ids</label>
+            <input type="text" class="input-field" placeholder="Enter comma separated client id" name="search"
+                [(ngModel)]="filterSurgeMappingData.clientIds" (keyup.enter)="getAllSurgeMappingDetails(true)">
+        </div>
+        <div class="col-3 input-details">
+            <label class="input-heading">Operational Zone Ids</label>
+            <input type="text" class="input-field" placeholder="Enter comma separated operational zone id" name="search"
+                [(ngModel)]="filterSurgeMappingData.operationalZoneIds" (keyup.enter)="getAllSurgeMappingDetails(true)">
+        </div>
+        <div class="col-3">
+            <button class="buttons br-50" (click)="getAllSurgeMappingDetails(true)">Apply Filter</button>
+        </div>
+    </div>
+    <main class="rider-wrapper__content mt-5">
+        <table class="w-100" mat-table [dataSource]="surgeMappingData" matSort multiTemplateDataRows>
+            <ng-container matColumnDef="surgeMappingId">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Surge Mapping Id</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.surgeMappingId}} </td>
+            </ng-container>
+            <ng-container matColumnDef="surgeDetail">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Surge Details</th>
+                <td mat-cell *matCellDef="let row">
+                    <span class="d-flex gap-3 align-items-center">
+                        <strong class="m-0 singleline-ellipsis cursor-enabled"
+                            (click)="navigateToMasterSurgePage(row.surgeId)" matTooltip="See Surge Details"
+                            matTooltipClass="custom-tooltip"><u>{{row.surgeId}}</u></strong>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.id">
+                    </span>
+                    <span class="d-flex gap-3 align-items-center">
+                        <p matTooltipClass="custom-tooltip">{{row.surgeName}}</p>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" width="15" height="15" alt=""
+                            [appCopyToClipboard]="row.name">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="surgeMappingStartAt">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Surge Mapping Start At</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.surgeMappingStartAt}} </td>
+            </ng-container>
+            <ng-container matColumnDef="surgeMappingEndAt">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Surge Mapping End At</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.surgeMappingEndAt}} </td>
+            </ng-container>
+            <ng-container matColumnDef="clientDetail">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Client Details</th>
+                <td mat-cell *matCellDef="let row">
+                    <span class="d-flex gap-3 align-items-center">
+                        <strong class="m-0 singleline-ellipsis cursor-enabled"
+                            (click)="navigateToClientsPage(row.clientId)" matTooltip="See Client Details"
+                            matTooltipClass="custom-tooltip"><u>{{row.clientId}}</u></strong>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.clientId">
+                    </span>
+                    <span class="d-flex gap-3 align-items-center">
+                        <p matTooltipClass="custom-tooltip">{{row.clientName}}</p>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" width="15" height="15" alt=""
+                            [appCopyToClipboard]="row.clientName">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="operationalZoneDetail">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Operational Zone Details</th>
+                <td mat-cell *matCellDef="let row">
+                    <span class="d-flex gap-3 align-items-center">
+                        <strong class="m-0 singleline-ellipsis cursor-enabled"
+                            (click)="navigateToOperationalZonePage(row.operationalZoneId)"
+                            matTooltip="See Operational Zone Details"
+                            matTooltipClass="custom-tooltip"><u>{{row.operationalZoneId}}</u></strong>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.operationalZoneId">
+                    </span>
+                    <span class="d-flex gap-3 align-items-center">
+                        <p matTooltipClass="custom-tooltip">{{row.operationalZoneName}}</p>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" width="15" height="15" alt=""
+                            [appCopyToClipboard]="row.operationalZoneName">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="action">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Action</th>
+                <td class="" mat-cell *matCellDef="let row">{{row.delete}}
+                    <mat-icon (click)="deleteSurgeMapping(row)" matTooltip="Delete Surge Mapping"
+                        matTooltipClass="custom-tooltip">delete</mat-icon>
+                </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+                    There is no matching data !!!
+                </td>
+            </tr>
+        </table>
+        <mat-paginator #paginatorRef [pageSizeOptions]="pageSizeOptions"></mat-paginator>
+    </main>
+</section>
+
+<!-- Create surge mapping modal -->
+<div class="modal hide drawer right-align" id="helpModalRight" role="dialog" aria-labelledby="helpModalLabel"
+    aria-hidden="true" *ngIf="showCreateSurgeMappingModal">
+    <div class="modal-dialog" role="dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <label class="modal-title border-0" id="exampleModalLabel">Create Surge Mapping</label>
+                <mat-icon (click)="toggleCreateSurgeMappingModal('')" data-dismiss="modal">close</mat-icon>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="createSurgeMappingForm">
+                    <div class="input-details mt-4">
+                        <label class="input-heading">Surge Id</label>
+                        <ng-select [items]="surgeList" bindValue="id" bindLabel="name" placeholder="Select Surge"
+                            formControlName="surgeId" class="w-100 modal-ng-select mt-2">
+                        </ng-select>
+                        <app-form-error-msg [control]="createSurgeMappingForm.controls.surgeId">
+                        </app-form-error-msg>
+                    </div>
+                    <div class="input-details mt-4">
+                        <label class="input-heading">Operational Zone Id</label>
+                        <ng-select [items]="opZoneList" bindValue="id" bindLabel="name" placeholder="Select Operational Zone"
+                            formControlName="operationalZoneId" class="w-100 modal-ng-select mt-2">
+                        </ng-select>
+                        <app-form-error-msg [control]="createSurgeMappingForm.controls.operationalZoneId">
+                        </app-form-error-msg>
+                    </div>
+                    <div class="input-details mt-4">
+                        <label class="input-heading">Client Id</label>
+                        <ng-select [items]="clientsList" bindValue="clientId" bindLabel="clientName" placeholder="Select Client"
+                            formControlName="clientId" class="w-100 modal-ng-select mt-2">
+                        </ng-select>
+                        <app-form-error-msg [control]="createSurgeMappingForm.controls.clientId">
+                        </app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Start Time</label>
+                        <input class="input-field" type="datetime-local" formControlName="startAt" />
+                        <app-form-error-msg [control]="createSurgeMappingForm.controls.startAt"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">End Time</label>
+                        <input class="input-field" type="datetime-local" formControlName="endAt" />
+                        <app-form-error-msg [control]="createSurgeMappingForm.controls.endAt"></app-form-error-msg>
+                    </div>
+                </form>
+                <div class="d-flex">
+                    <button class="buttons buttons--white br-50 w-100 h-3 mt-4  me-3"
+                        (click)="toggleCreateSurgeMappingModal('')">DISMISS</button>
+                    <button class="buttons br-50 w-100 h-3 mt-4" (click)="createSurgeMapping()">CREATE</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,120 @@
+<section class="customers-wrapper">
+    <app-page-title [pageTitle]="'Customer Users'"></app-page-title>
+
+    <div class="customers-wrapper__tools">
+        <div class="row align-items-end w-75">
+            <div class="col-6 input-details">
+                <label for="search" class="input-heading">Search by customer id...</label>
+                <input type="text" class="input-field" placeholder="Enter comma separated customer ids" name="search"
+                    [(ngModel)]="filterCustomerFields.id" (keyup.enter)="getCustomers(true)">
+            </div>
+            <div class="col-3">
+                <button class="buttons buttons--filter w-100"
+                    (click)="showFilterFields ? clearFilter('all') : showFilterFields = true">
+                    {{showFilterFields ? 'Clear Filters' : 'Add Filters'}}
+                    <img src="assets/icons/filter.svg" class="ms-4" alt="add-icon" />
+                </button>
+            </div>
+        </div>
+        <div class="row align-items-end mt-4" *ngIf="showFilterFields">
+            <div class="col-3 input-details">
+                <label class="input-heading">Phone</label>
+                <input type="text" class="input-field" placeholder="Enter comma separated phone numbers" name="phone"
+                    [(ngModel)]="filterCustomerFields.phone" (keyup.enter)="getCustomers(true)">
+            </div>
+            <div class="col-3 input-details">
+                <label class="input-heading">Email</label>
+                <input type="text" class="input-field" placeholder="Enter comma separated email ids" name="email"
+                    [(ngModel)]="filterCustomerFields.email" (keyup.enter)="getCustomers(true)">
+            </div>
+            <div class="col-2 input-details">
+                <label for="name" class="input-heading">Blocked Customers?</label>
+                <mat-radio-group [(ngModel)]="filterCustomerFields.isBlocked" class="mt-2">
+                    <mat-radio-button [value]="true" class="input-heading me-3">Yes</mat-radio-button>
+                    <mat-radio-button [value]="false" class="input-heading">No</mat-radio-button>
+                </mat-radio-group>
+            </div>
+            <div class="col-3">
+                <button class="buttons br-50" (click)="getCustomers(true)">Apply Filter</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="customers-wrapper__content mt-5">
+        <table class="w-100" mat-table [dataSource]="customersList" matSort>
+
+            <ng-container matColumnDef="sr no">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Sr No </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row; let i= index"> {{ (paginatorRef.pageIndex *
+                    paginatorRef.pageSize) + (i + 1) }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+                <td mat-cell *matCellDef="let row">
+                    <p class="m-0"><strong>{{row.name}}</strong></p>
+                    <span class="d-flex gap-3 align-items-center">
+                        <p class="m-0 singleline-ellipsis">{{row.id}}</p>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15" [appCopyToClipboard]="row.id">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="phone">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Phone</th>
+                <td mat-cell *matCellDef="let row">{{row.phone ? row.phone : 'N/A'}}</td>
+            </ng-container>
+            <ng-container matColumnDef="email">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Email ID</th>
+                <td mat-cell *matCellDef="let row">{{row.email ? row.email : 'N/A'}}</td>
+            </ng-container>
+            <ng-container matColumnDef="isBlocked">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Is Blocked?</th>
+                <td mat-cell *matCellDef="let row">{{row.isBlocked ? 'Yes' : 'No'}}</td>
+            </ng-container>
+            <ng-container matColumnDef="blockedReason">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Blocked Reason</th>
+                <td mat-cell *matCellDef="let row">{{row.blockedReason ? row.blockedReason : 'N/A'}}</td>
+            </ng-container>
+            <ng-container matColumnDef="blockedByAdminName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Blocked By</th>
+                <td mat-cell *matCellDef="let row">
+                    {{row.blockedByAdminName ? row.blockedByAdminName : 'N/A'}}
+                    <span class="d-flex gap-3 align-items-center" *ngIf="row.blockedByAdminId">
+                        <p class="m-0 singleline-ellipsis">{{row.blockedByAdminId}}</p>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15" [appCopyToClipboard]="row.blockedByAdminId">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="unblockedReason">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Unblocked Reason</th>
+                <td mat-cell *matCellDef="let row">{{row.unblockedReason ? row.unblockedReason : 'N/A'}}</td>
+            </ng-container>
+            <ng-container matColumnDef="unblockedByAdminName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Unblocked By</th>
+                <td mat-cell *matCellDef="let row">
+                    {{row.unblockedByAdminName ? row.unblockedByAdminName : 'N/A'}}
+                    <span class="d-flex gap-3 align-items-center" *ngIf="row.unblockedByAdminId">
+                        <p class="m-0 singleline-ellipsis">{{row.unblockedByAdminId}}</p>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15" [appCopyToClipboard]="row.unblockedByAdminId">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="action">
+                <th mat-header-cell *matHeaderCellDef>Action</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    <input class="me-3" type="checkbox" [ngClass]="{'active': !row.isBlocked }" role="switch" name="toggle" (click)="changeCustomerStatus(row)" [title]="row.isBlocked ? 'Unblock' : 'Block'">
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="displayedColumns.length">There is no matching data !!!</td>
+            </tr>
+        </table>
+
+        <mat-paginator #paginatorRef [length]="totalRecords" [pageSize]="pageSize"
+            [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)"></mat-paginator>
+    </div>
+</section>

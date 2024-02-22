@@ -1,0 +1,135 @@
+<main class="main">
+    <section class="order-details">
+        <div class="d-flex justify-content-between pb-3 border-bottom mb-3">
+            <ul class="p-0 m-0 list-unstyled">
+                <li><b>#{{inquiryOrderDetails?.orderId ? inquiryOrderDetails?.orderId : 'N/A'}}</b></li>
+                <li><b>#{{inquiryOrderDetails?.id ? inquiryOrderDetails?.id : 'N/A'}}</b></li>
+                <li class="color--grey">{{inquiryOrderDetails?.customerName ? inquiryOrderDetails.customerName : 'N/A'}}</li>
+                <li class="color--grey">{{inquiryOrderDetails?.customerId}}</li>
+                <li class="color--grey" *ngIf="inquiryOrderDetails && inquiryOrderDetails.customerAddress">
+                    {{ inquiryOrderDetails.customerAddress.name }}, {{ inquiryOrderDetails.customerAddress.houseFlatBlockNo }} - 
+                    {{ inquiryOrderDetails.customerAddress.apartmentRoadArea }}
+                    {{ inquiryOrderDetails.customerAddress.city }}, {{ inquiryOrderDetails.customerAddress.state }},
+                    {{ inquiryOrderDetails.customerAddress.country }} - {{ inquiryOrderDetails.customerAddress.pinCode }}
+                </li>
+            </ul>
+        </div>
+
+        <div class="special-request my-3" *ngIf="inquiryOrderDetails?.anySpecialRequest">
+            <p>Special request</p>
+            <span>{{inquiryOrderDetails?.anySpecialRequest}}</span>
+        </div>
+        <h6><b>Billing Summary</b></h6>
+        <ng-container [ngTemplateOutlet]="invoiceBreackOut">
+        </ng-container>
+    </section>
+
+    <section class="row">
+        <section class="row">
+            <h3 class="col-12">Order Logs</h3>
+
+            <div class="input-details col-4">
+                <label for="search" class="input-heading">Vendor Responded At</label>
+                <p class="input-field">
+                    {{inquiryOrderDetails?.vendorRespondedAt ? (inquiryOrderDetails?.vendorRespondedAt | date: 'dd/MM/yyyy hh:mm:ss a') : 'N/A'}}                
+                </p>
+            </div>
+            
+            <div class="input-details col-4">
+                <label for="search" class="input-heading">Vendor Response End Time</label>
+                <p class="input-field">
+                    {{inquiryOrderDetails?.vendorResponseEndTime ? (inquiryOrderDetails?.vendorResponseEndTime | date: 'dd/MM/YYYY hh:mm:ss a') : 'N/A'}}                
+                </p>
+            </div>
+            <div class="input-details col-4">
+                <label for="search" class="input-heading">Customer Response End Time</label>
+                <p class="input-field">
+                    {{inquiryOrderDetails?.customerResponseEndTime ? (inquiryOrderDetails?.customerResponseEndTime | date: 'dd/MM/YYYY hh:mm:ss a') : 'N/A'}}                
+                </p>
+            </div>            
+        </section>     
+
+        <ng-container>
+            <section class=" w-75">            
+                <h3>Order Items Details</h3>     
+                <table class="report-table w-100">
+                    <thead>
+                        <tr>
+                            <th>Vendor Status</th>
+                            <th>Customer Status</th>
+                            <!-- <th>Replacement</th> -->
+                            <th>Items Name</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let items of inquiryOrderDetails?.menuItems">
+                            <td>{{items.vendorStatus}}</td>
+                            <td>{{items.customerStatus | titlecase}}</td>
+                            <!-- <td>{{items.replacement ? items.replacement : 'N/A'}}</td> -->
+                            <td>{{items.menuItemName}}</td>
+                            <td>{{items.qty}}</td>
+                            <td>{{items.price}}</td>                        
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+    
+        </ng-container>
+
+    
+    <ng-template #invoiceBreackOut>
+        <h6><strong>Customer</strong></h6>
+        <div class="cart-details">
+            <span>Total Item Cost</span>
+            <span>{{inquiryOrderDetails?.invoiceDetails?.totalItemCost}}</span>
+        </div>
+        <div class="cart-details">
+            <span>Packaging Charges</span>
+            <span>{{inquiryOrderDetails?.invoiceDetails?.totalPackingCharges}}</span>
+        </div>
+        <div class="cart-details">
+            <span>Platform Charges</span>
+            <span>{{inquiryOrderDetails?.invoiceDetails?.platformCharges}}</span>
+        </div>
+        
+        <div class="cart-details">
+            <span>Taxes</span>
+            <span>{{inquiryOrderDetails?.invoiceDetails?.totalTax}}</span>
+        </div>
+        <div class="cart-details" *ngIf="inquiryOrderDetails?.invoiceDetails?.transactionChargesPaidBy === 'customer'">
+            <span>Transaction Charges</span>
+            <span>{{inquiryOrderDetails?.invoiceDetails?.txnCharges}}</span>
+        </div>
+        <div class="cart-details" *ngIf="inquiryOrderDetails?.invoiceDetails?.deliveryChargesPaidBy === 'customer'">
+            <span>Delivery Charges (inclusive of taxes)</span>
+            <span>{{inquiryOrderDetails?.invoiceDetails?.deliveryCharges}}</span>
+        </div>
+        <div class="cart-details">
+            <span><strong>Total Customer Payable</strong></span>
+            <span><strong>{{inquiryOrderDetails?.invoiceDetails?.totalCustomerPayable}}</strong></span>
+        </div>
+        <hr>
+        <h6><strong>Vendor</strong></h6>
+        <div class="cart-details">
+            <span>GST (Item + Packaging)</span>
+            <span>- {{inquiryOrderDetails?.invoiceDetails?.totalTax}}</span>
+        </div>
+        <div class="cart-details">
+            <span>Delivery Charges</span>
+            <span>- {{inquiryOrderDetails?.invoiceDetails?.deliveryCharges}}</span>
+        </div>
+        <div class="cart-details">
+            <span>Transaction Charges</span>
+            <span>- {{inquiryOrderDetails?.invoiceDetails?.txnCharges}}</span>
+        </div>
+        <div class="cart-details" *ngIf="inquiryOrderDetails?.invoiceDetails?.isSpeedyyChargesApplied">
+            <span>Speedyy Charges (inclusive of taxes)</span>
+            <span>- {{inquiryOrderDetails?.invoiceDetails?.totalSpeedyyCharges}}</span>
+        </div>
+        <div class="cart-details">
+            <span><strong>Vendor Estimated Payout Amount</strong></span>
+            <span><strong>{{inquiryOrderDetails?.invoiceDetails?.vendorPayoutAmount}}</strong></span>
+        </div>
+    </ng-template>

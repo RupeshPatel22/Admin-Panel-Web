@@ -1,0 +1,117 @@
+<section class="area-wrapper">
+    <div class="area-wrapper__tools ">
+        <div class="row align-items-end w-100">
+            <div class="col-3 input-details">
+                <label for="search" class="input-heading">Search by city name, polygon name or polygon id ...</label>
+                <input type="text" class="input-field" placeholder="Enter city name, polygon name or polygon id"
+                    name="search" id="search" [ngModel]="globalFilter" (ngModelChange)="globalSearch($event)">
+            </div>
+            <div class="col-3">
+                <button class="buttons buttons--filter w-100"
+                    (click)="showFilterFields ? clearFilter('all') : showFilterFields = true">
+                    {{showFilterFields ? 'Clear Filters' : 'Add Filters'}}
+                    <img src="assets/icons/filter.svg" class="ms-4" alt="add-icon" />
+                </button>
+            </div>
+            <div class="col-6 d-flex gap-2" *ngIf="canAddDeletePolygon">
+                <div>
+                    <button (click)="showAddPolygonPage()" class="buttons">
+                        Add Polygon
+                        <img src="assets/icons/add.svg" class="ms-4" alt="add-icon">
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row align-items-end mt-4" *ngIf="showFilterFields">
+            <div class="col-2 input-details">
+                <label class="input-heading">Polygon Id</label>
+                <ng-select [items]="areaDataArr" bindLabel="id" bindValue="id" placeholder="Select Polygon ID"
+                    [(ngModel)]="filterAreaFields.id" (clear)="clearFilter()"></ng-select>
+            </div>
+            <div class="col-2 input-details">
+                <label class="input-heading">City</label>
+                <ng-select [items]="areaDataArr | filterUnique: 'cityName'" bindLabel="cityName" bindValue="cityName"
+                    placeholder="Select City" [(ngModel)]="filterAreaFields.city" (clear)="clearFilter()"></ng-select>
+            </div>
+            <div class="col-2 input-details">
+                <label class="input-heading">Polygon</label>
+                <ng-select [items]="areaDataArr | filterUnique: 'areaName'" bindLabel="areaName" bindValue="areaName"
+                    placeholder="Select Polygon" [(ngModel)]="filterAreaFields.area" (clear)="clearFilter()">
+                </ng-select>
+            </div>
+            <div class="col-2 input-details">
+                <label class="input-heading">Status</label>
+                <ng-select [items]="areaDataArr | filterUnique: 'status'" bindLabel="status" bindValue="status"
+                    placeholder="Select Status" [(ngModel)]="filterAreaFields.status" (clear)="clearFilter()">
+                </ng-select>
+            </div>
+            <div class="col-2">
+                <button class="buttons br-50" (click)="applyFilter()">Apply Filter</button>
+            </div>
+        </div>
+    </div>
+    <main class="area-wrapper__content mt-5">
+        <table class="w-100" mat-table [dataSource]="areaList" matSort>
+            <ng-container matColumnDef="sr no">
+                <th mat-header-cell *matHeaderCellDef> Sr No </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row; let i= index"> {{ (paginatorRef.pageIndex *
+                    paginatorRef.pageSize) + (i + 1) }} </td>
+            </ng-container>
+            <ng-container matColumnDef="cityName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>City Name</th>
+                <td mat-cell *matCellDef="let row">
+                    <span class="d-flex gap-3 align-items-center">
+                        <strong class="cursor-enabled text-decoration-underline"
+                            (click)="viewAllPolygonInMap(row.cityId)"
+                            matTooltip="View All Polygons">{{row.cityName}}</strong>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.cityName">
+                    </span>
+                    <span class="d-flex gap-3 align-items-center">
+                        <span>{{row.cityId}}</span>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.cityId">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="areaName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Polygon </th>
+                <td class="cursor-enabled" mat-cell *matCellDef="let row">
+                    <span class="d-flex gap-3 align-items-center">
+                        <strong (click)="viewPolygonInMap(row)"
+                            class="text-decoration-underline">{{row.areaName}}</strong>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.areaName">
+                    </span>
+                    <span class="d-flex gap-3 align-items-center">
+                        <p (click)="viewPolygonInMap(row)" class="m-0">{{row.id}}</p>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.id">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+                <td class="" mat-cell *matCellDef="let row">
+                    <img src="assets/icons/enable-status.svg" alt="" *ngIf="row.status === 'Active'">
+                    <img src="assets/icons/disable-status.svg" alt="" *ngIf="!row.currentlyOpen === 'Inactive'">
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="delete">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Action</th>
+                <td class="" mat-cell *matCellDef="let row">
+                    <mat-icon matTooltip="View Polygon" class="me-3" (click)="viewPolygonInMap(row)">remove_red_eye
+                    </mat-icon>
+                    <mat-icon matTooltip="Delete Polygon" (click)="deleteArea(row)" *ngIf="canAddDeletePolygon">delete
+                    </mat-icon>
+                </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="displayedColumns.length">There is no matching data !!!</td>
+            </tr>
+        </table>
+        <mat-paginator #paginatorRef [pageSizeOptions]="pageSizeOptions"></mat-paginator>
+    </main>
+</section>

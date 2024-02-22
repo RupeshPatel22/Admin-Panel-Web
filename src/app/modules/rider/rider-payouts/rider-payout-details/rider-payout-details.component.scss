@@ -1,0 +1,18 @@
+.input-field {
+    background: #b9b7d13e;
+}
+
+.input-field--white {
+    background: white;
+}
+
+.report-table {
+    border: 1px solid #aaa;
+    tr {
+        text-align: center;
+        th,td {
+            border: 1px solid #aaa;
+            padding: 8px;
+        }
+    }
+}

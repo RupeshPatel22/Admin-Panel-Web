@@ -1,0 +1,254 @@
+<div class="finances-wrapper  d-flex gap-5">
+    <section class="finances-wrapper__content row">
+        <form [formGroup]="financesForm" class="col-10">
+            <!-- Bank Details -->
+            <mat-expansion-panel class="commission">
+                <mat-expansion-panel-header>
+                    <label>Bank Details</label>
+                </mat-expansion-panel-header>
+                <div class="commission__container d-flex flex-column">
+                    <div class="input-details">
+                        <label class="input-heading">Beneficiary Name</label>
+                        <input type="text" class="input-field mt-2" placeholder="Enter beneficiary name" name="beneficiaryName" formControlName="beneficiaryName">
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading">Bank Account Number</label>
+                        <input type="text" class="input-field mt-2" placeholder="12345678" name="bankAccountNumber" formControlName="bankAccountNumber">
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading">IFSC Code</label>
+                        <input type="text" class="input-field mt-2" placeholder="SBIN00765" name="ifscCode" formControlName="ifscCode">
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading">Bank Document</label>
+                        <span class="d-flex flex-row align-items-center w-100">
+                            <input type="text" class="input-field mt-2 w-75" name="bankDocName" formControlName="bankDocName">
+                            <mat-icon class="ms-2" (click)="viewFile('bankDocUrl')" matTooltip="View Document">open_in_new</mat-icon>
+                        </span>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading">KYC Document</label>
+                        <span class="d-flex flex-row align-items-center w-100">
+                            <input type="text" class="input-field mt-2 w-75" name="kycDocName" formControlName="kycDocName">
+                            <mat-icon class="ms-2" (click)="viewFile('kycDocUrl')" matTooltip="View Document">open_in_new</mat-icon>
+                        </span>
+                    </div>
+                </div>
+            </mat-expansion-panel>
+            <!-- Business Details -->
+            <mat-expansion-panel class="commission">
+                <mat-expansion-panel-header>
+                    <label>Business Details</label>
+                </mat-expansion-panel-header>
+                <div class="commission__container row">
+                    <div class="input-details col-6">
+                        <label for="license-no" class="input-heading">PAN</label>
+                        <input type="text" class="input-field mt-2" placeholder="Enter pan"
+                            name="pan" formControlName="pan">
+                        <app-form-error-msg [control]="financesForm.controls.pan"></app-form-error-msg>
+                    </div>
+                    <div class="input-details col-6">
+                        <label class="input-heading">PAN Owner Name</label>
+                        <input type="text" class="input-field mt-2" placeholder="Enter pan owner name"
+                            name="panOwnerName" formControlName="panOwnerName">
+                        <app-form-error-msg [control]="financesForm.controls.panOwnerName"></app-form-error-msg>
+                    </div>
+                    <div class="input-details col-12">
+                        <label class="input-heading">PAN Document</label>
+                        <span class="d-flex align-items-center">
+                            <mat-form-field class="custom-mat-form-field w-100" appearance="outline">
+                                <input [hidden]="true" (click)="$event.target.value = null"
+                                    (change)="getFileUploadUrl($event.target.files, 'panDocName')" type="file" accept="all/*"
+                                    #panDocName>
+                                <input type="text" readonly matInput formControlName="panDocName" />
+                                <button matSuffix (click)="panDocName.click();" mat-raised-button
+                                    class="upload-button">
+                                    upload
+                                </button>
+                            </mat-form-field>
+                            <mat-icon class="ms-2" (click)="viewFile('panDocUrl')" matTooltip="View Document"
+                                *ngIf="!financesForm.controls.panDocName.dirty">open_in_new</mat-icon>
+                        </span>
+                        <app-form-error-msg [control]="financesForm.controls.panDocName"></app-form-error-msg>
+                    </div>
+                    <ng-container *ngIf="showGstCategoryField">
+                        <div class="input-details col-6">
+                            <label class="input-heading">GST Category</label>
+                            <ng-select id="gstCategory" name="gstCategory" formControlName="gstCategory" [items]="gstCategoryList" bindLabel="name" bindValue="id" placeholder="Select category">
+                            </ng-select>
+                            <app-form-error-msg [control]="financesForm.controls.gstCategory"></app-form-error-msg>
+                        </div>
+                    </ng-container>
+                    <div class="input-details col-12">
+                        <label for="license-no" class="input-heading">Has GST?</label>
+                        <mat-radio-group formControlName="hasGST" class="mt-2"
+                            (change)="onHasGSTChange()">
+                            <mat-radio-button [value]="true" class="input-heading me-3">Yes</mat-radio-button>
+                            <mat-radio-button [value]="false" class="input-heading">No</mat-radio-button>
+                        </mat-radio-group>
+                        <app-form-error-msg [control]="financesForm.controls.hasGST"></app-form-error-msg>
+                    </div>
+                    <ng-container *ngIf="hasGST">
+                        <div class="input-details col-6">
+                            <label for="license-no" class="input-heading">GST Number</label>
+                            <input type="text" class="input-field mt-2" placeholder="Enter gst number"
+                                name="gstNumber" formControlName="gstNumber">
+                            <app-form-error-msg [control]="financesForm.controls.gstNumber"></app-form-error-msg>
+                        </div>
+                        <div class="input-details col-12">
+                            <label class="input-heading">GST Document</label>
+                            <span class="d-flex align-items-center">
+                                <mat-form-field class="custom-mat-form-field w-100" appearance="outline">
+                                    <input [hidden]="true" (click)="$event.target.value = null"
+                                        (change)="getFileUploadUrl($event.target.files, 'gstDocName')" type="file" accept="all/*"
+                                        #gstDocName>
+                                    <input type="text" readonly matInput formControlName="gstDocName" />
+                                    <button matSuffix (click)="gstDocName.click();" mat-raised-button
+                                        class="upload-button">
+                                        upload
+                                    </button>
+                                </mat-form-field>
+                                <mat-icon class="ms-2" (click)="viewFile('gstDocUrl')" matTooltip="View Document"
+                                    *ngIf="!financesForm.controls.gstDocName.dirty">open_in_new</mat-icon>
+                            </span>
+                            <app-form-error-msg [control]="financesForm.controls.gstDocName"></app-form-error-msg>
+                        </div>
+                    </ng-container>
+                    <ng-container *ngIf="!hasGST">
+                        <div class="input-details col-6">
+                            <label for="license-no" class="input-heading">Business Name</label>
+                            <input type="text" class="input-field mt-2" placeholder="Enter business name"
+                                name="businessName" formControlName="businessName">
+                            <app-form-error-msg [control]="financesForm.controls.businessName"></app-form-error-msg>
+                        </div>
+                        <div class="input-details col-6">
+                            <label for="license-no" class="input-heading">Business Address</label>
+                            <input type="text" class="input-field mt-2" placeholder="Enter business address"
+                                name="businessAddress" formControlName="businessAddress">
+                            <app-form-error-msg [control]="financesForm.controls.businessAddress"></app-form-error-msg>
+                        </div>
+                    </ng-container>
+                    <div *ngIf="service === Services.Flower || service == Services.Paan || service === Services.Pharmacy || service == Services.Pet">
+                    <div class="input-details col-12">
+                        <label for="license-no" class="input-heading">Has Shop Establishment Details?</label>
+                        <mat-radio-group formControlName="hasRegistration" class="mt-2"
+                            (change)="onhasRegistrationChange()">
+                            <mat-radio-button [value]="true" class="input-heading me-3">Yes</mat-radio-button>
+                            <mat-radio-button [value]="false" class="input-heading">No</mat-radio-button>
+                        </mat-radio-group>
+                        <app-form-error-msg [control]="financesForm.controls.hasRegistration"></app-form-error-msg>
+                    </div>
+                    <ng-container *ngIf="hasRegistration">
+                        <div class="input-details col-6">
+                            <label for="license-no" class="input-heading">Shop Establishment Number</label>
+                            <input type="text" class="input-field mt-2" placeholder="Enter Registration number"
+                                name="registrationNumber" formControlName="registrationNumber">
+                            <app-form-error-msg [control]="financesForm.controls.registrationNumber"></app-form-error-msg>
+                        </div>
+                        <div class="input-details col-12">
+                            <label class="input-heading">Shop Establishment Document</label>
+                            <span class="d-flex align-items-center">
+                                <mat-form-field class="custom-mat-form-field w-100" appearance="outline">
+                                    <input [hidden]="true" (click)="$event.target.value = null"
+                                        (change)="getFileUploadUrl($event.target.files, 'registrationDocName')" type="file" accept="all/*"
+                                        #registrationDocName>
+                                    <input type="text" readonly matInput formControlName="registrationDocName" />
+                                    <button matSuffix (click)="registrationDocName.click();" mat-raised-button
+                                        class="upload-button">
+                                        upload
+                                    </button>
+                                </mat-form-field>
+                                <mat-icon class="ms-2" (click)="viewFile('registrationDocUrl')" matTooltip="View Document"
+                                    *ngIf="!financesForm.controls.registrationDocName.dirty">open_in_new</mat-icon>
+                            </span>
+                            <app-form-error-msg [control]="financesForm.controls.registrationDocName"></app-form-error-msg>
+                        </div>
+                    </ng-container>
+                </div>
+                </div>
+            </mat-expansion-panel>
+
+            <!-- Speedyy Charges -->
+            <mat-expansion-panel class="commission">
+                <mat-expansion-panel-header>
+                    <label>Speedyy Charges Details</label>
+                </mat-expansion-panel-header>
+                <form [formGroup]="speedyyChargesForm" class="row">
+                    <div class="input-details col-4 mt-3">
+                        <label class="input-heading">Is Speedyy Charges Applied?</label>
+                        <mat-radio-group class="mt-2" formControlName="isSpeedyyChargesApplied" (change)="onSpeedyyChargesAppliedChange()">
+                            <mat-radio-button [value]="true" class="input-heading me-3">Yes</mat-radio-button>
+                            <mat-radio-button [value]="false" class="input-heading">No</mat-radio-button>
+                        </mat-radio-group>
+                        <app-form-error-msg [control]="speedyyChargesForm.controls.isSpeedyyChargesApplied"></app-form-error-msg>
+                    </div>
+                    <ng-container *ngIf="isSpeedyyChargesApplied">
+                        <div class="input-details col-4 mt-3">
+                            <label class="input-heading">Speedyy Charges Type</label>
+                            <mat-radio-group class="mt-2" formControlName="speedyyChargesType">
+                                <mat-radio-button [value]="'fixed'" class="input-heading me-3">Fixed</mat-radio-button>
+                                <mat-radio-button [value]="'percent'" class="input-heading">Percentage</mat-radio-button>
+                            </mat-radio-group>
+                            <app-form-error-msg [control]="speedyyChargesForm.controls.speedyyChargesType"></app-form-error-msg>
+                        </div>
+                        <div class="input-details col-4 mt-3">
+                            <label class="input-heading">Speedyy Charges Rate</label>
+                            <input type="text" class="input-field" formControlName="speedyyChargesRate" appAllowTwoDecimalNumbers>
+                            <app-form-error-msg [control]="speedyyChargesForm.controls.speedyyChargesRate"></app-form-error-msg>
+                        </div>
+                    </ng-container>
+                    <div class="d-flex justify-content-end gap-3 mt-3" *ngIf="speedyyChargesForm.dirty">
+                        <button class="buttons buttons--white br-50" (click)="onCancelSpeedyyCharges()">Cancel</button>
+                        <button class="buttons br-50" (click)="updateSpeedyyCharges()">Save</button>
+                    </div>
+                </form>
+            </mat-expansion-panel>
+            <!-- Payout Accounts -->
+            <mat-expansion-panel class="commission">
+                <mat-expansion-panel-header>
+                    <label>Payout Accounts Details</label>
+                </mat-expansion-panel-header>
+                <div class="row border border-1 rounded p-3 mb-3" *ngFor="let payoutAccount of payoutAccountsList">
+                    <div class="input-details col-4 mt-3">
+                        <label class="input-heading">Beneficiary Account Title</label>
+                        <input type="text" class="input-field mt-2 cursor-disable" [(ngModel)]="payoutAccount.name" [ngModelOptions]="{standalone: true}" disabled>
+                    </div>
+                    <div class="input-details col-4 mt-3">
+                        <label class="input-heading">Account Number</label>
+                        <input type="text" class="input-field mt-2 cursor-disable" [(ngModel)]="payoutAccount.bank_account_number" [ngModelOptions]="{standalone: true}" disabled>
+                    </div>
+                    <div class="input-details col-4 mt-3">
+                        <label class="input-heading">IFSC Code</label>
+                        <input type="text" class="input-field mt-2 cursor-disable" [(ngModel)]="payoutAccount.ifsc_code" [ngModelOptions]="{standalone: true}" disabled>
+                    </div>
+                    <!-- <div class="input-details col-4 mt-3">
+                        <label class="input-heading">Bank Name</label>
+                        <input type="text" class="input-field mt-2 cursor-disable" [(ngModel)]="payoutAccount.bank_name" 
+                            [ngModelOptions]="{standalone: true}" readonly>
+                    </div> -->
+                    <div class="input-details col-4 mt-3">
+                        <label class="input-heading">Is Primary ?</label>
+                        <mat-radio-group [(ngModel)]="payoutAccount.is_primary" [ngModelOptions]="{standalone: true}" [disabled]="true" class="mt-2">
+                            <mat-radio-button [value]="true" class="input-heading me-3">Yes</mat-radio-button>
+                            <mat-radio-button [value]="false" class="input-heading">No</mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                    <div class="input-details col-4 mt-3">
+                        <label class="input-heading">Is IFSC Code Verified ?</label>
+                        <mat-radio-group [(ngModel)]="payoutAccount.ifsc_verified" [ngModelOptions]="{standalone: true}" [disabled]="true" class="mt-2">
+                            <mat-radio-button [value]="true" class="input-heading me-3">Yes</mat-radio-button>
+                            <mat-radio-button [value]="false" class="input-heading">No</mat-radio-button>
+                        </mat-radio-group>
+                    </div>
+                </div>
+            </mat-expansion-panel>
+            <div class="fixed-button d-flex gap-3" *ngIf="financesForm.dirty">
+                <button class="buttons buttons--white br-50" (click)="onCancel()">Cancel</button>
+                <button class="buttons br-50" (click)="updateOutletDetails()">Save</button>
+            </div>
+        </form>
+    </section>
+    <section class="col-3 mt-2">
+        <!-- <app-tools></app-tools> -->
+    </section>
+</div>

@@ -1,0 +1,56 @@
+<section class="dialog-wrapper">
+    <h4 class="d-flex justify-content-between mb-4">
+        <span>{{globalVarDetails.isEditable && canEdit ? 'EDIT' : 'VIEW'}}</span>
+        <mat-icon (click)="onDismiss()">close</mat-icon>
+    </h4>
+
+    <form class="row" [formGroup]="globalVarForm">
+        <div class="input-details col-9 mb-3">
+            <label class="input-heading">Key</label>
+            <mat-form-field appearance="outline" class="w-100">
+                <input type="text" matInput name="key" formControlName="key"
+                    placeholder="Enter Key">
+            </mat-form-field>
+            <app-form-error-msg [control]="globalVarForm.controls.key"></app-form-error-msg>
+        </div>
+        <div class="input-details col-3 mb-3">
+            <label class="input-heading">Type</label>
+            <mat-form-field appearance="outline" class="w-100">
+                <input type="text" matInput name="type" formControlName="type"
+                    placeholder="Enter Type">
+            </mat-form-field>
+            <app-form-error-msg [control]="globalVarForm.controls.type"></app-form-error-msg>
+        </div>
+        <div class="input-details col-12 mb-3">
+            <label class="input-heading">Value</label>
+            <ng-container *ngIf="globalVarDetails.type !== 'file'; else showFileInput">
+                <textarea class="reason" placeholder="Type here..." formControlName="value"></textarea>
+            </ng-container>
+            <app-form-error-msg [control]="globalVarForm.controls.value"></app-form-error-msg>
+        </div>
+
+        <div class="input-details col-12 mb-3">
+            <label class="input-heading">Description</label>
+            <mat-form-field appearance="outline" class="w-100">
+                <input type="text" matInput name="description" formControlName="description"
+                    placeholder="Enter description">
+            </mat-form-field>
+            <app-form-error-msg [control]="globalVarForm.controls.description"></app-form-error-msg>
+        </div>
+    </form>
+
+    <div class="d-flex justify-content-end gap-3" *ngIf="globalVarDetails.isEditable && canEdit">
+        <button class="buttons buttons--white br-50" (click)="onDismiss()">Not Now </button>
+        <button class="buttons br-50" (click)="onConfirm()"> Save </button>
+    </div>
+</section>
+
+<ng-template #showFileInput>
+    <a class="mb-3" href="{{globalVarDetails.value}}" target="_blank" *ngIf="globalVarDetails.value">View File</a>
+    <div class="d-flex align-items-center">
+        <input [hidden]="true" type="file" accept="all/*" (click)="$event.target.value = null"
+            (change)="getFileUploadUrl($event.target.files)" #chooseFile>
+        <button class="choose-file-button" (click)="chooseFile.click()">Choose File</button>
+        <span>{{fileName}}</span>
+    </div>
+</ng-template>

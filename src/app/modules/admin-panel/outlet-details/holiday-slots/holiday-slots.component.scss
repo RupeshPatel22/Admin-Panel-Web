@@ -1,0 +1,15 @@
+.main {
+    padding: 0 24px 16px;
+    .holiday-slots-wrapper {
+        &__content {
+            width: 100%;
+            .container {
+                margin: 0;
+                width: 75%;
+            }
+        }
+    }
+}
+.buttons{
+    margin: 42px 0px 0px 0px;
+}

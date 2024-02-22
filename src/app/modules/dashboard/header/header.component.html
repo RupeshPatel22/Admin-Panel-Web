@@ -1,0 +1,43 @@
+<header class="header-wrapper">
+    <div class="header-wrapper__header">
+        <figure class="m-0 position-relative cursor-enabled" [matMenuTriggerFor]="menu"
+            (click)="showTotalNotificationRecords = false; reloadNotificationsData()">
+            <img src="assets/icons/notification-icon.svg" alt="notification icon">
+            <span class="notification-badge" *ngIf="totalNotificationRecords && showTotalNotificationRecords">
+                <strong>{{totalNotificationRecords > 9 ? '9+' : totalNotificationRecords}}</strong>
+            </span>
+        </figure>
+        <div class="user-profile">
+            <span class="profile-name"> {{userName}} </span>
+            <p class="profile-designation">
+                (
+                <ng-container *ngFor="let role of roles; let i = index">
+                    <span>{{role}}</span>
+                    <span *ngIf="roles.length !== i+1"> | </span>
+                </ng-container>
+                )
+            </p>
+        </div>
+        <mat-icon (click)="logout()">power_settings_new</mat-icon>
+    </div>
+</header>
+
+<mat-menu #menu="matMenu" xPosition="before">
+    <div class="notification-card cursor-enabled mt-2" *ngFor="let notification of notificationList;let i=index">
+        <p class="d-flex justify-content-between align-items-center m-0">
+            <span>
+                <span><b>{{notification.title}}</b></span>
+                <span class="service-name ms-1 text-uppercase">({{notification.service}})</span>
+                <span class="notification-time ms-2">{{notification.createdAt}}</span>
+            </span>
+            <span class="cursor-enabled notification-status"
+                matTooltip="{{notification.markAsRead ? 'Mark as unread' : 'Mark as read'}}" matTooltipClass="custom-tooltip" 
+                [ngClass]="{'notification-status--unread': !notification.markAsRead}" 
+                (click)="changePushNotificationReadStatus(notification);$event.stopPropagation()"></span>
+        </p>
+        <span class="notification-body">{{notification.body}}</span>
+        <hr *ngIf="notificationList.length !== i+1">
+    </div>
+    <div class="notification-load-more mt-3 text-center cursor-enabled" (click)="loadMoreNotificationsData();$event.stopPropagation()" *ngIf="totalNotificationRecords > notificationList.length">Load More</div>
+    <div *ngIf="!notificationList.length">No new notifications</div>
+</mat-menu>

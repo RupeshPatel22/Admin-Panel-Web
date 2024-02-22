@@ -1,0 +1,79 @@
+<div class="vendor-details-wrapper">
+    <section class="vendor-details-wrapper__content">
+        <div class="col-9">
+            <app-page-title [pageTitle]="'Vendor Details'"></app-page-title>
+        </div>
+    </section>
+    <!-- <mat-accordion> -->
+    <div class="">
+        <!-- basic information -->
+        <table class="w-100" mat-table [dataSource]="vendorDetail" matSort>
+
+            <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Vendor Id</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    <span class="d-flex gap-3 align-items-center">
+                        <strong class="singleline-ellipsis">{{row.id}}</strong>
+                        <img class="cursor-enabled" title="Copy" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.id">
+                    </span>
+                </td>
+
+            </ng-container>
+
+            <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    {{row.name}}
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="role">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Role</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    {{row.role}}
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="email">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Email Id</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    {{row.email}}
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="phone">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Phone Number</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    {{row.phone}}
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="loginId">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Login Id</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    {{row.loginId}}
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="active">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Is Active</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    {{row.active? 'Yes' : 'No'}}
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="resetPassword">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Force Reset Password</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    <button class="buttons" (click)="openResetPasswordDialog(row.loginId)">
+                        Reset Password
+                    </button>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+    </div>
+</div>

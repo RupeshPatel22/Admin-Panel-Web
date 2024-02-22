@@ -1,0 +1,117 @@
+.live-dashboard-wrapper{
+  .all-live-status {
+    .banner-live{
+      box-shadow: 0px 0px 54px 0px #0000001A;
+      height: 170px;
+      border-radius: 20px;
+    }
+    .banner-live-name{
+      font-size: 25px;
+      font-weight: 500;
+    }
+    .banner-live-count{
+      font-weight: 700;
+      font-size: 50px;
+    }
+    .banner-factor{
+      background-color: #F1FFFA;
+      border: #04A971 1px solid;
+      .green{
+        color: #04A971;
+      }
+    }
+    .live-orders{
+      background-color: #E2F1FF;
+      border: #0F88F8 1px solid;
+      .blue{
+        color: #0F88F8;
+      }
+      .red{
+        color: #f80f0f;
+      }
+    }
+    .live-riders {
+      background-color: #FFE6CE;
+      border: #FC9537 1px solid;
+      .orange{
+        color: #E34602;
+      }
+      .green{
+        color: #00bd58;
+      }
+    }
+  }
+
+  .detail-order-status {
+    .heading {
+      font-size: 25px;
+      font-weight: 600;
+    }
+    .order-status {
+      height: 580px;
+      box-shadow: 0px 0px 54px 0px #0000001A;
+      border-radius: 20px;
+      .order-status-header {
+        border-radius: 20px 20px 0 0;
+        background-color: #D2D9DE;
+        padding: 20px 30px;
+      }
+      .order-status-detail {
+        padding: 40px 20px;
+        .pending-order{
+          border-radius: 20px;
+          padding: 10px;
+          box-shadow: 2px 2px 6px 2px #0D0A2C14;
+        }
+        .alloted-order{
+          border-radius: 20px;
+          padding: 10px;
+          box-shadow: 2px 2px 6px 2px #0D0A2C14;
+        }
+        .dispatched-order{
+          border-radius: 20px;
+          padding: 10px;
+          box-shadow: 2px 2px 6px 2px #0D0A2C14;
+        }
+        .arrived-at-customer-doorstep-order{
+          border-radius: 20px;
+          padding: 10px;
+          box-shadow: 2px 2px 6px 2px #0D0A2C14;
+        }
+        .arrived{
+          border-radius: 20px;
+          padding: 10px;
+          box-shadow: 2px 2px 6px 2px #0D0A2C14;
+        }
+        .cancelled{
+          border-radius: 20px;
+          padding: 10px;
+          box-shadow: 2px 2px 6px 2px #0D0A2C14;
+        }
+        .delivered{
+          border-radius: 20px;
+          padding: 10px;
+          box-shadow: 2px 2px 6px 2px #0D0A2C14;
+        }
+        .order-count{
+          font-size: 40px;
+          font-weight: 600;
+        }
+        .order-count-green{
+          color: #04A971;
+        }
+        .order-count-orange{
+          color: #FC9700;
+        }
+        .order-count-red{
+          color: #FF1F00;
+        }
+        .order-name {
+          font-size: 18px;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+  
+}

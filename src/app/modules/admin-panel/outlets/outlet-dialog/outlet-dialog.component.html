@@ -1,0 +1,20 @@
+<section class="dialog-wrapper">
+    <form>
+        <label class="input-heading">{{title}}</label>
+        <div class="form-details w-100">
+            <mat-radio-group [formControl]="comments" class="d-flex flex-column" *ngIf="data.action === 'disable'">
+                <mat-radio-button value="Speedyy Initiated" class="input-heading">Speedyy Initiated</mat-radio-button>
+                <mat-radio-button value="Vendor Initiated" class="input-heading">Vendor Initiated</mat-radio-button>
+                <mat-radio-button value="Will be back soon" class="input-heading">Will be back soon</mat-radio-button>
+                <mat-radio-button value="No plans of coming back" class="input-heading">No plans of coming back</mat-radio-button>
+            </mat-radio-group>
+            <textarea class="reason" [formControl]="comments" *ngIf="data.action === 'active'"></textarea>
+            <app-form-error-msg [control]="comments"></app-form-error-msg>
+        </div>
+    </form>
+    <hr>
+    <div class="d-flex w-100 justify-content-end">
+        <button class="buttons buttons--white br-50 me-2" (click)="onDismiss()">Discard</button>
+        <button class="buttons br-50" (click)="onConfirm()">Save</button>
+    </div>
+</section>

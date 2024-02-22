@@ -1,0 +1,107 @@
+<div class="upload-wrapper">
+    <section class="upload-wrapper__content mb-5" *ngFor="let data of uploadArr; let i = index">
+        <div class="input-details mb-3">
+            <h3>{{data.title}}</h3>
+            <label>Select File:</label>
+            <div class="d-flex align-items-center">
+                <input [hidden]="true" type="file" accept="text/csv" (click)="$event.target.value = null"
+                    (change)="onFileSelect($event.target.files,i)" #chooseFile>
+                <button class="choose-file-button" (click)="chooseFile.click()">Choose File</button>
+                <span>{{data.fileName}}</span>
+            </div>
+        </div>
+           <div class="d-flex gap-2 align-items-center mb-2" *ngIf="data.title==='Item Bulk Upload'">
+            <h6>Partial Menu Upload: </h6>
+            <input class="me-3 partial-upload-checkbox" (change)="partialUpload($event.target.checked)" type="checkbox" [ngClass]="{'active': isPartialUpload}" role="switch" name="toggle">
+           </div>
+        <p *ngIf="data.title === 'Restaurants Upload'">GST Compliance: Postal Code is now mandate for all restaurants.
+            Do not update postal code and GST details in same update operation/upload. If Postal Code & GST details are
+            not matched, then no updates will be allowed to restaurant in any case.
+            In order to match Postal Code with GST, first update GST details then update Postal Code.</p>
+        <div class="d-flex align-items-center gap-5">
+            <button class="buttons br-50" [disabled]="!canUpload(i)" (click)="fileUpload(i)">Upload</button>
+            <span class="download" (click)="downloadFormat(data)"><img class="align-baseline me-3"
+                    src="assets/icons/download-icon.svg" alt=""> Download format for
+                {{data.title}}</span>
+        </div>
+    </section>
+</div>
+
+<!-- Status Modal -->
+<div class="modal hide drawer right-align" id="changeModalRight" role="dialog"
+    aria-labelledby="changePasswordModalLabel" aria-hidden="true" *ngIf="showStatusModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <label class="modal-title border-0" id="exampleModalLabel">Changes</label>
+                <mat-icon (click)="closeStatusModal()" data-dismiss="modal">close</mat-icon>
+            </div>
+            <div class="modal-body">
+
+
+                <table class="w-100" mat-table [dataSource]="errorList" matSort *ngIf="errorList.data.length">
+
+                    <ng-container matColumnDef="sr no">
+                        <th mat-header-cell *matHeaderCellDef> Sr No </th>
+                        <td class="cursor-disable" mat-cell *matCellDef="let row; let i= index"> {{
+                            (paginatorRef.pageIndex *
+                            paginatorRef.pageSize) + (i + 1) }} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="rowNumber">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Row Number </th>
+                        <td class="cursor-disable" mat-cell *matCellDef="let row">
+                            {{row.rowNumber}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="columnName">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Column Name</th>
+                        <td class="" mat-cell *matCellDef="let row"> {{row.columnName}} </td>
+                    </ng-container>
+                    <ng-container matColumnDef="error">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Error</th>
+                        <td class="text-danger" mat-cell *matCellDef="let row">{{row.error}} </td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+                    <tr class="mat-row" *matNoDataRow>
+                        <td class="mat-cell" colspan="4">There is no matching data !!!</td>
+                    </tr>
+                </table>
+
+                <table class="w-100" mat-table [dataSource]="changesList" matSort *ngIf="changesList.data.length">
+
+                    <ng-container matColumnDef="sr no">
+                        <th mat-header-cell *matHeaderCellDef> Sr No </th>
+                        <td class="cursor-disable" mat-cell *matCellDef="let row; let i= index"> {{
+                            (paginatorRef.pageIndex *
+                            paginatorRef.pageSize) + (i + 1) }} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="name">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Name </th>
+                        <td class="cursor-disable" mat-cell *matCellDef="let row">
+                            {{row.name}}
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="created">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Created</th>
+                        <td class="" mat-cell *matCellDef="let row"> {{row.created}} </td>
+                    </ng-container>
+                    <ng-container matColumnDef="modified">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Modified</th>
+                        <td class="text-danger" mat-cell *matCellDef="let row">{{row.modified}} </td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="changesTableDisplayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: changesTableDisplayedColumns;"></tr>
+
+                    <tr class="mat-row" *matNoDataRow>
+                        <td class="mat-cell" colspan="4">There is no matching data !!!</td>
+                    </tr>
+                </table>
+                <mat-paginator #paginatorRef [pageSizeOptions]="[5, 10, 20, 100]"></mat-paginator>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,7 @@
+<!-- <app-header></app-header> -->
+<header><span class="cursor-enabled" (click)="goToHome()"> Home / </span>{{outletDetails?.name}}</header>
+<mat-tab-group animationDuration="500ms" class="position-sticky mt-4" (selectedIndexChange)="tabChange($event)">
+    <mat-tab label="{{tab.label}}" *ngFor="let tab of tabs; let i = index">
+        <ng-container [ngComponentOutlet]="tab.component" *ngIf="showTabContent[i]"></ng-container>
+    </mat-tab>
+</mat-tab-group>

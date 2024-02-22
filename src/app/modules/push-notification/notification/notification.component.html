@@ -1,0 +1,136 @@
+<section class="notification-wrapper">
+    <app-page-title [pageTitle]="'Notifications'"></app-page-title>
+    <div class="notification-wrapper__tools">
+        <div class="row align-items-end">
+            <div class="row align-items-end w-75">
+                <div class="col-6 input-details">
+                    <label for="search" class="input-heading">Search by Text...</label>
+                    <input type="text" class="input-field" placeholder="Enter Text" name="search"
+                        [(ngModel)]="filterNotificationsFields.searchText" (keyup.enter)="getNotificationData()">
+                </div>
+                <div class="col-3">
+                    <button class="buttons buttons--filter w-100"
+                        (click)="showfilterFields ? clearFilter('all') : showfilterFields = true">
+                        {{showfilterFields ? 'Clear Filters' : 'Add Filters'}}
+                        <img src="assets/icons/filter.svg" class="ms-4" alt="add-icon" />
+                    </button>
+                </div>
+            </div>
+            <div class="row align-items-end mt-4" *ngIf="showfilterFields">
+                <div class="col-2 input-details">
+                    <label class="input-heading">Push Notification Id</label>
+                    <input type="text" class="input-field" placeholder="Enter push notification id" name="pushNotificationId"
+                        [(ngModel)]="filterNotificationsFields.pushNotificationId" (keyup.enter)="getNotificationData(true)">
+                </div>
+                <div class="col-2 input-details">
+                    <label class="input-heading">User Id</label>
+                    <input type="text" class="input-field" placeholder="Enter user id" name="userId"
+                        [(ngModel)]="filterNotificationsFields.userId" (keyup.enter)="getNotificationData(true)">
+                </div>
+                <div class="col-2 input-details">
+                    <label class="input-heading">Template Id</label>
+                    <input type="text" class="input-field" placeholder="Enter template id" name="templateId"
+                        [(ngModel)]="filterNotificationsFields.templateId" (keyup.enter)="getNotificationData(true)">
+                </div>
+                <div class="col-2 input-details">
+                    <label for="type" class="input-heading">User Type</label>
+                    <ng-select [items]="userTypeList" bindLabel="name" bindValue="id" placeholder="Select Type" multiple="true" [(ngModel)]="filterNotificationsFields.userType" (clear)="clearFilter()"></ng-select>
+                </div>
+                <div class="col-2 input-details">
+                    <label for="type" class="input-heading">Delivery Status</label>
+                    <ng-select [items]="deliveryStatusList" bindLabel="name" bindValue="id" placeholder="Select status" [(ngModel)]="filterNotificationsFields.deliveryStatus" (clear)="clearFilter()"></ng-select>
+                </div>
+                <div class="input-details col-2 mt-3">
+                    <label class="input-heading">Start Date</label>
+                    <mat-form-field class="custom-mat-form-field" appearance="outline">
+                        <input matInput (click)="startDate.open()" [matDatepicker]="startDate" [max]="maxDate" [(ngModel)]="filterNotificationsFields.startDate" name="startDate" placeholder="Select date">
+                        <mat-datepicker-toggle matSuffix [for]="startDate"></mat-datepicker-toggle>
+                        <mat-datepicker #startDate></mat-datepicker>
+                        <button mat-icon-button matSuffix *ngIf="filterNotificationsFields.startDate" (click)="clearFilter('date')">
+                            <mat-icon>clear</mat-icon>
+                        </button>
+                    </mat-form-field>
+                </div>
+                <div class="input-details col-2 mt-3">
+                    <label class="input-heading">Start Time</label>
+                    <mat-form-field class="custom-mat-form-field" appearance="outline">
+                        <input matInput type="time" name="startTime" [(ngModel)]="filterNotificationsFields.startTime" placeholder="Select Time">
+                        <button mat-icon-button matSuffix *ngIf="filterNotificationsFields.startTime" (click)="clearFilter('startTime')">
+                            <mat-icon>clear</mat-icon>
+                        </button>
+                    </mat-form-field>
+                </div>
+                <div class="input-details col-2 mt-3">
+                    <label class="input-heading">End Date</label>
+                    <mat-form-field class="custom-mat-form-field" appearance="outline">
+                        <input matInput (click)="endDate.open()" [matDatepicker]="endDate" [max]="maxDate" [(ngModel)]="filterNotificationsFields.endDate"  name="endDate" placeholder="Select date">
+                        <mat-datepicker-toggle matSuffix [for]="endDate"></mat-datepicker-toggle>
+                        <mat-datepicker #endDate></mat-datepicker>
+                        <button mat-icon-button matSuffix *ngIf="filterNotificationsFields.endDate" (click)="clearFilter('date')">
+                            <mat-icon>clear</mat-icon>
+                        </button>
+                    </mat-form-field>
+                </div>
+                <div class="input-details col-2 mt-3">
+                    <label class="input-heading">End Time</label>
+                    <mat-form-field class="custom-mat-form-field" appearance="outline">
+                        <input matInput type="time" name="endTime" [(ngModel)]="filterNotificationsFields.endTime" placeholder="Select Time">
+                        <button mat-icon-button matSuffix *ngIf="filterNotificationsFields.endTime" (click)="clearFilter('endTime')">
+                            <mat-icon>clear</mat-icon>
+                        </button>
+                    </mat-form-field>
+                </div>
+                <div class="col-3">
+                    <button class="buttons br-50" (click)="getNotificationData(true)">Apply Filter</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="notification-wrapper__content mt-5">
+        <table class="w-100" mat-table [dataSource]="notificationList" matSort multiTempleteDataRow>
+            <ng-container matColumnDef="pushNotificationId">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Notification Id</th>
+                <td mat-cell *matCellDef="let row">
+                    <span class="d-flex gap-3 align-items-center">
+                        <strong>{{row.pushNotificationId? row.pushNotificationId : 'N/A'}}</strong>
+                        <img class="cursor-enabled" title="Copy" src="assets/icons/copy-icon.svg" height="15" width="15" [appCopyToClipboard]="row.pushNotificationId">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="userId">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>User Id</th>
+                <td mat-cell *matCellDef="let row">
+                    {{row.userId? row.userId : 'N/A'}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="userType">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>User Type</th>
+                <td mat-cell *matCellDef="let row">
+                    {{row.userType? row.userType : 'N/A'}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="templateId">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Template Id</th>
+                <td mat-cell *matCellDef="let row">
+                    {{row.templateId? row.templateId : 'N/A'}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="deliveryStatus">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Delivery Status</th>
+                <td mat-cell *matCellDef="let row">
+                    {{row.deliveryStatus? row.deliveryStatus : 'N/A'}}
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+                    There is no matching data !!!
+                </td>
+            </tr>
+        </table>
+        <mat-paginator #paginatorRef [length]="totalRecords" [pageSize]="pageSize"
+            [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)"></mat-paginator>
+    </div>
+</section>

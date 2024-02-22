@@ -1,0 +1,143 @@
+<section class="orders-wrapper">
+    <app-page-title [pageTitle]="'All Live Orders'"></app-page-title>
+    <div class="row align-items-end">
+        <div class="col-3 input-details">
+            <label for="type" class="input-heading">Service Type</label>
+            <ng-select [items]="typeList | keyvalue: originalOrder" bindLabel="value" bindValue="key" placeholder="Select service type" [multiple]="true" [(ngModel)]="filterAllOrders.serviceType"></ng-select>
+        </div>
+        <div class="col-3 input-details mt-3">
+            <label class="input-heading">Customer ID</label>
+            <input type="text" class="input-field" placeholder="Enter customer ID" name="customerId" [(ngModel)]="filterAllOrders.customerId" (keydown.enter)="getAllLiveOrders(true)">
+        </div>
+        <div class="input-details col-3 mt-3">
+            <label class="input-heading">Start Date</label>
+            <mat-form-field class="custom-mat-form-field" appearance="outline">
+                <input matInput (click)="startDate.open()" [matDatepicker]="startDate" [max]="maxDate" [(ngModel)]="filterAllOrders.startDate" name="startDate" placeholder="Select date">
+                <mat-datepicker-toggle matSuffix [for]="startDate"></mat-datepicker-toggle>
+                <mat-datepicker #startDate></mat-datepicker>
+                <button mat-icon-button matSuffix *ngIf="filterAllOrders.startDate" (click)="clearFilter('date')">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
+        <div class="input-details col-3 mt-3">
+            <label class="input-heading">Start Time</label>
+            <mat-form-field class="custom-mat-form-field" appearance="outline">
+                <input matInput type="time" name="startTime" [(ngModel)]="filterAllOrders.startTime" placeholder="Select Time">
+                <button mat-icon-button matSuffix *ngIf="filterAllOrders.startTime" (click)="clearFilter('startTime')">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
+        <div class="input-details col-3 mt-3">
+            <label class="input-heading">End Date</label>
+            <mat-form-field class="custom-mat-form-field" appearance="outline">
+                <input matInput (click)="endDate.open()" [matDatepicker]="endDate" [max]="maxDate" [(ngModel)]="filterAllOrders.endDate"  name="endDate" placeholder="Select date">
+                <mat-datepicker-toggle matSuffix [for]="endDate"></mat-datepicker-toggle>
+                <mat-datepicker #endDate></mat-datepicker>
+                <button mat-icon-button matSuffix *ngIf="filterAllOrders.endDate" (click)="clearFilter('date')">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
+        <div class="input-details col-3 mt-3">
+            <label class="input-heading">End Time</label>
+            <mat-form-field class="custom-mat-form-field" appearance="outline">
+                <input matInput type="time" name="endTime" [(ngModel)]="filterAllOrders.endTime" placeholder="Select Time">
+                <button mat-icon-button matSuffix *ngIf="filterAllOrders.endTime" (click)="clearFilter('endTime')">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
+        <div class="col-3 mt-4 ms-2">
+            <button class="buttons br-50" (click)="getAllLiveOrders(true)">Apply Filter</button>
+        </div>
+    </div>
+    <main class="orders-wrapper__content mt-5">
+        <table class="w-100" mat-table [dataSource]="ordersList" matSort multiTempleteDataRow>
+            <ng-container matColumnDef="orderId">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Order Id</th>
+                <td mat-cell *matCellDef="let row">
+                    <span class="d-flex gap-3 align-items-center cursor-enabled text-decoration-underline">
+                        <strong (click)="navigateToOrdersPageInNewWindow(row.orderId,row.clientServiceType)" matTooltip="Open in orders" matTooltipClass="custom-tooltip"
+                            >{{row.orderId? row.orderId : 'N/A'}}</strong>
+                        <!-- <strong>{{row.orderId? row.orderId : 'N/A'}}</strong> -->
+                        <img class="cursor-enabled" title="Copy" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.orderId">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="clientServiceType">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Service</th>
+                <td mat-cell *matCellDef="let row">
+                    {{row.clientServiceType? row.clientServiceType : 'N/A'}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="customerName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Customer Detail</th>
+                <td mat-cell *matCellDef="let row">
+                    {{row.customerName? row.customerName : 'N/A'}}
+                    <span class="d-flex align-items-center text-decoration-underline cursor-enabled gap-3"><strong>
+                        <p class="m-0 singleline-ellipsis" (click)="navigation(null, row.customerPhone, row.clientServiceType, row.customerName)">{{row.customerId? row.customerId : 'N/A'}}</p></strong>
+                        <img class="cursor-enabled" title="Copy" src="assets/icons/copy-icon.svg" height="15" width="15" [appCopyToClipboard]="row.customerId">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="outletName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Outlet Detail</th>
+                <td mat-cell *matCellDef="let row">
+                    {{row.outletName? row.outletName : 'N/A'}}
+                    <span class="d-flex align-items-center text-decoration-underline cursor-enabled gap-3"><strong>
+                        <p class="m-0 singleline-ellipsis" (click)="navigation(row.outletId, null, row.clientServiceType, null)">{{row.outletId? row.outletId : 'N/A'}}</p></strong>
+                        <img class="cursor-enabled" title="Copy" src="assets/icons/copy-icon.svg" height="15" width="15" [appCopyToClipboard]="row.outletId">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="orderPlacedAt">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Order Placed Time</th>
+                <td mat-cell *matCellDef="let row">
+                    {{row.orderPlacedAt | date: 'dd/MM/YYYY hh:mm:ss a'}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="orderStatus">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Order Status</th>
+                <td mat-cell *matCellDef="let row">
+                    <div class="d-flex align-items-center">
+                        <img class="me-3" src='{{"assets/icons/" + row.orderStatus + "-order-status.svg"}}' alt="{{ row.orderStatus }}" matTooltip="{{ row.orderStatus }}" matTooltipClass="custom-tooltip" width="20" height="20">
+                    </div>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="orderAcceptanceStatus">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Order Acceptance Status</th>
+                <td mat-cell *matCellDef="let row">
+                    {{row.orderAcceptanceStatus? row.orderAcceptanceStatus : 'N/A'}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="deliveryStatus">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Delivery Status</th>
+                <td mat-cell *matCellDef="let row">
+                    {{row.deliveryStatus? row.deliveryStatus : 'N/A'}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="paymentStatus">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Payment Status</th>
+                <td mat-cell *matCellDef="let row">
+                    {{row.paymentStatus? row.paymentStatus : 'N/A'}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="refundStatus">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Refund Status</th>
+                <td mat-cell *matCellDef="let row">
+                    {{row.refundStatus? row.refundStatus : 'N/A'}}
+                </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+                    There is no matching data !!!
+                </td>
+            </tr>
+        </table>
+    </main>
+</section>

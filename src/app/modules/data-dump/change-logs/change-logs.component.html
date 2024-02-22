@@ -1,0 +1,185 @@
+<section class="log-data-wrapper">
+    <app-page-title [pageTitle]="'Changes Log'"></app-page-title>
+
+    <div class="log-data-wrapper__tools w-75">
+        <div class="row align-items-end">
+            <div class="col-6 input-details">
+                <label for="search" class="input-heading">Search by url and entity types ...</label>
+                <input type="text" class="input-field" placeholder="Enter url and entity types" name="search"
+                    [(ngModel)]="filterLogData.searchText" (keydown.enter)="getChangesLogList(true)">
+            </div>
+            <div class="col-3">
+                <button class="buttons buttons--filter w-100"
+                    (click)="showFilterFields ? clearFilter('all') : showFilterFields = true">
+                    {{showFilterFields ? 'Clear Filters' : 'Add Filters'}}
+                    <img src="assets/icons/filter.svg" class="ms-4" alt="add-icon" />
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row align-items-end mt-4" *ngIf="showFilterFields">
+        <div class="col-3 input-details mt-3">
+            <label for="id" class="input-heading">HTTP Methods</label>
+            <ng-select [multiple]="true" [closeOnSelect]="false" [items]="httpMethodsList | keyvalue" bindValue="key"
+                bindLabel="value" placeholder="Select HTTP Methods" [(ngModel)]="filterLogData.httpMethods"
+                (clear)="clearFilter()"></ng-select>
+        </div>
+        <div class="col-3 input-details mt-3">
+            <label for="id" class="input-heading">User Types</label>
+            <ng-select [multiple]="true" [closeOnSelect]="false" [items]="userTypesList | keyvalue" bindValue="key"
+                bindLabel="value" placeholder="Select User Types" [(ngModel)]="filterLogData.userTypes"
+                (clear)="clearFilter()"></ng-select>
+        </div>
+        <div class="col-3 input-details mt-3">
+            <label for="id" class="input-heading">Response Codes</label>
+            <ng-select [multiple]="true" [closeOnSelect]="false" [items]="responseCodeNumber" bindLabel="label"
+                bindLabel="value" placeholder="Select Response Codes" [(ngModel)]="filterLogData.responseCodes"
+                (clear)="clearFilter()"></ng-select>
+        </div>
+        <div class="col-3 input-details mt-3">
+            <label for="id" class="input-heading">IP Addresses</label>
+            <input type="text" class="input-field" [(ngModel)]="filterLogData.ipAddr"
+                placeholder="Enter comma separated values" (keydown.enter)="getChangesLogList(true)">
+        </div>
+        <div class="col-3 input-details mt-3">
+            <label for="id" class="input-heading">User Ids</label>
+            <input type="text" class="input-field" [(ngModel)]="filterLogData.userIds"
+                placeholder="Enter comma separated values" (keydown.enter)="getChangesLogList(true)">
+        </div>
+        <div class="col-3 input-details mt-3">
+            <label for="id" class="input-heading">Entity Types</label>
+            <input type="text" class="input-field" [(ngModel)]="filterLogData.entityTypes"
+                placeholder="Enter comma separated values" (keydown.enter)="getChangesLogList(true)">
+        </div>
+        <div class="col-3 input-details mt-3">
+            <label for="id" class="input-heading">Entity Ids</label>
+            <input type="text" class="input-field" [(ngModel)]="filterLogData.entityIds"
+                placeholder="Enter comma separated values" (keydown.enter)="getChangesLogList(true)">
+        </div>
+        <div class="col-3 input-details mt-3">
+            <label for="id" class="input-heading">URLs</label>
+            <input type="text" class="input-field" [(ngModel)]="filterLogData.urls"
+                placeholder="Enter comma separated values" (keydown.enter)="getChangesLogList(true)">
+        </div>
+        <div class="input-details col-3 mt-3">
+            <label class="input-heading">Start Date</label>
+            <mat-form-field class="custom-mat-form-field" appearance="outline">
+                <input matInput (click)="startDate.open()" [matDatepicker]="startDate" [readonly]="true"
+                    name="startDate" placeholder="Select date" [(ngModel)]="filterLogData.startDate" ngDefaultControl>
+                <mat-datepicker-toggle matSuffix [for]="startDate" matSuffix></mat-datepicker-toggle>
+                <mat-datepicker #startDate></mat-datepicker>
+                <button mat-icon-button matSuffix *ngIf="filterLogData.startDate" (click)="clearFilter('startDate')">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
+        <div class="input-details col-3 mt-3">
+            <label class="input-heading">End Date</label>
+            <mat-form-field class="custom-mat-form-field" appearance="outline">
+                <input matInput (click)="endDate.open()" [matDatepicker]="endDate" [readonly]="true" name="endDate"
+                    placeholder="Select date" [min]="filterLogData.startDate" [(ngModel)]="filterLogData.endDate"
+                    ngDefaultControl>
+                <mat-datepicker-toggle matSuffix [for]="endDate" matSuffix></mat-datepicker-toggle>
+                <mat-datepicker #endDate></mat-datepicker>
+                <button mat-icon-button matSuffix *ngIf="filterLogData.endDate" (click)="clearFilter('endDate')">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
+        <div class="col-2">
+            <button class="buttons br-50" (click)="getChangesLogList(true)">Apply Filter</button>
+        </div>
+    </div>
+    <div class="log-data-wrapper__content mt-5">
+        <table class="w-100" mat-table [dataSource]="logsList" matSort multiTemplateDataRows>
+
+            <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{ row.id }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="url">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>URL</th>
+                <td mat-cell *matCellDef="let row" class="text-break">
+                    {{row.url}}
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="ipAddr">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>IP Address</th>
+                <td mat-cell *matCellDef="let row">
+                    {{row.ipAddr}}
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="httpMethods">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>HTTP Method</th>
+                <td mat-cell *matCellDef="let row">
+                    {{row.httpMethods}}
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="responseCode">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Response Code</th>
+                <td mat-cell *matCellDef="let row">
+                    {{row.responseCode}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="userId">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>User Details</th>
+                <td mat-cell *matCellDef="let row" class="text-break">
+                    <span class="d-flex gap-3 align-items-start flex-column">
+                        <strong class=""> {{row.userName}}</strong>
+                        <strong>({{row.userType}})</strong>
+                        {{row.userId}}
+                    </span>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="entityType">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Entity Type</th>
+                <td mat-cell *matCellDef="let row" class="text-break">
+                    <span class="d-flex gap-3 align-items-start flex-column">
+                        <strong class="">{{row.entityType}}</strong>
+                        {{row.entityId}}
+                    </span>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="createdAt">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Created At</th>
+                <td mat-cell *matCellDef="let row" class="text-break">
+                    {{row.createdAt}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="action">
+                <th class="cursor-disable" mat-header-cell *matHeaderCellDef>Action </th>
+                <td mat-cell *matCellDef="let row">
+                    <button mat-icon-button (click)="expandedRow = expandedRow === row ? null : row">
+                        <mat-icon>{{row === expandedRow ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="expandedDetail">
+                <td *matCellDef="let row" [attr.colspan]="displayedColumns.length">
+                    <app-change-log-details class="expanded-row-details"
+                        [ngClass]="row === expandedRow ? 'expanded' : 'collapsed'" [logDetails]="row"
+                        *ngIf="expandedRow === row">
+                    </app-change-log-details>
+                </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="displayedColumns.length">There is no matching data !!!</td>
+            </tr>
+        </table>
+
+        <mat-paginator #paginatorRef [length]="totalLogRecords" [pageSize]="pageSize"
+            [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)"></mat-paginator>
+
+
+    </div>
+</section>

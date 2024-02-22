@@ -1,0 +1,80 @@
+<section class="d-flex justify-content-end gap-3">
+    <button class="buttons br-50" (click)="actionOnPayout(payoutAction.Retry)" *ngIf="payoutDetails.payoutStatus !== payoutStatusList.COMPLETE">
+        {{payoutAction.Retry}}
+    </button>
+    <button class="buttons br-50" (click)="actionOnPayout(payoutAction.StopRetry)" *ngIf="payoutDetails.payoutStatus !== payoutStatusList.COMPLETE && payoutDetails.canRetry">
+        {{payoutAction.StopRetry}}
+    </button>
+    <button class="buttons br-50" (click)="actionOnPayout(payoutAction.MarkComplete)" *ngIf="payoutDetails.payoutStatus !== payoutStatusList.COMPLETE">{{payoutAction.MarkComplete}}</button>
+    <button class="buttons br-50" (click)="actionOnPayout(payoutAction.ExportPDF)">
+        <mat-icon class="me-1">arrow_downward</mat-icon>
+        {{payoutAction.ExportPDF}}
+    </button>
+</section>
+<!-- <section class="row mb-3">
+    <h3> Bank Details </h3>
+    <div class="input-details col-3">
+        <label class="input-heading">Beneficiary Name</label>
+        <p class="input-field">{{payoutDetails.accountDetails.beneficiaryName}}</p>
+    </div>
+    <div class="input-details col-3">
+        <label class="input-heading">Account Number</label>
+        <p class="input-field">{{payoutDetails.accountDetails.accountNumber}}</p>
+    </div>
+    <div class="input-details col-3">
+        <label class="input-heading">IFSC Code</label>
+        <p class="input-field">{{payoutDetails.accountDetails.ifscCode}}</p>
+    </div>
+    <div class="input-details col-3" *ngIf="payoutDetails.reason">
+        <label class="input-heading">Failure Reason</label>
+        <p class="input-field">{{payoutDetails.reason}}</p>
+    </div>
+</section> -->
+<section class=" w-75">
+    <h3 class="mb-3">Detailed Report</h3>
+    <ng-container *ngFor="let shift of payoutDetails.shiftPayouts">
+        <div><strong>Rider Shift ID: </strong> {{shift.riderShiftId}}</div>
+        <div><strong>Shift Name: </strong> {{shift.shiftName}}</div>
+        <div><strong>Date: </strong> {{shift.firstPingAt}}</div>
+        <table class="report-table w-100 mb-3">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Client ID</th>
+                    <th>Client Order ID</th>
+                    <th>Rider Payout</th>
+                    <th>Actual Rider Payout</th>
+                    <th>Remarks (if any)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let order of shift.payoutOrders">
+                    <td class="cursor-enabled text-decoration-underline" (click)="navigateToRiderOrdersPage(order.orderId)">{{order.orderId}}</td>
+                    <td>{{order.clientId}}</td>
+                    <td>{{order.clientOrderId}}</td>
+                    <td>{{order.riderPayoutAmt}}</td>
+                    <td>{{order.deliveryStatus === deliveryStatusList.CANCELLED ? order.riderPayoutSettlementAmt : order.riderPayoutAmt}}
+                    </td>
+                    <td>{{order.cancellationReason ! == null ? order.cancellationReaon: 'N/A'}}</td>
+                </tr>
+                <tr *ngIf="!shift.payoutOrders.length">
+                    <td colspan="6">Data not available</td>
+                </tr>
+            </tbody>
+        </table>
+    </ng-container>
+    <table class="report-table mt-4 w-50">
+        <tr>
+            <th>Total Order Amount</th>
+            <td>{{payoutDetails.totalOrderAmount}}</td>
+        </tr>
+        <tr>
+            <th>Transaction Changes </th>
+            <td>{{payoutDetails.txnCharges}}</td>
+        </tr>
+        <tr>
+            <th>Amount Paid</th>
+            <td>{{payoutDetails.amountPaidToRider}}</td>
+        </tr>
+    </table>
+</section>

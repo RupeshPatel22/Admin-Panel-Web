@@ -1,0 +1,188 @@
+<section class="rider-surge-wrapper">
+    <app-page-title [pageTitle]="'Master Surge'"></app-page-title>
+    <div class="surge-wrapper__tools w-75">
+        <div class="row align-items-end">
+            <div class="col-6 input-details">
+                <label for="search" class="input-heading">Search by surge id...</label>
+                <input type="text" class="input-field" placeholder="Enter comma separated surge id" name="search"
+                    [(ngModel)]="filterSurgeData.surgeIds" (keyup.enter)="getAllMasterSurgeDetails(true)">
+            </div>
+            <div class="col-3">
+                <button class="buttons buttons--filter w-100"
+                    (click)="showFilterFields ? clearFilter('all') : showFilterFields = true">
+                    {{showFilterFields ? 'Clear Filters' : 'Add Filters'}}
+                    <img src="assets/icons/filter.svg" class="ms-4" alt="add-icon" />
+                </button>
+            </div>
+            <div class="col-3">
+                <button class="buttons" (click)="openMasterSurgeModal('Add'); showId=false">
+                    Add Surge
+                    <img src="assets/icons/add.svg" class="ms-2" alt="add-icon">
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row align-items-end mt-4" *ngIf="showFilterFields">
+        <div class="col-3 input-details">
+            <label class="input-heading">Types</label>
+            <ng-select bindLabel="value" [items]="masterSurgeTypeList | keyvalue: originalOrder" [multiple]="true"
+                [(ngModel)]="filterSurgeData.types" bindValue="key" placeholder="Select Type"
+                (clear)="clearFilter()"></ng-select>
+        </div>
+        <div class="col-3">
+            <button class="buttons br-50" (click)="getAllMasterSurgeDetails(true)">Apply Filter</button>
+        </div>
+    </div>
+    <main class="rider-wrapper__content mt-5">
+        <table class="w-100" mat-table [dataSource]="masterSurgeData" matSort multiTemplateDataRows>
+            <ng-container matColumnDef="surgeDetail">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Surge Details</th>
+                <td mat-cell *matCellDef="let row">
+                    <span class="d-flex gap-3 align-items-center">
+                        <strong class="m-0 singleline-ellipsis">{{row.id}}</strong>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.id">
+                    </span>
+                    <span class="d-flex gap-3 align-items-center">
+                        <p matTooltipClass="custom-tooltip">{{row.name}}</p>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" width="15" height="15" alt=""
+                            [appCopyToClipboard]="row.name">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="type">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+                <td mat-cell *matCellDef="let row">
+                    <b title="See Outlet Info">{{masterSurgeTypeList[row.type]}}</b>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="frequency">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Frequency</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{masterSurgeFrequencyList[row.frequency]}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="startTime">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Start Time</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.startTime}} </td>
+            </ng-container>
+            <ng-container matColumnDef="endTime">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>End Time</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.endTime}} </td>
+            </ng-container>
+            <ng-container matColumnDef="rateType">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Rate Type</th>
+                <td class="" mat-cell *matCellDef="let row">{{masterSurgeRateTypeList[row.rateType]}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="rate">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Rate</th>
+                <td class="" mat-cell *matCellDef="let row">{{row.rate}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="message">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Message</th>
+                <td class="" mat-cell *matCellDef="let row">{{row.message}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="updatedAt">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Updated At</th>
+                <td class="" mat-cell *matCellDef="let row">{{row.updatedAt}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="action">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Action</th>
+                <td class="" mat-cell *matCellDef="let row">{{row.delete}}
+                    <mat-icon (click)="openMasterSurgeModal('Edit', row)">edit</mat-icon>
+                    <mat-icon (click)="deleteRiderSurges(row)">delete</mat-icon>
+                </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+                    There is no matching data !!!
+                </td>
+            </tr>
+        </table>
+        <mat-paginator #paginatorRef [pageSizeOptions]="pageSizeOptions"></mat-paginator>
+    </main>
+</section>
+
+<div class="modal hide drawer right-align" id="changeModalRight" role="dialog" aria-hidden="true"
+    *ngIf="showMasterSurgeModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <label class="modal-title border-0">{{action === 'Edit'?'Edit Surge' : 'Create Surge'}}</label>
+                <mat-icon data-dismiss="modal" (click)="closeMasterSurgeModal()">close</mat-icon>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="masterSurgeForm">
+                    <div class="input-details" *ngIf="showId">
+                        <label class="input-heading mt-3">Surge Id</label>
+                        <input type="text" class="input-field" formControlName="id" placeholder="Enter Surge id" />
+                        <app-form-error-msg [control]="masterSurgeForm.controls.id"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Surge Name</label>
+                        <input type="text" class="input-field" formControlName="name" placeholder="Enter Surge Name" />
+                        <app-form-error-msg [control]="masterSurgeForm.controls.name"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Surge Type</label>
+                        <ng-select class="modal-ng-select" [items]="masterSurgeTypeList | keyvalue: originalOrder"
+                            bindLabel="value" bindValue="key" placeholder="Select Surge Type" formControlName="type">
+                        </ng-select>
+                        <app-form-error-msg [control]="masterSurgeForm.controls.type"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Start Time</label>
+                        <input type="time" class="input-field" formControlName="startTime" min="00:00" max="23:59"
+                            step="60" placeholder="Enter Start Time" />
+                        <app-form-error-msg [control]="masterSurgeForm.controls.startTime"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">End Time</label>
+                        <input type="time" class="input-field" formControlName="endTime" min="00:00" max="23:59"
+                            step="60" placeholder="Enter End Time" />
+                        <app-form-error-msg [control]="masterSurgeForm.controls.endTime"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Frequency</label>
+                        <ng-select class="modal-ng-select" [items]="masterSurgeFrequencyList | keyvalue: originalOrder"
+                            bindLabel="value" bindValue="key" placeholder="Select Frequency"
+                            formControlName="frequency">
+                        </ng-select>
+                        <app-form-error-msg [control]="masterSurgeForm.controls.frequency"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Rate Type</label>
+                        <ng-select class="modal-ng-select" [items]="masterSurgeRateTypeList | keyvalue: originalOrder"
+                            bindLabel="value" bindValue="key" placeholder="Select Rate Type" formControlName="rateType">
+                        </ng-select>
+                        <app-form-error-msg [control]="masterSurgeForm.controls.rateType"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Rate</label>
+                        <input type="text" class="input-field" formControlName="rate" placeholder="Enter Rate" />
+                        <app-form-error-msg [control]="masterSurgeForm.controls.rate"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Message</label>
+                        <input type="text" class="input-field" formControlName="message" placeholder="Enter Message" />
+                        <app-form-error-msg [control]="masterSurgeForm.controls.message"></app-form-error-msg>
+                    </div>
+                    <div class="d-flex mt-3">
+                        <button type="button" class="buttons buttons--white br-50 w-100 h-3 me-3"
+                            (click)="closeMasterSurgeModal()">Dismiss
+                        </button>
+                        <button type="button" class="buttons br-50 w-100 h-3" (click)="createSurge()">{{action ===
+                            'Edit'?'Save' : 'Add'}}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

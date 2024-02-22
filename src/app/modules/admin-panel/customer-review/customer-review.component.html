@@ -1,0 +1,151 @@
+<div class="customer-review-wrapper">
+    <section class="customer-review-wrapper__content row align-items-baseline">
+        <div class="col-4">
+            <app-page-title [pageTitle]="'Customer Review'"></app-page-title>
+        </div>
+        <div class="row align-items-end">
+            <div class="col-6 input-details">
+                <label for="search" class="input-heading">Search by outlet id...</label>
+                <input type="text" class="input-field" placeholder="Enter Outlet ID" name="search" [(ngModel)]="outletIds" (keydown.enter)="getCustomerReview(true)">
+            </div>
+            <div class="col-3">
+                <button class="buttons buttons--filter w-100" (click)="showFilterFields ? clearFilter('all') : showFilterFields = true">
+                    {{showFilterFields ? 'Clear Filters' : 'Add Filters'}}
+                    <img src="assets/icons/filter.svg" class="ms-4" alt="add-icon" />
+                </button>
+            </div>
+        </div>
+    </section>
+        <div class="row align-items-end mt-4" *ngIf="showFilterFields">
+            <div class="col-2 input-details">
+                <label for="id" class="input-heading">Vote Type</label>
+                <ng-select [closeOnSelect]="false"  placeholder="Select vote type" [(ngModel)]="filterCutomerReview.voteType" (clear)="clearFilter('voteType')">
+                    <ng-option [value]="1">Like</ng-option>
+                    <ng-option [value]="-1">Dislike</ng-option>
+                   
+                </ng-select>
+            </div>
+            <!-- <div class="col-2 input-details">
+                <label for="id" class="input-heading">Rating</label>
+                <ng-select [closeOnSelect]="false"  placeholder="Select rating" [(ngModel)]="filterCutomerReview.rating" (clear)="clearFilter('rating')">
+                    <ng-option [value]="0">0</ng-option>
+                    <ng-option [value]="1">1</ng-option>
+                    <ng-option [value]="2">2</ng-option>
+                    <ng-option [value]="3">3</ng-option>
+                    <ng-option [value]="4">4</ng-option>
+                    <ng-option [value]="5">5</ng-option>
+                </ng-select>
+            </div>
+            <div class="col-2 input-details">
+                <label for="id" class="input-heading">Rating Greater Than</label>
+                <ng-select [closeOnSelect]="false"  placeholder="Select rating" [(ngModel)]="filterCutomerReview.ratingGt" (clear)="clearFilter('ratingGt')">
+                    <ng-option [value]="0">0</ng-option>
+                    <ng-option [value]="1">1</ng-option>
+                    <ng-option [value]="2">2</ng-option>
+                    <ng-option [value]="3">3</ng-option>
+                    <ng-option [value]="4">4</ng-option>
+                    <ng-option [value]="5">5</ng-option>
+                </ng-select>
+            </div>
+            <div class="col-2 input-details">
+                <label for="id" class="input-heading">Rating Less Than</label>
+                <ng-select [closeOnSelect]="false"  placeholder="Select rating" [(ngModel)]="filterCutomerReview.ratingLt" (clear)="clearFilter('ratingLt')">
+                    <ng-option [value]="0">0</ng-option>
+                    <ng-option [value]="1">1</ng-option>
+                    <ng-option [value]="2">2</ng-option>
+                    <ng-option [value]="3">3</ng-option>
+                    <ng-option [value]="4">4</ng-option>
+                    <ng-option [value]="5">5</ng-option>
+                </ng-select>
+            </div> -->
+            <div class="col-2">
+                <button class="buttons br-50" (click)="getCustomerReview(true)">Apply Filter</button>
+            </div>
+    </div>
+    <!-- <mat-accordion> -->
+    <div class="mt-4">
+        <!-- basic information -->
+        <table class="w-100" mat-table [dataSource]="customerReview" matSort>
+
+            <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Order Id</th>
+                <td class="cursor-enabled" mat-cell *matCellDef="let row">
+                    <strong class="cursor-enabled text-decoration-underline" (click)="goToOneViewWebsite(row.id)">{{row.id}}</strong>
+                    <img class="cursor-enabled ms-2" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.id">
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="outletDetail">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Outlet Detail</th>
+                <td mat-cell *matCellDef="let row">
+                    <span class="d-flex gap-3 align-items-center">
+                         {{row.outletName}}
+                        <!-- <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.outletName"> -->
+                    </span>
+                    <span class="d-flex gap-3 align-items-center text-decoration-underline">
+                        <strong class="cursor-enabled"><p class="m-0 singleline-ellipsis" (click)="navigateToOutletDetailsInNewWindow(row.outletId, row.outletName)">{{row.outletId}}</p></strong>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.outletId">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="customerName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Customer Detail</th>
+                <td mat-cell *matCellDef="let row">
+                    <span class="d-flex gap-3 align-items-center">
+                       {{row.customerName}} 
+                        <!-- <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.customerName"> -->
+                    </span>
+                    <span class="d-flex gap-3 align-items-center">
+                        <!-- <strong class="cursor-enabled"> -->
+                            <strong class="m-0 singleline-ellipsis">{{row.customerId}}</strong>
+                        <!-- </strong> -->
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.customerId">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="comments">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Comments</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    {{row.comments? row.comments : 'N/A'}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="reviewedAt">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Reviewed At</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    {{row.reviewedAt}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="orderPlacedTime">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Order Placed Time</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    {{row.orderPlacedTime}}
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="voteType">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Vote Type</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    <!-- {{row.voteType === 1 ? 'Like' : 'Dislike'}} -->
+                    <img [src]="row.voteType === 1 ? '../../../../assets/icons/like-icon.svg' : '../../../../assets/icons/dislike-icon.svg'" class="me-2" alt="" width="40" height="30"
+                    [matTooltip]="row.voteType === 1 ? 'Like' : 'Dislike'">               
+                </td>
+            </ng-container>
+            <!-- <ng-container matColumnDef="orderRating">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Order Rating</th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    {{row.orderRating}}
+                </td>
+            </ng-container> -->
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" colspan="6">There is no matching data !!!</td>
+            </tr>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+        <mat-paginator #paginatorRef [length]="totalRecords" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)"></mat-paginator>
+
+    </div>
+</div>

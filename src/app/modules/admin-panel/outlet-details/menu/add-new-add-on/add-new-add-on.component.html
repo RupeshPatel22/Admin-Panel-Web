@@ -1,0 +1,59 @@
+<div class="modal hide drawer right-align" id="addNewAddOnModalRight" role="dialog" aria-labelledby="addNewAddOnModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <label class="modal-title border-0 text-uppercase">{{modalData.actionType}} Add-On</label>
+                <mat-icon (click)="close()" data-dismiss="modal">close</mat-icon>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="addonActionForm">
+                    <header>
+                        <label><b>Kindly fill up the basic details to continue !!!</b></label>
+                    </header>
+
+                    <!-- form input fields -->
+                    <div class="input-details">
+                        <label class="input-heading mt-4">Group Name</label>
+                        <ng-select class="modal-ng-select mt-2 w-100" formControlName="addonGroupId" [items]="addonGroupList" bindValue="addonGroupId" bindLabel="addonGroupName" placeholder="Select Add-On Group">
+                        </ng-select>
+                        <app-form-error-msg [control]="addonActionForm.controls.addonGroupId"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-4">ADD-ON NAME</label>
+                        <input class="input-field mt-2" formControlName="addonName" type="text" placeholder="Enter name" />
+                        <app-form-error-msg [control]="addonActionForm.controls.addonName"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-4">ADD-ON TYPE</label>
+                        <ng-select class="modal-ng-select mt-2 w-100" formControlName="foodType" [items]="foodTypeList" bindValue="id" bindLabel="name" placeholder="Select Type">
+                        </ng-select>
+                        <app-form-error-msg [control]="addonActionForm.controls.foodType"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-4">ADDITIONAL PRICE (&#8377;)</label>
+                        <input class="input-field mt-2" formControlName="addonPrice" type="text" placeholder="Enter price" appAllowTwoDecimalNumbers />
+                        <app-form-error-msg [control]="addonActionForm.controls.addonPrice"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-4">Is GST Inclusive?</label>
+                        <ng-select class="modal-ng-select mt-2 w-100" formControlName="isGstInclusive" [items]="flags" bindValue="id" bindLabel="name" placeholder="Select GST Type" (change)="getSelectionChange()"></ng-select>
+                        <app-form-error-msg [control]="addonActionForm.controls.isGstInclusive"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-4">GST Rate (in %)</label>
+                        <div class="input-marge d-flex align-items-center row mt-2">
+                            <input class="input-field col-11 mt-2" formControlName="gst" type="text" placeholder="Enter GST rate" appAllowTwoDecimalNumbers />
+                            <div class="col-1">%</div>
+                        </div>
+                        <app-form-error-msg [control]="addonActionForm.controls.gst"></app-form-error-msg>
+                    </div>
+                    <div class="d-flex mt-4">
+                        <button type="button" mat-button class="buttons w-100 h-3 me-3" (click)="close()">DISMISS
+                        </button>
+                        <button type="button" mat-button class="buttons active-button w-100 h-3" (click)="submitAddon()" *ngIf="!modalData.disableAll">{{isAddAddon ? 'ADD' : 'SAVE'}}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

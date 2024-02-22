@@ -1,0 +1,169 @@
+<section class="live-dashboard-wrapper">
+  <app-page-title [pageTitle]="'Live Dashboard'"></app-page-title>
+  <div class="all-live-status row justify-content-between align-items-center w-100 mt-4">
+    <!-- <div class="col-4">
+      <div class="banner-live banner-factor d-flex flex-column align-items-center justify-content-center ">
+        <label class="banner-live-count green m-0"> {{ bannerFactor !== null ? (bannerFactor !== 0 ? bannerFactor : '0')
+          : 'N/A' }} </label>
+        <label class="banner-live-name">Banner Factor</label>
+      </div>
+    </div> -->
+    <div class="col-3">
+      <div class="banner-live live-orders d-flex flex-column align-items-center justify-content-center ">
+        <label class="banner-live-count blue m-0"> {{ liveOrderCount?.liveOrderCount }} </label>
+        <label class="banner-live-name">Live Orders</label>
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="banner-live live-riders d-flex flex-column align-items-center justify-content-center">
+        <label class="banner-live-count orange m-0"> {{ liveRiderCount?.liveRiderCount }} </label>
+        <label class="banner-live-name">Live Riders</label>
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="banner-live live-orders d-flex flex-column align-items-center justify-content-center ">
+        <label class="banner-live-count red m-0"> {{ liveOrderCount?.totalOrdersCount }} </label>
+        <label class="banner-live-name">Total Orders</label>
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="banner-live live-riders d-flex flex-column align-items-center justify-content-center ">
+        <label class="banner-live-count green m-0"> {{ liveRiderCount?.totalRidersCount }} </label>
+        <label class="banner-live-name">Total Riders</label>
+      </div>
+    </div>
+    
+  </div>
+
+  <div class="detail-order-status row mt-5">
+    <div class="col-6">
+      <section class="order-status">
+        <div class="order-status-header d-flex align-items-center justify-content-between">
+          <label class="heading">Order Status</label>
+          <img src="../../../../assets/icons/order-status-icon.svg" alt="">
+        </div>
+        <div class="order-status-detail d-flex flex-wrap gap-4">
+          <div class="row w-100 m-0">
+            <div class="col-4">
+              <span class="pending-order cursor-enabled d-flex flex-column align-items-center justify-content-center"
+                (click)="navigateToRiderOrdersPage('PENDING')">
+                <label class="order-count"> {{ liveOrderCount?.pendingOrderCount }} </label>
+                <label class="order-name">Pending</label>
+              </span>
+            </div>
+            <div class="col-4">
+              <span class="pending-order cursor-enabled d-flex flex-column align-items-center justify-content-center"
+                (click)="navigateToRiderOrdersPage('ASSIGNED')">
+                <label class="order-count"> {{ liveOrderCount?.assignedOrdersCount }} </label>
+                <label class="order-name">Assigned</label>
+              </span>
+            </div>
+            <div class="col-4">
+              <span class="alloted-order cursor-enabled d-flex flex-column align-items-center justify-content-center"
+                (click)="navigateToRiderOrdersPage('ALLOTTED')">
+                <label class="order-count"> {{ liveOrderCount?.allotedOrderCount }} </label>
+                <label class="order-name">Alloted</label>
+              </span>
+            </div>
+          </div>
+          <div class="row w-100  m-0 text-center">
+            <div class="col-6">
+              <span
+                class="arrived cursor-enabled cursor-enabled d-flex flex-column align-items-center justify-content-center"
+                (click)="navigateToRiderOrdersPage('ARRIVED')">
+                <label class="order-count order-count-orange"> {{ liveOrderCount?.arrivedOrderCount }} </label>
+                <label class="order-name text-center">Arrived at Pick Location</label>
+              </span>
+            </div>
+            <div class="col-6">
+              <span class="dispatched-order cursor-enabled d-flex flex-column align-items-center justify-content-center"
+                (click)="navigateToRiderOrdersPage('DISPATCHED')">
+                <label class="order-count"> {{ liveOrderCount?.dispatchedOrderCount }} </label>
+                <label class="order-name">Dispatched</label>
+              </span>
+            </div>
+          </div>
+          <div class="row w-100  m-0">
+            <div class="col-4">
+              <span
+                class="arrived-at-customer-doorstep-order cursor-enabled d-flex flex-column align-items-center justify-content-center"
+                (click)="navigateToRiderOrdersPage('ARRIVED_CUSTOMER_DOORSTEP')">
+                <label class="order-count"> {{ liveOrderCount?.arrivedCustomerDoorStepOrderCount }} </label>
+                <label class="order-name text-center">Arrived at Customer Doorstep</label>
+              </span>
+            </div>
+            <div class="col-4">
+              <span class="cancelled cursor-enabled d-flex flex-column align-items-center justify-content-center"
+                (click)="navigateToRiderOrdersPage('CANCELLED')">
+                <label class="order-count order-count-red"> {{ liveOrderCount?.cancelledOrderCount }} </label>
+                <label class="order-name">Cancelled</label>
+              </span>
+            </div>
+            <div class="col-4">
+              <span class="delivered cursor-enabled d-flex flex-column align-items-center justify-content-center"
+                (click)="navigateToRiderOrdersPage('DELIVERED')">
+                <label class="order-count order-count-green"> {{ liveOrderCount?.deliveredOrderCount }} </label>
+                <label class="order-name">Delivered</label>
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="col-6">
+      <section class="order-status">
+        <div class="order-status-header d-flex align-items-center justify-content-between">
+          <label class="heading">Rider Status</label>
+          <img src="../../../../assets/icons/rider-status-sports_motorsports-icon.svg" alt="">
+        </div>
+        <div class="order-status-detail">
+          <div class="row w-100 m-0">
+            <div class="col-6">
+              <span class="pending-order d-flex flex-column align-items-center justify-content-center">
+                <label class="order-count"> {{ liveRiderCount?.idleRiderCount }} </label>
+                <label class="order-name">Idle</label>
+              </span>
+            </div>
+            <div class="col-6">
+              <span class="alloted-order d-flex flex-column align-items-center justify-content-center">
+                <label class="order-count"> {{ liveRiderCount?.busyRiderCount }} </label>
+                <label class="order-name">Busy</label>
+              </span>
+            </div>
+          </div>
+          <div class="row w-100 mt-4 m-0 text-center">
+            <div class="col-6">
+              <span class="dispatched-order d-flex flex-column align-items-center justify-content-center">
+                <label class="order-count"> {{ liveRiderCount?.allocatingRiderCount }} </label>
+                <label class="order-name">Allocating</label>
+              </span>
+            </div>
+            <div class="col-6">
+              <span
+                class="arrived-at-customer-doorstep-order d-flex flex-column align-items-center justify-content-center">
+                <label class="order-count"> {{ liveRiderCount?.offlineRiderCount }} </label>
+                <label class="order-name">Offline</label>
+              </span>
+            </div>
+          </div>
+          <div class="row w-100 mt-4 m-0 text-center">
+            <div class="col-6">
+              <span class="dispatched-order d-flex flex-column align-items-center justify-content-center">
+                <label class="order-count"> {{ liveRiderCount?.noPingWarningRiderCount }} </label>
+                <label class="order-name">No Ping Warning</label>
+              </span>
+            </div>
+            <div class="col-6">
+              <span
+                class="arrived-at-customer-doorstep-order d-flex flex-column align-items-center justify-content-center">
+                <label class="order-count"> {{ liveRiderCount?.noPingOfflineRiderCount }} </label>
+                <label class="order-name">No Ping Offline</label>
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>

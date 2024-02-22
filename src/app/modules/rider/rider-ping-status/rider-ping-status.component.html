@@ -1,0 +1,121 @@
+<section class="rider-wrapper">
+    <app-page-title [pageTitle]="'Rider Alerts'"></app-page-title>
+    <div class="rider-wrapper__tools w-75">
+        <div class="row align-items-end">
+            <div class="col-6 input-details">
+                <label for="search" class="input-heading">Search by rider name</label>
+                <input type="text" class="input-field" placeholder="Enter rider name" name="search"
+                    [(ngModel)]="filterRiderFields.riderName" (keyup.enter)="getRiderList(true)">
+            </div>
+            <div class="col-3">
+                <button class="buttons buttons--filter w-100"
+                    (click)="showFilterFields ? clearFilter('all') : showFilterFields = true">
+                    {{showFilterFields ? 'Clear Filters' : 'Add Filters'}}
+                    <img src="assets/icons/filter.svg" class="ms-4" alt="add-icon" />
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="row align-items-end mt-4" *ngIf="showFilterFields">
+        <div class="input-details col-2">
+            <label class="input-heading">Rider ID</label>
+            <input type="text" class="input-field" placeholder="Enter Rider ID" name="filterByRiderId"
+                [(ngModel)]="filterRiderFields.riderId" (keydown.enter)="getRiderList(true)">
+        </div>
+        <div class="col-2 input-details">
+            <label class="input-heading">Rider Ping Status</label>
+            <ng-select [items]="riderPingStatusList | keyvalue: originalOrder" bindLabel="value" bindValue="key"
+                placeholder="Select Status" [multiple]="true" [closeOnSelect]="false"
+                [(ngModel)]="filterRiderFields.riderPingStatus" (clear)="clearFilter()"></ng-select>
+        </div>
+        <div class="col-2 input-details">
+            <label class="input-heading">Rider Status</label>
+            <ng-select [items]="riderStatusList | keyvalue" bindLabel="value" bindValue="key"
+                placeholder="Select Status" [multiple]="true" [closeOnSelect]="false"
+                [(ngModel)]="filterRiderFields.riderStatus" (clear)="clearFilter()"></ng-select>
+        </div>
+        <div class="col-2 input-details">
+            <label class="input-heading">Rider Type</label>
+            <ng-select [items]="riderTypeList | keyvalue: originalOrder" bindLabel="value" bindValue="key"
+                placeholder="Select Rider Type" [(ngModel)]="filterRiderFields.type" (clear)="clearFilter()">
+            </ng-select>
+        </div>
+        <div class="input-details col-2 mt-3">
+            <label class="input-heading">Rider Phone Number</label>
+            <input type="text" class="input-field" placeholder="Enter Rider Phone Number" name="filterByRiderPhone"
+                [(ngModel)]="filterRiderFields.phone" (keydown.enter)="getRiderList(true)">
+        </div>
+        <div class="col-2 input-details">
+            <label class="input-heading">Rider Offline Reasons</label>
+            <ng-select [items]="riderOfflineReasonsList | keyvalue" bindLabel="value" bindValue="key"
+                placeholder="Select Status" [multiple]="true" [closeOnSelect]="false"
+                [(ngModel)]="filterRiderFields.offlineReason" (clear)="clearFilter()"></ng-select>
+        </div>
+        <div class="col-2 mt-3">
+            <button class="buttons br-50" (click)="getRiderList(true)">Apply Filter</button>
+        </div>
+    </div>
+    <main class="rider-wrapper__content mt-5">
+        <table class="w-100" mat-table [dataSource]="riderList" matSort >
+            <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Rider Details</th>
+                <td mat-cell *matCellDef="let row">
+                    <strong class="cursor-enabled text-decoration-underline">
+                        <span class="d-flex gap-3 align-items-center">
+                            <strong>{{row.name}}</strong>
+                            <img class="cursor-enabled" src="assets/icons/copy-icon.svg" width="15" height="15" alt=""
+                                [appCopyToClipboard]="row.name">
+                        </span>
+                    </strong>
+                    <span class="d-flex align-items-center gap-3">
+                        <p class="m-0">{{row.id}}</p>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" width="15" height="15" alt=""
+                            [appCopyToClipboard]="row.id">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="phone">
+                <th mat-header-cell *matHeaderCellDef>Phone </th>
+                <td mat-cell *matCellDef="let row">{{row.phone}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="type">
+                <th mat-header-cell *matHeaderCellDef>Type </th>
+                <td mat-cell *matCellDef="let row">{{row.type}}</td>
+            </ng-container>
+            <ng-container matColumnDef="pingStatusUpdatedAt">
+                <th mat-header-cell *matHeaderCellDef>Ping Status Updated At </th>
+                <td mat-cell *matCellDef="let row">{{row.pingStatusUpdatedAt? row.pingStatusUpdatedAt : 'N/A'}}</td>
+            </ng-container>
+            <ng-container matColumnDef="lastOfflineAt">
+                <th mat-header-cell *matHeaderCellDef>Last Offline At </th>
+                <td mat-cell *matCellDef="let row">{{ row.lastOfflineAt ? row.lastOfflineAt : 'N/A '}}</td>
+            </ng-container>
+            <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef>Rider Active Status </th>
+                <td mat-cell *matCellDef="let row">{{row.status}}</td>
+            </ng-container>
+            <ng-container matColumnDef="pingStatus">
+                <th mat-header-cell *matHeaderCellDef>Ping Status </th>
+                <td mat-cell *matCellDef="let row">
+                    <span [ngClass]="{'text-warning': row.pingStatus === riderPingStatusList.warning, 
+                        'text-danger': row.pingStatus === riderPingStatusList.offline,
+                        'text-success': row.pingStatus === riderPingStatusList.live}">{{row.pingStatus? row.pingStatus : 'N/A'}}</span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="offlineReason">
+                <th mat-header-cell *matHeaderCellDef>Offline Reason </th>
+                <td mat-cell *matCellDef="let row">{{row.offlineReason ? row.offlineReason : 'N/A'}}</td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+                    There is no matching data !!!
+                </td>
+            </tr>
+        </table>
+        <mat-paginator #paginatorRef [length]="totalRiderRecords" [pageSize]="pageSize"
+            [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)"></mat-paginator>
+    </main>
+</section>

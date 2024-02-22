@@ -1,0 +1,230 @@
+<section class="admin-users-wrapper">
+    <app-page-title [pageTitle]="'Admin Users'"></app-page-title>
+
+    <div class="admin-users-wrapper__tools">
+        <div class="row align-items-end w-75">
+            <div class="col-6 input-details">
+                <label for="search" class="input-heading">Search by user name...</label>
+                <input type="text" class="input-field" placeholder="Enter user name" name="search"
+                    [(ngModel)]="filterAdminUserFields.name" (keyup.enter)="getAdminUsersList(true)">
+            </div>
+            <div class="col-3">
+                <button class="buttons buttons--filter w-100"
+                    (click)="showFilterFields ? clearFilter('all') : showFilterFields = true">
+                    {{showFilterFields ? 'Clear Filters' : 'Add Filters'}}
+                    <img src="assets/icons/filter.svg" class="ms-4" alt="add-icon" />
+                </button>
+            </div>
+            <div class="col-3">
+                <button class="buttons" (click)="openAdminUserModal('Add')">
+                    Add User
+                    <img src="assets/icons/add.svg" class="ms-4" alt="add-icon">
+                </button>
+            </div>
+        </div>
+        <div class="row align-items-end mt-4" *ngIf="showFilterFields">
+            <div class="col-2 input-details">
+                <label class="input-heading">User ID</label>
+                <input type="text" class="input-field" placeholder="Enter user id" name="id"
+                    [(ngModel)]="filterAdminUserFields.id" (keyup.enter)="getAdminUsersList(true)">
+            </div>
+            <div class="col-2 input-details">
+                <label class="input-heading">Login ID</label>
+                <input type="text" class="input-field" placeholder="Enter login id" name="loginId"
+                    [(ngModel)]="filterAdminUserFields.loginId" (keyup.enter)="getAdminUsersList(true)">
+            </div>
+            <div class="col-2 input-details">
+                <label class="input-heading">Phone</label>
+                <input type="text" class="input-field" placeholder="xxxxx xxxxx" name="phone"
+                    [(ngModel)]="filterAdminUserFields.phone" (keyup.enter)="getAdminUsersList(true)">
+            </div>
+            <div class="col-2 input-details">
+                <label class="input-heading">Email</label>
+                <input type="text" class="input-field" placeholder="example@speedyy.com" name="email"
+                    [(ngModel)]="filterAdminUserFields.email" (keyup.enter)="getAdminUsersList(true)">
+            </div>
+            <div class="col-2 input-details">
+                <label for="name" class="input-heading">Blocked Admin?</label>
+                <mat-radio-group [(ngModel)]="filterAdminUserFields.isBlock" class="mt-2">
+                    <mat-radio-button [value]="true" class="input-heading me-3">Yes</mat-radio-button>
+                    <mat-radio-button [value]="false" class="input-heading">No</mat-radio-button>
+                </mat-radio-group>
+            </div>
+            <div class="col-2">
+                <button class="buttons br-50" (click)="getAdminUsersList(true)">Apply Filter</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-users-wrapper__content mt-5">
+        <table class="w-100" mat-table [dataSource]="adminUsersList" matSort>
+
+            <ng-container matColumnDef="sr no">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Sr No </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row; let i= index"> {{ (paginatorRef.pageIndex *
+                    paginatorRef.pageSize) + (i + 1) }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>User Detail</th>
+                <td mat-cell *matCellDef="let row">
+                    <p class="m-0"><strong>{{row.name}}</strong></p>
+                    <span class="d-flex gap-3 align-items-center"><label class="singleline-ellipsis">{{row.id}}</label>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15" [appCopyToClipboard]="row.id">
+                    </span>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="email">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Email ID</th>
+                <td mat-cell *matCellDef="let row">{{row.email ? row.email : 'N/A'}}</td>
+            </ng-container>
+            <ng-container matColumnDef="phone">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Phone</th>
+                <td mat-cell *matCellDef="let row">{{row.phone ? row.phone : 'N/A'}}</td>
+            </ng-container>
+            <ng-container matColumnDef="loginId">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Login ID</th>
+                <td mat-cell *matCellDef="let row">{{row.loginId}}</td>
+            </ng-container>
+            <ng-container matColumnDef="roles">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Roles</th>
+                <td mat-cell *matCellDef="let row">
+                    <span *ngFor="let role of row.roles; let i=index">
+                        {{adminRoles[role] ? adminRoles[role]: 'N/A'}}
+                        <span *ngIf="row.roles.length !== i+1">, </span>
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="isBlock">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Is Blocked?</th>
+                <td mat-cell *matCellDef="let row">{{row.isBlock ? 'Yes' : 'No'}}</td>
+            </ng-container>
+            <ng-container matColumnDef="blockedReason">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Blocked Reason</th>
+                <td mat-cell *matCellDef="let row">{{row.blockedReason ? row.blockedReason : 'N/A'}}</td>
+            </ng-container>
+            <ng-container matColumnDef="blockedByAdminName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Blocked By</th>
+                <td mat-cell *matCellDef="let row">
+                    {{row.blockedByAdminName ? row.blockedByAdminName : 'N/A'}}
+                    <span class="d-flex gap-3 align-items-center" *ngIf="row.blockedByAdminId">
+                        <p class="m-0 singleline-ellipsis">{{row.blockedByAdminId}}</p>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15" [appCopyToClipboard]="row.blockedByAdminId">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="unBlockedReason">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Unblocked Reason</th>
+                <td mat-cell *matCellDef="let row">{{row.unBlockedReason ? row.unBlockedReason : 'N/A'}}</td>
+            </ng-container>
+            <ng-container matColumnDef="unBlockedByAdminName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Unblocked By</th>
+                <td mat-cell *matCellDef="let row">
+                    {{row.unBlockedByAdminName ? row.unBlockedByAdminName : 'N/A'}}
+                    <span class="d-flex gap-3 align-items-center" *ngIf="row.unBlockedByAdminId">
+                        <p class="m-0 singleline-ellipsis">{{row.unBlockedByAdminId}}</p>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15" [appCopyToClipboard]="row.unBlockedByAdminId">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="action">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td class="" mat-cell *matCellDef="let row">
+                    <button mat-icon-button [matMenuTriggerFor]="menu">
+                        <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <mat-menu #menu="matMenu">
+                        <div class="d-flex flex-column">
+                            <span class="d-flex align-items-center justify-content-between" matTooltip="Edit User"
+                            [matTooltipClass]="custom-tooltip">
+                                <label class="cursor-enabled" for="" (click)="openAdminUserModal('Edit', row)">Edit Details</label>
+                                <mat-icon class="ms-2" (click)="openAdminUserModal('Edit', row)" *ngIf="!row.roles.includes('superadmin')">edit</mat-icon>
+                            </span>
+                            <span class="d-flex align-items-center justify-content-between mt-2">
+                                <label for="">Block Status</label>
+                                <input class="ms-2" type="checkbox" [ngClass]="{'active': !row.isBlock }" role="switch" name="toggle" (click)="changeAdminStatus(row)" [title]="row.isBlock ? 'Unblock' : 'Block'">
+                            </span>
+                        </div>
+                    </mat-menu>    
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="displayedColumns.length">There is no matching data !!!</td>
+            </tr>
+        </table>
+
+        <mat-paginator #paginatorRef [length]="totalAdminUsersRecords" [pageSize]="pageSize"
+            [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)"></mat-paginator>
+    </div>
+</section>
+
+<!-- Admin User Form Modal -->
+<div class="modal hide drawer right-align" id="changeModalRight" role="dialog" aria-hidden="true"
+    *ngIf="showAdminUserModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <label class="modal-title border-0" id="exampleModalLabel">{{action}} User</label>
+                <mat-icon (click)="closeAdminUserModal()" data-dismiss="modal">close</mat-icon>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="adminUserForm">
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Full Name</label>
+                        <input type="text" class="input-field" formControlName="name"
+                            placeholder="Enter user full name" />
+                        <app-form-error-msg [control]="adminUserForm.controls.name"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Email</label>
+                        <input type="text" class="input-field" formControlName="email"
+                            placeholder="example@speedyy.com" />
+                        <app-form-error-msg [control]="adminUserForm.controls.email"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Phone</label>
+                        <input type="text" class="input-field" formControlName="phone" placeholder="xxxxx xxxxx" />
+                        <app-form-error-msg [control]="adminUserForm.controls.phone"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Login ID</label>
+                        <input type="text" class="input-field" formControlName="loginId" placeholder="Enter Login ID" />
+                        <app-form-error-msg [control]="adminUserForm.controls.loginId"></app-form-error-msg>
+                    </div>
+                    <div class="input-details" *ngIf="action === 'Add'">
+                        <label class="input-heading mt-3">Password</label>
+                        <input type="text" class="input-field" formControlName="password"
+                            placeholder="Enter password" />
+                        <app-form-error-msg [control]="adminUserForm.controls.password"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading mt-3">Roles</label>
+                        <ng-select class="modal-ng-select w-100" formControlName="roles" [multiple]="true"
+                            [closeOnSelect]="false" placeholder="Select roles">
+                            <ng-container *ngFor="let role of adminRoles | keyvalue: originalOrder">
+                                <ng-option [value]="role.key" *ngIf="role.key !== 'superadmin'">
+                                    {{role.value}}
+                                </ng-option>
+                            </ng-container>
+                        </ng-select>
+                        <app-form-error-msg [control]="adminUserForm.controls.roles"></app-form-error-msg>
+                    </div>
+                    <div class="d-flex mt-3" *ngIf="action !== 'View'">
+                        <button type="button" class="buttons buttons--white br-50 w-100 h-3 me-3"
+                            (click)="closeAdminUserModal()">Dismiss
+                        </button>
+                        <button type="button" class="buttons br-50 w-100 h-3" (click)="submitAdminUser()">{{action ===
+                            'Edit'
+                            ?
+                            'Save' : 'Add'}}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,39 @@
+<div class="dialog-wrapper">
+    <section *ngIf="action === 'add'">
+        <h3>Add Holiday Slot</h3>
+        <form [formGroup]="holidaySlotsForm" class="row my-4">
+            <div class="input-details col-6">
+                <label class="input-heading">End Date</label>
+                <mat-form-field appearance="outline">
+                    <input matInput (click)="endDate.open()" [matDatepicker]="endDate" [min]="minDate" [readonly]="true"
+                        name="endDate" formControlName="date" placeholder="Select date">
+                    <mat-datepicker-toggle matSuffix [for]="endDate"></mat-datepicker-toggle>
+                    <mat-datepicker #endDate></mat-datepicker>
+                </mat-form-field>
+                <app-form-error-msg [control]="holidaySlotsForm.controls.date"></app-form-error-msg>
+            </div>
+            <div class="input-details col-6">
+                <label class="input-heading">End Time</label>
+                <mat-form-field appearance="outline">
+                    <input matInput type="time" formControlName="time" name="endTime"
+                        placeholder="Select Time">
+                    <!-- <ngx-material-timepicker-toggle matSuffix [for]="endTime"></ngx-material-timepicker-toggle>
+                    <ngx-material-timepicker #endTime [defaultTime]="currentTime"></ngx-material-timepicker> -->
+                </mat-form-field>
+                <app-form-error-msg [control]="holidaySlotsForm.controls.time"></app-form-error-msg>
+            </div>
+        </form>
+        <div class="d-flex justify-content-between gap-3">
+            <button class="buttons buttons--white br-50 w-50" (click)="onDismiss()">Dismiss</button>
+            <button class="buttons br-50 w-50" (click)="onConfirm()"> Add</button>
+        </div>
+    </section>
+
+    <section *ngIf="action === 'delete'">
+        <h3>Are you sure you want to delete this slot?</h3>
+        <div class="d-flex justify-content-between gap-3 mt-4">
+            <button class="buttons buttons--white br-50 w-50" (click)="onDismiss()">Dismiss</button>
+            <button class="buttons br-50 w-50" (click)="onConfirm()"> Delete</button>
+        </div>
+    </section>
+</div>

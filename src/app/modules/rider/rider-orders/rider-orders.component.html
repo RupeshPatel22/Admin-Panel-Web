@@ -1,0 +1,220 @@
+<section class="rider-orders-wrapper">
+    <app-page-title [pageTitle]="pageHeading"></app-page-title>
+    <div class="rider-orders-wrapper__tools">
+        <div class="row align-items-end w-75">
+            <div class="col-6 input-details">
+                <label for="search" class="input-heading">Search by order id</label>
+                <input type="text" class="input-field" placeholder="Enter comma separated order id" name="search"
+                    [(ngModel)]="filterRiderOrderFields.orderId" (keyup.enter)="getriderOrdersList(true)" appMoveCursorAtEnd>
+            </div>
+            <div class="col-3">
+                <button class="buttons buttons--filter w-100"
+                    (click)="showFilterFields ? clearFilter('all') : showFilterFields = true">
+                    {{showFilterFields ? 'Clear Filters' : 'Add Filters'}}
+                    <img src="assets/icons/filter.svg" class="ms-4" alt="add-icon" />
+                </button>
+            </div>
+            <div class="col-3">
+                <button class="buttons w-100" (click)="exportRiderOrdersInCsv()">Export in csv
+                </button>
+            </div>
+        </div>
+        <div class="row align-items-end mt-4" *ngIf="showFilterFields">
+            <div class="input-details col-3 mt-3">
+                <label class="input-heading">Client Order ID</label>
+                <input type="text" class="input-field" placeholder="Enter Comma Separated Client Order ID" name="filterByClientOrderId"
+                    [(ngModel)]="filterRiderOrderFields.clientOrderId" (keydown.enter)="getriderOrdersList(true)" appMoveCursorAtEnd>
+            </div>
+            <!-- <div class="input-details col-3 mt-3">
+                <label class="input-heading">Client ID</label>
+                <input type="text" class="input-field" placeholder="Enter Comma Separated Client ID" name="filterByClientId"
+                    [(ngModel)]="filterRiderOrderFields.clientId" (keydown.enter)="getriderOrdersList(true)">
+            </div> -->
+            <div class="input-details col-3 mt-3">
+                <label class="input-heading">Rider ID</label>
+                <input type="text" class="input-field" placeholder="Enter Comma Separated Rider ID" name="filterByRiderId"
+                    [(ngModel)]="filterRiderOrderFields.riderId" (keydown.enter)="getriderOrdersList(true)" appMoveCursorAtEnd>
+            </div>
+            <div class="input-details col-3 mt-3" *ngIf="kind !=='manual-allocation'">
+                <label class="input-heading">Rider Shift IDs</label>
+                <input type="text" class="input-field" placeholder="Enter Comma Separated Rider Shift IDs" name="filterByRiderShiftId"
+                    [(ngModel)]="filterRiderOrderFields.riderShiftId" (keydown.enter)="getriderOrdersList(true)" appMoveCursorAtEnd>
+            </div>
+            <div class="input-details col-3 mt-3">
+                <label class="input-heading">Payout ID</label>
+                <input type="text" class="input-field" placeholder="Enter Payout ID" name="filterByPayoutId"
+                    [(ngModel)]="filterRiderOrderFields.payoutId" (keydown.enter)="getriderOrdersList(true)">
+            </div>
+            <div class="input-details col-3 mt-3">
+                <label class="input-heading">Allocation Attempts</label>
+                <input type="text" class="input-field" placeholder="Enter Attempts Count"
+                    name="filterByAllocationAttempts" [(ngModel)]="filterRiderOrderFields.allocationAttempts"
+                    (keydown.enter)="getriderOrdersList(true)">
+            </div>
+            <div class="input-details col-3 mt-3" *ngIf="kind === 'manual-allocation'">
+                <label class="input-heading">Manual Allocation</label>
+                <ng-select [items]="manualAssignmentValue" bindLabel="value" bindValue="key"
+                    placeholder="Select Value" [(ngModel)]="filterRiderOrderFields.manualAssignment" (clear)="clearFilter()" disabled></ng-select>
+            </div>
+            <div class="input-details col-3 mt-3" *ngIf="kind !=='manual-allocation'">
+                <label class="input-heading">Delivery Status</label>
+                <ng-select [items]="deliveryStatusList | keyvalue" bindLabel="value" bindValue="key"
+                    placeholder="Select Status" [multiple]="true" [closeOnSelect]="false"
+                    [(ngModel)]="filterRiderOrderFields.deliveryStatus" (clear)="clearFilter()"></ng-select>
+            </div>
+            <div class="input-details col-3 mt-3" *ngIf="kind === 'all'">
+                <label class="input-heading">Settlement Status</label>
+                <ng-select [items]="settlementStatusList | keyvalue" bindLabel="value" bindValue="key"
+                    placeholder="Select Status" [multiple]="true" [closeOnSelect]="false"
+                    [(ngModel)]="filterRiderOrderFields.settlementStatus" (clear)="clearFilter()"></ng-select>
+            </div>
+            <div class="input-details col-3 mt-3" *ngIf="kind !=='manual-allocation'">
+                <label class="input-heading">Cancelled By</label>
+                <ng-select [items]="cancelledByList | keyvalue" bindLabel="value" bindValue="key"
+                    placeholder="Select Cancelled By" [multiple]="true" [closeOnSelect]="false"
+                    [(ngModel)]="filterRiderOrderFields.cancelledBy" (clear)="clearFilter()"></ng-select>
+            </div>
+            <div class="input-details col-3 mt-3">
+                <label class="input-heading">Pickup Operational Zone ID</label>
+                <input type="text" class="input-field" placeholder="Enter Comma Separated Pickup Operational Zone ID" name="filterByPickupOperationalZoneId"
+                    [(ngModel)]="filterRiderOrderFields.pickupOperationalZoneId" (keydown.enter)="getriderOrdersList(true)" appMoveCursorAtEnd>
+            </div>
+            <div class="col-2 input-details mt-3">
+                <label for="name" class="input-heading">Is Sponsored Rider?</label>
+                <mat-radio-group [(ngModel)]="filterRiderOrderFields.isSponsoredRider" class="mt-2">
+                    <mat-radio-button [value]="true" class="input-heading me-3">Yes</mat-radio-button>
+                    <mat-radio-button [value]="false" class="input-heading">No</mat-radio-button>
+                </mat-radio-group>
+            </div>
+            
+            <div class="input-details col-3 mt-3">
+                <label class="input-heading">Start Date</label>
+                <mat-form-field class="custom-mat-form-field" appearance="outline">
+                    <input matInput (click)="startDate.open()" [matDatepicker]="startDate" [readonly]="true"
+                        name="startDate" placeholder="Select date" [(ngModel)]="filterRiderOrderFields.startDate"
+                        ngDefaultControl>
+                    <mat-datepicker-toggle matSuffix [for]="startDate" matSuffix></mat-datepicker-toggle>
+                    <mat-datepicker #startDate></mat-datepicker>
+                    <button mat-icon-button matSuffix *ngIf="filterRiderOrderFields.startDate"
+                        (click)="clearFilter('startDate')">
+                        <mat-icon>clear</mat-icon>
+                    </button>
+                </mat-form-field>
+            </div>
+            <div class="input-details col-3 mt-3">
+                <label class="input-heading">End Date</label>
+                <mat-form-field class="custom-mat-form-field" appearance="outline">
+                    <input matInput (click)="endDate.open()" [matDatepicker]="endDate" [readonly]="true" name="endDate"
+                        placeholder="Select date" [min]="filterRiderOrderFields.startDate"
+                        [(ngModel)]="filterRiderOrderFields.endDate" ngDefaultControl>
+                    <mat-datepicker-toggle matSuffix [for]="endDate" matSuffix></mat-datepicker-toggle>
+                    <mat-datepicker #endDate></mat-datepicker>
+                    <button mat-icon-button matSuffix *ngIf="filterRiderOrderFields.endDate"
+                        (click)="clearFilter('endDate')">
+                        <mat-icon>clear</mat-icon>
+                    </button>
+                </mat-form-field>
+            </div>
+            <div class="col-4 mt-3">
+                <button class="buttons br-50" (click)="getriderOrdersList(true)">Apply Filter</button>
+            </div>
+        </div>
+    </div>
+    <main class="rider-orders-wrapper__content mt-5">
+        <table class="w-100" mat-table [dataSource]="riderOrdersList" matSort multiTemplateDataRows>
+            <ng-container matColumnDef="orderId">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Order ID </th>
+                <td mat-cell *matCellDef="let row">
+                    <span class="d-flex gap-3 align-items-center">
+                        <strong>{{row.orderId}}</strong>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" width="15" height="15" alt=""
+                            [appCopyToClipboard]="row.orderId">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="clientOrderId">
+                <th mat-header-cell *matHeaderCellDef>Client Order ID </th>
+                <td mat-cell *matCellDef="let row">
+                    <span class="d-flex gap-3 align-items-center">
+                        <span class="text-decoration-underline cursor-enabled" matTooltip="open in one view dashboard" matTooltipClass="custom-tooltip"
+                            (click)="goToOneViewWebsite(row.clientOrderId)"> <strong> {{row.clientOrderId}} </strong> </span>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" width="15" height="15" alt=""
+                            [appCopyToClipboard]="row.clientOrderId">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="riderName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Rider Details</th>
+                <td mat-cell *matCellDef="let row">
+                    <span>{{row.riderName ? row.riderName : 'N/A'}}</span>
+                    <p class="m-0">
+                        <span class="d-flex gap-3 align-items-center">
+                            <strong class=" singleline-ellipsis">{{row.riderId ? row.riderId : ''}}</strong>
+                            <img class="cursor-enabled" src="assets/icons/copy-icon.svg" width="15" height="15" alt=""
+                                [appCopyToClipboard]="row.riderId">
+                        </span>
+                    </p>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="createdAt">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Order Placed At</th>
+                <td mat-cell *matCellDef="let row">{{row.createdAt| date: dateLongTimeFormat}}</td>
+            </ng-container>
+            <ng-container matColumnDef="totalAmount">
+                <th mat-header-cell *matHeaderCellDef>Amount</th>
+                <td mat-cell *matCellDef="let row">{{row.totalAmount}}</td>
+            </ng-container>
+            <ng-container matColumnDef="deliveryCharges">
+                <th mat-header-cell *matHeaderCellDef>Delivery Charges (GST included)</th>
+                <td mat-cell *matCellDef="let row">{{row.deliveryCharges}}</td>
+            </ng-container>
+            <ng-container matColumnDef="pickupOperationalZoneDetails">
+                <th mat-header-cell *matHeaderCellDef>Pickup Operational Zone Details</th>
+                <td mat-cell *matCellDef="let row">
+                    <span>{{row.pickupOperationalZoneName ? row.pickupOperationalZoneName : 'N/A'}}</span>
+                    <p class="m-0">
+                        <span class="d-flex gap-3 align-items-center">
+                            <strong class=" singleline-ellipsis">{{row.pickupOperationalZoneId ? row.pickupOperationalZoneId : ''}}</strong>
+                            <img class="cursor-enabled" src="assets/icons/copy-icon.svg" width="15" height="15" alt=""
+                                [appCopyToClipboard]="row.pickupOperationalZoneId">
+                        </span>
+                    </p>
+                </td>
+            </ng-container>
+            <!-- <ng-container matColumnDef="deliveryDistance">
+                <th mat-header-cell *matHeaderCellDef>Delivery Distance (in km)</th>
+                <td mat-cell *matCellDef="let row">{{row.deliveryDistance}} </td>
+            </ng-container> -->
+            <ng-container matColumnDef="DeliveryStatus">
+                <th mat-header-cell *matHeaderCellDef>Delivery Status </th>
+                <td mat-cell *matCellDef="let row">{{row.deliveryStatus}}</td>
+            </ng-container>
+            <ng-container matColumnDef="action">
+                <th class="cursor-disable" mat-header-cell *matHeaderCellDef>Action </th>
+                <td mat-cell *matCellDef="let row">
+                    <button mat-icon-button (click)="expandedRow = expandedRow === row ? null : row">
+                        <mat-icon>{{row === expandedRow ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}}</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="expandedDetail">
+                <td *matCellDef="let row" [attr.colspan]="displayedColumns.length">
+                    <app-rider-orders-details class="expanded-row-details"
+                        [ngClass]="row === expandedRow ? 'expanded' : 'collapsed'" [riderOrderDetails]="row"
+                        [action]="action" (takeAction)="takeAction($event)" *ngIf="expandedRow === row">
+                    </app-rider-orders-details>
+                </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+                    There is no matching data !!!
+                </td>
+            </tr>
+        </table>
+        <mat-paginator #paginatorRef [length]="totalRiderOrdersRecords" [pageSize]="pageSize"
+            [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)"></mat-paginator>
+    </main>
+</section>

@@ -1,0 +1,227 @@
+<section class="client-wrapper">
+    <app-page-title [pageTitle]="'Clients'"></app-page-title>
+    <div class="client-wrapper__tools row align-items-end w-75">
+        <div class="col-6 input-details">
+            <label for="search" class="input-heading">Search</label>
+            <input type="text" class="input-field" placeholder="Search by client id or client name..." name="search" [ngModel]="globalFilter" (ngModelChange)="globalSearch($event)">
+        </div>
+        <div class="col-3">
+            <button class="buttons" (click)="openClientActionModal(clientAction.AddClient)">
+                Add Client
+                <img src="assets/icons/add.svg" class="ms-4" alt="add-icon">
+            </button>
+        </div>
+    </div>
+    <main class="client-wrapper__content mt-5">
+        <table class="w-100" mat-table [dataSource]="clientsList" matSort>
+            <ng-container matColumnDef="clientId">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Client Id </th>
+                <td mat-cell *matCellDef="let row">
+                    <span class="d-flex gap-3 align-items-center">
+                        <strong>{{row.clientId}}</strong>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" width="15" height="15"
+                            alt="" [appCopyToClipboard]="row.clientId">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="clientName">
+                <th mat-header-cell *matHeaderCellDef>Client Name </th>
+                <td mat-cell *matCellDef="let row">
+                    <span class="d-flex gap-3 align-items-center">
+                        <strong>{{row.clientName}}</strong>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" width="15" height="15"
+                            alt="" [appCopyToClipboard]="row.clientName">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="action">
+                <th class="cursor-disable" mat-header-cell *matHeaderCellDef>Action </th>
+                <td mat-cell *matCellDef="let row">
+                    <mat-icon mat-icon-button [matMenuTriggerFor]="menu">more_vert</mat-icon>
+                    <mat-menu #menu="matMenu">
+                        <div class="cursor-enabled mb-2" (click)="openClientActionModal(clientAction.ViewPricing, row)">View Pricing</div>
+                        <div class="cursor-enabled mb-2" (click)="openClientActionModal(clientAction.UpdatePricing, row)">Update Pricing</div>
+                        <div class="cursor-enabled mb-2" (click)="openClientActionModal(clientAction.GenerateAuthToken, row)"> Generate Auth Token
+                        </div>
+                        <div class="cursor-enabled mb-2" (click)="openClientActionModal(clientAction.ViewAuthToken, row)"> View Auth Token</div>
+                        <div class="cursor-enabled mb-2" (click)="openClientActionModal(clientAction.CallbackToken, row)">Callback Token</div>
+                        <div class="cursor-enabled mb-2" (click)="openClientActionModal(clientAction.OrderStatusCb, row)">Order Status Callback</div>
+                        <div class="cursor-enabled mb-2" (click)="openClientActionModal(clientAction.RiderLocationCb, row)">Rider Location Callback
+                        </div>
+                    </mat-menu>
+                </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+                    There is no matching data !!!
+                </td>
+            </tr>
+        </table>
+        <mat-paginator #paginatorRef [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 25, 50]"></mat-paginator>
+    </main>
+</section>
+<div class="modal hide drawer right-align" id="helpModalRight" role="dialog" aria-labelledby="helpModalLabel" aria-hidden="true" *ngIf="showClientActionModal">
+    <div class="modal-dialog" role="dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <label class="modal-title border-0" id="exampleModalLabel">{{modalHeading}} {{currentClientId ? '-' :
+                    ''}} {{currentClientId}}</label>
+                <mat-icon (click)="closeClientActionModal()" data-dismiss="modal">close</mat-icon>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="clientForm" *ngIf="modalAction === clientAction.AddClient 
+                    || modalAction === clientAction.ViewPricing || modalAction === clientAction.UpdatePricing">
+                    <div class="input-details mb-3">
+                        <label class="input-heading">Client ID</label>
+                        <input type="text" class="input-field" placeholder="Enter Client ID" name="clientId" formControlName="clientId">
+                        <app-form-error-msg [control]="clientForm.controls.clientId"></app-form-error-msg>
+                    </div>
+                    <div class="input-details mb-3">
+                        <label class="input-heading">Client Name</label>
+                        <input type="text" class="input-field" name="clientName" placeholder="Enter Client Name" formControlName="clientName">
+                        <app-form-error-msg [control]="clientForm.controls.clientName"></app-form-error-msg>
+                    </div>
+                    <section class="border border-1 rounded p-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="m-0">Normal</h4>
+                            <button type="button" class="buttons active-button"
+                                (click)="addNormalDeliveryChargesSlab()" *ngIf="modalAction !== clientAction.ViewPricing">
+                                Add
+                            </button>
+                        </div>
+                        <div formArrayName="normal">
+                            <div class="row" *ngFor="let row of normalDeliveryChargesArr['controls']; let i=index"
+                                [formGroupName]="i">
+                                <p class="d-flex align-items-center text-uppercase text-secondary my-3 col-12">slab
+                                    {{i+1}}
+                                    <mat-icon class="ms-2"
+                                        (click)="removeNormalDeliveryChargesSlab(i)"
+                                        matTooltip="Delete" *ngIf="normalDeliveryChargesArr.length > 1 && modalAction !== clientAction.ViewPricing">delete
+                                    </mat-icon>
+                                </p>
+                                <div class="input-details col-6 mb-3">
+                                    <label class="input-heading">Min Distance</label>
+                                    <input class="input-field" formControlName="minDistance" type="number"
+                                        placeholder="Enter min value" />
+                                    <app-form-error-msg
+                                        [control]="normalDeliveryChargesArr['controls'][i]['controls']['minDistance']">
+                                    </app-form-error-msg>
+                                </div>
+                                <div class="input-details col-6 mb-3">
+                                    <label class="input-heading">Max Distance</label>
+                                    <input class="input-field" formControlName="maxDistance" type="number"
+                                        placeholder="Enter max value" />
+                                    <app-form-error-msg
+                                        [control]="normalDeliveryChargesArr['controls'][i]['controls']['maxDistance']">
+                                    </app-form-error-msg>
+                                </div>
+                                <div class="input-details col-6 mb-3">
+                                    <label class="input-heading">Rate Type</label>
+                                    <ng-select class="modal-ng-select" [items]="slabRateType | keyvalue" bindLabel="value" bindValue="key"
+                                        placeholder="Select rate type" formControlName="rateType"></ng-select>
+                                    <app-form-error-msg
+                                        [control]="normalDeliveryChargesArr['controls'][i]['controls']['rateType']">
+                                    </app-form-error-msg>
+                                </div>
+                                <div class="input-details col-6">
+                                    <label class="input-heading">Rate (in ₹)</label>
+                                    <input class="input-field" formControlName="rate" type="number"
+                                        placeholder="Enter rate" appAllowTwoDecimalNumbers />
+                                    <app-form-error-msg
+                                        [control]="normalDeliveryChargesArr['controls'][i]['controls']['rate']">
+                                    </app-form-error-msg>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <section class="border border-1 rounded p-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="m-0">Long Distance</h4>
+                            <button type="button" class="buttons active-button"
+                                (click)="!longDistanceDeliveryChargesGrp ? addLongDistanceDeliveryChargesSlab() 
+                                    : removeLongDistanceDeliveryChargesSlab()" *ngIf="modalAction !== clientAction.ViewPricing">
+                                {{!longDistanceDeliveryChargesGrp ? 'Add' : 'Remove'}}
+                            </button>
+                        </div>
+                        <div formGroupName="longDistance" class="row" *ngIf="longDistanceDeliveryChargesGrp">
+                            <div class="input-details col-6 mb-3">
+                                <label class="input-heading">Min Distance</label>
+                                <input class="input-field" formControlName="minDistance" type="number"
+                                    placeholder="Enter min value" appAllowTwoDecimalNumbers />
+                                <app-form-error-msg
+                                    [control]="longDistanceDeliveryChargesGrp['controls']['minDistance']">
+                                </app-form-error-msg>
+                            </div>
+                            <div class="input-details col-6 mb-3">
+                                <label class="input-heading">Rate Type</label>
+                                <ng-select class="modal-ng-select" [items]="slabRateType | keyvalue" bindLabel="value" bindValue="key"
+                                    placeholder="Select rate type" formControlName="rateType"></ng-select>
+                                <app-form-error-msg
+                                    [control]="longDistanceDeliveryChargesGrp['controls']['rateType']">
+                                </app-form-error-msg>
+                            </div>
+                            <div class="input-details col-6">
+                                <label class="input-heading">Rate (in ₹)</label>
+                                <input class="input-field mt-2" formControlName="rate" type="number"
+                                    placeholder="Enter rate" appAllowTwoDecimalNumbers />
+                                <app-form-error-msg
+                                    [control]="longDistanceDeliveryChargesGrp['controls']['rate']">
+                                </app-form-error-msg>
+                            </div>
+                        </div>
+                    </section>
+                </form>
+                <!-- Auth Token -->
+                <ng-container *ngIf="modalAction === clientAction.GenerateAuthToken || modalAction === clientAction.ViewAuthToken">
+                    <div class="input-details mb-3">
+                        <label class="input-heading">Auth Token</label>
+                        <input type="text" class="input-field" name="authToken" placeholder="Enter callback token" [formControl]="authToken">
+                        <app-form-error-msg [control]="authToken"></app-form-error-msg>
+                    </div>
+                </ng-container>
+                <!-- Callback token -->
+                <ng-container *ngIf="modalAction === clientAction.CallbackToken">
+                    <div class="input-details mb-3">
+                        <label class="input-heading">Callback Token</label>
+                        <input type="text" class="input-field" name="callbackToken" placeholder="Enter callback token" [formControl]="callbackToken">
+                        <app-form-error-msg [control]="callbackToken"></app-form-error-msg>
+                    </div>
+                </ng-container>
+                <!-- Order status Callback -->
+                <ng-container *ngIf="modalAction === clientAction.OrderStatusCb">
+                    <div class="input-details mb-3">
+                        <label class="input-heading">Url</label>
+                        <input type="text" class="input-field" name="orderStatusCbUrl" placeholder="Enter Url" [formControl]="orderStatusCbUrl">
+                        <app-form-error-msg [control]="orderStatusCbUrl"></app-form-error-msg>
+                    </div>
+                    <div class="input-details mb-3">
+                        <label class="input-heading">Method</label>
+                        <input type="text" class="input-field" name="orderStatusCbMethod" placeholder="Enter Method" [formControl]="orderStatusCbMethod">
+                        <app-form-error-msg [control]="orderStatusCbMethod"></app-form-error-msg>
+                    </div>
+                </ng-container>
+                <!-- Rider Location Callback -->
+                <ng-container *ngIf="modalAction === clientAction.RiderLocationCb">
+                    <div class="input-details mb-3">
+                        <label class="input-heading">Url</label>
+                        <input type="text" class="input-field" name="riderLocationCbUrl" placeholder="Enter Url" [formControl]="riderLocationCbUrl">
+                        <app-form-error-msg [control]="riderLocationCbUrl"></app-form-error-msg>
+                    </div>
+                    <div class="input-details mb-3">
+                        <label class="input-heading">Method</label>
+                        <input type="text" class="input-field" name="riderLocationCbMethod" placeholder="Enter Method" [formControl]="riderLocationCbMethod">
+                        <app-form-error-msg [control]="riderLocationCbMethod"></app-form-error-msg>
+                    </div>
+                </ng-container>
+                <div class="d-flex mt-4" *ngIf="modalAction !== clientAction.GenerateAuthToken 
+                    && modalAction !== clientAction.ViewAuthToken && modalAction !== clientAction.ViewPricing">
+                    <button type="button" class="buttons buttons--white br-50 w-100 h-3 me-3" (click)="closeClientActionModal()">DISMISS
+                    </button>
+                    <button type="button" class="buttons br-50 w-100 h-3" (click)="takeAction()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

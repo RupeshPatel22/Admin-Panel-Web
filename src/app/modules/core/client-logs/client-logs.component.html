@@ -1,0 +1,186 @@
+<section class="client-logs-wrapper">
+    <app-page-title [pageTitle]="'Client Logs'"></app-page-title>
+
+    <div class="client-logs-wrapper__tools">
+        <div class="row align-items-end w-75">
+            <div class="col-6 input-details">
+                <label for="search" class="input-heading">Search by user id...</label>
+                <input type="text" class="input-field" placeholder="Enter user id" name="search"
+                    [(ngModel)]="filterClientLogsFields.userId" (keyup.enter)="getClientLogs(true)">
+            </div>
+            <div class="col-3">
+                <button class="buttons buttons--filter w-100"
+                    (click)="showFilterFields ? clearFilter('all') : showFilterFields = true">
+                    {{showFilterFields ? 'Clear Filters' : 'Add Filters'}}
+                    <img src="assets/icons/filter.svg" class="ms-4" alt="add-icon" />
+                </button>
+            </div>
+        </div>
+        <div class="row align-items-end mt-4" *ngIf="showFilterFields">
+            <div class="col-3 input-details">
+                <label class="input-heading">IP Address</label>
+                <input type="text" class="input-field" placeholder="Enter ip address" name="ipAddr"
+                    [(ngModel)]="filterClientLogsFields.ipAddr" (keyup.enter)="getClientLogs(true)">
+            </div>
+            <!-- TODO: add level filter once types other than 'error' are allowed -->
+            <!-- <div class="col-3 input-details mt-3">
+                <label class="input-heading">Log Level</label>
+                <ng-select [items]="clientLogLevel | keyvalue: originalOrder" bindLabel="value" bindValue="key"
+                    [multiple]="true" [closeOnSelect]="false" placeholder="Select log level"
+                    [(ngModel)]="filterClientLogsFields.level" (clear)="clearFilter()"></ng-select>
+            </div> -->
+            <div class="col-2 input-details mt-3">
+                <label class="input-heading">User Type</label>
+                <ng-select [items]="userType | keyvalue: originalOrder" bindLabel="value" bindValue="key"
+                    [multiple]="true" [closeOnSelect]="false" placeholder="Select user type"
+                    [(ngModel)]="filterClientLogsFields.userType" (clear)="clearFilter()"></ng-select>
+            </div>
+            <div class="col-3 input-details mt-3">
+                <label class="input-heading">Client App</label>
+                <ng-select [items]="clientAppType | keyvalue: originalOrder" bindLabel="value" bindValue="key"
+                    [multiple]="true" [closeOnSelect]="false" placeholder="Select client app"
+                    [(ngModel)]="filterClientLogsFields.clientApp" (clear)="clearFilter()"></ng-select>
+            </div>
+            <div class="col-2 input-details">
+                <label class="input-heading">Client App Version</label>
+                <input type="text" class="input-field" placeholder="Enter app version" name="clientAppVersion"
+                    [(ngModel)]="filterClientLogsFields.clientAppVersion" (keyup.enter)="getClientLogs(true)">
+            </div>
+            <div class="col-2 input-details">
+                <label class="input-heading">Code</label>
+                <input type="text" class="input-field" placeholder="Enter code" name="code"
+                    [(ngModel)]="filterClientLogsFields.code" (keyup.enter)="getClientLogs(true)">
+            </div>
+            <div class="col-3 input-details">
+                <label class="input-heading">Client Device ID</label>
+                <input type="text" class="input-field" placeholder="Enter device id" name="clientDeviceId"
+                    [(ngModel)]="filterClientLogsFields.clientDeviceId" (keyup.enter)="getClientLogs(true)">
+            </div>
+            <div class="input-details col-3 mt-3">
+                <label class="input-heading">Start Date</label>
+                <mat-form-field class="custom-mat-form-field" appearance="outline">
+                    <input matInput (click)="startDate.open()" [matDatepicker]="startDate" [max]="currentDate"
+                        [(ngModel)]="filterClientLogsFields.startDate" name="startDate" placeholder="Select date">
+                    <mat-datepicker-toggle matSuffix [for]="startDate"></mat-datepicker-toggle>
+                    <mat-datepicker #startDate></mat-datepicker>
+                    <button mat-icon-button matSuffix *ngIf="filterClientLogsFields.startDate" (click)="clearFilter('date')">
+                        <mat-icon>clear</mat-icon>
+                    </button>
+                </mat-form-field>
+            </div>
+            <div class="input-details col-3 mt-3">
+                <label class="input-heading">End Date</label>
+                <mat-form-field class="custom-mat-form-field" appearance="outline">
+                    <input matInput (click)="endDate.open()" [matDatepicker]="endDate"
+                        [min]="filterClientLogsFields.startDate" [max]="currentDate"
+                        [(ngModel)]="filterClientLogsFields.endDate" name="endDate" placeholder="Select date">
+                    <mat-datepicker-toggle matSuffix [for]="endDate"></mat-datepicker-toggle>
+                    <mat-datepicker #endDate></mat-datepicker>
+                    <button mat-icon-button matSuffix *ngIf="filterClientLogsFields.endDate"
+                        (click)="clearFilter('date')">
+                        <mat-icon>clear</mat-icon>
+                    </button>
+                </mat-form-field>
+            </div>
+            <div class="col-2">
+                <button class="buttons br-50" (click)="getClientLogs(true)">Apply Filter</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="client-logs-wrapper__content mt-5">
+        <table class="w-100" mat-table [dataSource]="clientLogsList" matSort>
+
+            <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.id}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="userType">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <span>
+                        User Type
+                        <p class="m-0">User ID</p>
+                    </span>
+                </th>
+                <td mat-cell *matCellDef="let row">
+                    <p class="m-0"><strong>{{row.userType ? row.userType : 'N/A'}}</strong></p>
+                    <span class="d-flex gap-3 align-items-center" *ngIf="row.userId">
+                        <label class="singleline-ellipsis">{{row.userId}}</label>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.userId">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="level">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Level</th>
+                <td mat-cell *matCellDef="let row">{{row.level}}</td>
+            </ng-container>
+            <ng-container matColumnDef="ipAddr">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>IP Address</th>
+                <td mat-cell *matCellDef="let row">
+                    <span class="d-flex gap-3 align-items-center">
+                        {{row.ipAddr}}
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.ipAddr">
+                    </span>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="clientApp">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    <span>
+                        Client App
+                        <p class="m-0">Device ID</p>
+                    </span>
+                </th>
+                <td mat-cell *matCellDef="let row">
+                    <p class="m-0">
+                        {{row.clientApp}}
+                        <span *ngIf="row.clientAppVersion">(v{{row.clientAppVersion}})</span>
+                    </p>
+                    <span class="d-flex gap-3 align-items-center" *ngIf="row.clientDeviceId"><label
+                            class="singleline-ellipsis">{{row.clientDeviceId}}</label>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.clientDeviceId">
+                    </span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="deviceDetails">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Device Details</th>
+                <td mat-cell *matCellDef="let row">
+                    <p class="m-0">
+                        {{row.clientOs}}
+                    </p>
+                    <span *ngIf="row.clientBrowser">{{row.clientBrowser}}</span>
+                </td>
+            </ng-container>
+            <ng-container matColumnDef="code">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Code</th>
+                <td mat-cell *matCellDef="let row" class="text-break">{{row.code}}</td>
+            </ng-container>
+            <ng-container matColumnDef="message">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Message</th>
+                <td mat-cell *matCellDef="let row" class="text-break">{{row.message}}</td>
+            </ng-container>
+            <ng-container matColumnDef="data">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Additional Data</th>
+                <td mat-cell *matCellDef="let row">{{row.data}}</td>
+            </ng-container>
+            <ng-container matColumnDef="createdAt">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Time</th>
+                <td mat-cell *matCellDef="let row">{{row.createdAt | date: dateLongTimeFormat}}</td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="displayedColumns.length">There is no matching data !!!</td>
+            </tr>
+        </table>
+
+        <mat-paginator #paginatorRef showFirstLastButtons [length]="totalRecords" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
+            (page)="onPageChange($event)"></mat-paginator>
+    </div>
+</section>

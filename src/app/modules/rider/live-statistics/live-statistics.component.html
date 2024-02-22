@@ -1,0 +1,106 @@
+<section class="live-dashboard-wrapper">
+    <app-page-title [pageTitle]="'Zone Statistics'"></app-page-title>
+    <div class="row d-flex justify-content-between align-items-center mt-4">
+      <div class="col-6">
+        <div class="input-details d-flex flex-column">
+          <label class="input-heading">Operational City</label>
+          <ng-select [items]="operationalCity" [clearable]="false" bindLabel="name" bindValue="id" placeholder="Select City" (change)="setZoneList($event)" [(ngModel)]="filter.operationalCityId"></ng-select>
+        </div>
+      </div>
+      
+      <div class="col-6">
+        <div class="input-details d-flex flex-column">
+          <label class="input-heading">Operational Zone</label>
+          <ng-select [items]="operationalZone" [multiple]="true" [closeOnSelect]="false" bindLabel="name" bindValue="id" placeholder="Select Zone" [(ngModel)]="filter.operationalZoneId" (change)="setZone($event)"></ng-select>
+        </div>
+      </div>
+    </div>
+
+     <!--Table-->  
+     <main class="orders-wrapper__content mt-5">
+        <table class="w-100" mat-table [dataSource]="liveStatistics" matSort multiTemplateDataRows>
+            <ng-container matColumnDef="zoneId">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Zone Details </th>
+                <td mat-cell *matCellDef="let row">
+                    <span class="d-flex gap-3 align-items-center">
+                        <strong class="m-0 singleline-ellipsis cursor-enabled" (click)="navigateToOperationalZonePage(row.id)"><u>{{row.id}}</u></strong>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.customerId">
+                    </span>
+                    <p class="">
+                        {{row.name}}
+                    </p>
+                </td>
+            </ng-container>
+            <!-- <ng-container matColumnDef="zoneName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Zone Name </th>
+                <td mat-cell *matCellDef="let row">
+                    <strong>
+                        {{row.name}}</strong>
+                </td>
+            </ng-container> -->
+
+            <ng-container matColumnDef="liveRiders">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Live Riders </th>
+                <td mat-cell *matCellDef="let row"> <strong class="text-warning fs-4"> {{row.liveRiders}} </strong>  </td>
+            </ng-container>
+            <ng-container matColumnDef="liveOrders">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Live Orders </th>
+                <td mat-cell *matCellDef="let row"> <strong class="text-success fs-4"> {{row.liveOrders}} </strong>  </td>
+            </ng-container>            
+            
+            <ng-container matColumnDef="currentBannerFactor">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Current Banner Factor </th>
+                <td mat-cell *matCellDef="let row">
+                  <strong class="text-primary fs-4"> {{row.currentBannerFactor}} </strong>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="bannerFactorUpperLimit">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Banner Factor Upper Limit </th>
+                <td mat-cell *matCellDef="let row">
+                    <strong class="text-danger fs-4"> {{row.bannerFactorUpperLimit ? row.bannerFactorUpperLimit : 'N/A'}} </strong>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="bannerFactorLowerLimit">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Banner Factor Lower Limit </th>
+              <td mat-cell *matCellDef="let row">
+                  <strong class="text-danger fs-4"> {{row.bannerFactorLowerLimit ? row.bannerFactorLowerLimit : 'N/A'}} </strong>
+              </td>
+          </ng-container>
+
+          <ng-container matColumnDef="bannerFactorCoolDownSince">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Banner Factor Cool Down Since </th>
+            <td mat-cell *matCellDef="let row">
+                <strong class="text-danger fs-4"> {{row.bannerFactorCoolDownSince}} </strong>
+            </td>
+        </ng-container>
+
+            
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+                    There is no matching data !!!
+                </td>
+            </tr>
+        </table>
+        <!-- <mat-paginator #paginatorRef showFirstLastButtons [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"></mat-paginator> -->
+    </main>
+
+<!--Map-->
+      <main class="live-tracking-wrapper__content mt-3">
+        <agm-map [latitude]="mapLatitude" [longitude]="mapLongitude" [zoom]="12" (mapReady)="onMapReady($event)" (boundsChange)="onBoundsChange($event)">
+            <agm-marker *ngFor="let city of operationalZone" [latitude]="city.latitude" [longitude]="city.longitude" [markerDraggable]="false" >      
+                    <agm-info-window class="d-flex align-items-center" [disableAutoPan]="true">
+                        <img class="rounded-circle me-2" alt="" width="20" height="20">
+                        <span class="d-flex flex-column justify-content-between align-items-center"> {{city.name}}
+                            <label>Zone ID: {{city.id}}</label>
+                        </span>
+                </agm-info-window>
+            </agm-marker>
+        </agm-map>
+    </main>
+
+  </section>

@@ -1,0 +1,197 @@
+<section class="row" [formGroup]="riderDetailsForm">
+    <div class="fixed-button d-flex justify-content-end gap-3" *ngIf="riderDetailsForm.dirty || isEditRiderImage">
+        <button class="buttons buttons--white br-50" (click)="onCancel()">Cancel</button>
+        <button class="buttons br-50" (click)="updateRiderDetails(riderDetails.id)">Save</button>
+    </div>
+    <div class="input-details col-4 mb-2">
+    <label class="input-heading">Rider Image</label>
+    <div class="position-relative">
+        <input [hidden]="true"  type="file" accept="image/*" (click)="$event.target.value = null" (change)="getFileUploadUrl($event.target.files)" #editRiderImage>
+        <span class="edit-rider-image-icon p-2">
+            <mat-icon class="img-icons" matTooltip="Edit Rider Image" matTooltipClass="custom-tooltip" (click)="editRiderImage.click()">edit</mat-icon>
+        </span>
+        <img src="{{riderDetails.riderImageUrl}}" alt="" height="120" width="140">
+    </div>
+    </div>
+        <div class="input-details col-4 mb-2">
+            <label class="input-heading">Rider Name</label>
+            <input type="text" class="input-field mt-2" placeholder="Outlet Name" formControlName="name">
+            <app-form-error-msg [control]="riderDetailsForm.controls.name"></app-form-error-msg>
+
+        </div>
+    <div class="input-details col-4 mb-2">
+        <label for="search" class="input-heading">Phone Number</label>
+        <input class="input-field" type="text" formControlName="phone" placeholder="Enter Rider phone number">
+        <app-form-error-msg [control]="riderDetailsForm.controls.phone"></app-form-error-msg>
+
+    </div>
+    <div class="input-details col-4 mb-2">
+        <label class="input-heading">Date Of Birth</label>
+        <input class="input-field" type="text" formControlName="dob" placeholder="Enter Date of birth">
+        <app-form-error-msg [control]="riderDetailsForm.controls.dob"></app-form-error-msg>
+
+    </div>
+    <div class="input-details col-4 mb-2">
+        <label class="input-heading">Rider Type</label>
+        <ng-select class="expansion-panel-ng-select" [items]="riderTypes | keyvalue: originalOrder" [dropdownPosition]="'top'" bindLabel="value" bindValue="key" placeholder="Select Type" formControlName="type"></ng-select>
+        <app-form-error-msg [control]="riderDetailsForm.controls.type"></app-form-error-msg>
+        
+    </div>
+    <div class="input-details col-4 mb-2" *ngIf="riderDetailsForm.get('type').value === 'sponsored'">
+        <label class="input-heading">Sponsored By Id</label>
+        <input class="input-field" type="text" formControlName="sponsoredById" placeholder="Enter Sponsored By Id">
+        <app-form-error-msg [control]="riderDetailsForm.controls.sponsoredById"></app-form-error-msg>
+    </div>
+    <div class="input-details col-4 mb-2">
+        <label class="input-heading">Max Pod in Hand (in ₹)</label>
+        <input class="input-field" type="text" formControlName="maxPodInHand" placeholder="Enter max pod in hand">
+        <app-form-error-msg [control]="riderDetailsForm.controls.maxPodInHand"></app-form-error-msg>
+    </div>
+    <div class="input-details col-4 mb-2">
+        <label for="search" class="input-heading">Account Number</label>
+        <input class="input-field" type="text" formControlName="accountNumber">
+    </div>
+    <div class="input-details col-4 mb-2">
+        <label for="search" class="input-heading">IFSC Code</label>
+        <input type="text" class="input-field" placeholder="N/A" name="ifscCode" formControlName="ifscCode">
+    </div>
+    <div class="input-details col-4 mb-2">
+        <label for="search" class="input-heading">Rejected Orders</label>
+        <input type="text" class="input-field" placeholder="N/A" name="rejectedOrderCount" formControlName="rejectedOrderCount">
+    </div>
+    <div class="input-details col-4 mb-2">
+        <label for="search" class="input-heading">Rejection Reason</label>
+        <input type="text" class="input-field" placeholder="N/A" name="rejectReason" formControlName="rejectReason">
+    </div>
+    <div class="input-details col-4 mb-2">
+        <label class="input-heading">Approved By Admin Name</label>
+        <input type="text" class="input-field" placeholder="N/A" name="approvedAdminName" formControlName="approvedAdminName">
+    </div>
+    <div class="input-details col-4 mb-2">
+        <label class="input-heading">Approved By Admin Id</label>
+        <input type="text" class="input-field" placeholder="N/A" name="approvedAdminId" formControlName="approvedAdminId">
+    </div>
+    <div class="input-details col-4 mb-2">
+        <label class="input-heading">Latitude</label>
+        <input type="text" class="input-field" placeholder="N/A" name="latitude" formControlName="latitude">
+    </div>
+    <div class="input-details col-4 mb-2">
+        <label class="input-heading">Longitude</label>
+        <input type="text" class="input-field" placeholder="N/A" name="longitude" formControlName="longitude">
+    </div>
+    <div class="input-details col-4 mb-2">
+        <label class="input-heading">Out Of Operational Zone Since</label>
+        <input type="text" class="input-field" placeholder="N/A" name="outOfOperationalZoneSince" formControlName="outOfOperationalZoneSince">
+    </div>
+    <div class="input-details col-4 mb-2">
+        <label class="input-heading">Current Operational Zone Id</label>
+        <input type="text" class="input-field" placeholder="N/A" name="currentOperationalZoneId" formControlName="currentOperationalZoneId">
+    </div>
+    <div class="input-details col-4 mb-2">
+        <label class="input-heading">Current Operational Zone Name</label>
+        <input type="text" class="input-field" placeholder="N/A" name="currentOperationalZoneName" formControlName="currentOperationalZoneName">
+    </div>
+    <div class="input-details col-4 mb-2">
+        <label class="input-heading">Aadhar Front</label>
+        <span class="d-flex align-items-center">
+        <input type="text" class="input-field" placeholder="N/A" name="aadharFrontDoc" formControlName="aadharFrontDoc">
+        <mat-icon class="ms-2" (click)="viewFile(riderDetails.aadharFrontUrl    )">open_in_new</mat-icon>
+        </span>
+    </div>
+    <div class="input-details col-4 mb-2">
+        <label class="input-heading">Aadhar Back</label>
+        <span class="d-flex align-items-center">
+        <input type="text" class="input-field" placeholder="N/A" name="aadharBackDoc" formControlName="aadharBackDoc">
+        <mat-icon class="ms-2" (click)="viewFile(riderDetails.aadharBackUrl)">open_in_new</mat-icon>
+        </span>
+    </div>
+    <div class="input-details col-4 mb-2">
+        <label class="input-heading">PAN</label>
+        <span class="d-flex align-items-center">
+        <input type="text" class="input-field" placeholder="N/A" name="panDoc" formControlName="panDoc">
+        <mat-icon class="ms-2" (click)="viewFile(riderDetails.panDocUrl)">open_in_new</mat-icon>
+        </span>
+    </div>
+    <div class="input-details col-4 mb-2">
+        <label class="input-heading">Driving License</label>
+        <span class="d-flex align-items-center">
+        <input type="text" class="input-field" placeholder="N/A" name="drivingLicenseDoc" formControlName="drivingLicenseDoc">
+        <mat-icon class="ms-2" (click)="viewFile(riderDetails.drivingLicenseUrl)">open_in_new</mat-icon>
+        </span>
+    </div>
+    <div class="input-details col-4 mb-2">
+        <label class="input-heading">Cancelled Cheque</label>
+        <span class="d-flex align-items-center">
+        <input type="text" class="input-field" placeholder="N/A" name="cancelledChequeDoc" formControlName="cancelledChequeDoc">
+        <mat-icon class="ms-2" (click)="viewFile(riderDetails.cancelledChequeUrl)">open_in_new</mat-icon>
+        </span>
+    </div>
+    <div class="input-details col-4 mb-2">
+        <label class="input-heading">Created At</label>
+        <input type="text" class="input-field" placeholder="N/A" name="createdAt" formControlName="createdAt">
+    </div>
+    <div class="input-details col-4 mb-2">
+        <label class="input-heading">Updated At</label>
+        <input type="text" class="input-field" placeholder="N/A" name="updatedAt" formControlName="updatedAt">
+    </div>
+    <ng-container *ngIf="riderDetails.isBlocked">
+        <div class="input-details col-4 mb-2">
+            <label for="search" class="input-heading">Blocked By</label>
+        <input type="text" class="input-field" placeholder="N/A" name="blockedBy" formControlName="blockedBy">
+        </div>
+        <div class="input-details col-4 mb-2">
+            <label for="search" class="input-heading">Blocked Reason</label>
+        <input type="text" class="input-field" placeholder="N/A" name="blockedReason" formControlName="blockedReason">
+        </div>
+        <div class="d-flex align-items-end mb-2 col-3">
+            <button class="buttons br-50" (click)="unblockRider()"> Un-Block Rider</button>
+        </div>
+    </ng-container>
+    <hr>
+    <div class="col-6 mt-3" *ngIf="!riderDetails.isBlocked">
+        <h4>Block Rider</h4>
+        <div class="input-details">
+            <label>Reason</label>
+            <textarea class="reason" placeholder="Type here..." [formControl]="reason"></textarea>
+            <app-form-error-msg [control]="reason"></app-form-error-msg>
+        </div>
+        <div class="d-flex justify-content-end gap-3 mt-3">
+            <button class="buttons buttons--white br-50 w-25" (click)="onClear()">Clear</button>
+            <button class="buttons br-50 w-25" (click)="blockRider()">Block Rider</button>
+        </div>
+    </div>
+    <div class="col-6 mt-3">
+        <span class="d-flex justify-content-between">
+            <h4>Rider Operational Zones</h4>
+            <div class="d-flex justify-content-end gap-3 mb-3">
+                <button class="buttons br-50 w-25" (click)="onRiderOpZoneAction('Add')">Add</button>
+                <button class="buttons buttons--white br-50 w-25" (click)="onRiderOpZoneAction('Delete')">Delete</button>
+            </div>
+        </span>
+        <mat-chip-list >
+            <mat-chip class="mb-3" *ngFor="let zone of riderOpZones" [removable]="riderOpZoneAction === 'Delete'" (removed)="removedOpZoneIds(zone.id)">
+                {{zone.name}}
+                <mat-icon matChipRemove *ngIf="riderOpZoneAction === 'Delete'">cancel</mat-icon>
+            </mat-chip>
+        </mat-chip-list>
+        <form class="row" *ngIf="riderOpZoneAction === 'Add'" [formGroup]="riderOpZoneForm">
+            <div class="input-details col-6 mb-2">
+                <label for="search" class="input-heading">Operational City</label>
+                <ng-select [items]="opCityList" bindLabel="name" bindValue="id" [dropdownPosition]="'top'"
+                    placeholder="Select City" formControlName="opCityId" (change)="getOpZonesByCityId()">
+                </ng-select>
+                <app-form-error-msg [control]="riderOpZoneForm.controls.opCityId"></app-form-error-msg>
+            </div>
+            <div class="input-details col-6 mb-2">
+                <label for="search" class="input-heading">Operational Zone</label>
+                <ng-select [items]="opZoneList | uniqueRiderOpZoneFilter: riderOpZones" [multiple]="true" [closeOnSelect]="false" bindLabel="name" bindValue="id" [dropdownPosition]="'top'"
+                    placeholder="Select Zones" formControlName="opZoneId">
+                </ng-select>
+                <app-form-error-msg [control]="riderOpZoneForm.controls.opZoneId"></app-form-error-msg>
+            </div>
+        </form>
+        <div class="d-flex justify-content-end gap-3 mt-3" *ngIf="riderOpZoneAction">
+            <button class="buttons br-50 w-25" (click)="riderOpZoneAction === 'Add' ? addRiderOpZones() : deleteRiderOpZones()"> Submit</button>
+        </div>
+    </div>
+</section>

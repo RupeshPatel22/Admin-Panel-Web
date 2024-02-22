@@ -1,0 +1,114 @@
+<section class="partner-users-wrapper">
+    <app-page-title [pageTitle]="'Vendor Users Dump'"></app-page-title>
+
+    <div class="partner-users-wrapper__tools w-75">
+        <div class="row align-items-end">
+            <div class="col-6 input-details">
+                <label for="search" class="input-heading">Search</label>
+                <input type="text" class="input-field" placeholder="Search..." name="search" id="search" />
+            </div>
+            <div class="col-3">
+                <button class="buttons buttons--filter w-100" (click)="showFilters()">
+                    {{ showFilterFields ? "Hide Filters" : "Add Filters" }}
+                    <img src="assets/icons/filter.svg" class="ms-4" alt="add-icon" />
+                </button>
+            </div>
+
+        </div>
+        <div class="row mt-4" *ngIf="showFilterFields">
+            <div class="col-3 input-details">
+                <label class="input-heading">Vendor Id</label>
+                <ng-select [items]="['1','2']" placeholder="Select Vendor Id"></ng-select>
+            </div>
+            <div class="col-3 input-details">
+                <label class="input-heading">Desktop Applet</label>
+                <ng-select [items]="['1','2']" placeholder="Select Desktop Applet"></ng-select>
+            </div>
+
+        </div>
+    </div>
+
+    <section class="mt-5">
+        <table class="w-100" mat-table [dataSource]="partnerUsersList" matSort>
+            <ng-container matColumnDef="srNo">
+                <th mat-header-cell *matHeaderCellDef>Sr No. </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row; let i= index"> {{ (paginatorRef.pageIndex *
+                    paginatorRef.pageSize) + (i + 1) }} </td>
+            </ng-container>
+            <ng-container matColumnDef="vendorId">
+                <th mat-header-cell *matHeaderCellDef>Vendor Id </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row; let i= index"> {{ row.vendorId }} </td>
+            </ng-container>
+            <ng-container matColumnDef="posSoftware">
+                <th mat-header-cell *matHeaderCellDef>POS Software Used </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row; let i= index"> {{ row.posSoftware }} </td>
+            </ng-container>
+            <ng-container matColumnDef="fromDate">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>From Date </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.fromDate | date : 'dd/MM/yyyy
+                    hh:mm:ss'}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="toDate">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>To Date </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row"> {{row.toDate | date : 'dd/MM/yyyy hh:mm:ss'}}
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="action">
+                <th mat-header-cell *matHeaderCellDef>Action </th>
+                <td mat-cell *matCellDef="let row">
+                    <mat-icon (click)="togglePartnerUsersModal()">remove_red_eye</mat-icon>
+                </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" colspan="4">There is no matching data !!!</td>
+            </tr>
+        </table>
+
+        <mat-paginator #paginatorRef [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+    </section>
+</section>
+
+<!-- Partner Users Modal -->
+<div class="modal hide drawer right-align" id="partnerUsersModalRight" role="dialog"
+    aria-labelledby="partnerUsersModalLabel" aria-hidden="true" *ngIf="showPartnerUsersModal">
+    <div class="modal-dialog" role="dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <label class="modal-title border-0" id="exampleModalLabel">Vendor Users</label>
+                <mat-icon (click)="togglePartnerUsersModal()" data-dismiss="modal">close</mat-icon>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="partnerUsersForm" class="d-flex flex-column gap-3">
+                    <div class="input-details">
+                        <label class="input-heading">Vendor ID</label>
+                        <input type="text" class="input-field mt-2 w-100" name="name" formControlName="vendorId"
+                            placeholder="Enter Vendor ID">
+                        <app-form-error-msg [control]="partnerUsersForm.controls.vendorId"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading">Password</label>
+                        <input type="password" class="input-field mt-2 w-100" name="password" formControlName="password"
+                            placeholder="Enter Password">
+                        <app-form-error-msg [control]="partnerUsersForm.controls.password"></app-form-error-msg>
+                    </div>
+                    <div class="input-details">
+                        <label class="input-heading">Desktop Applet</label>
+                        <ng-select class="modal-ng-select mt-2 w-100" [items]="posSoftwares"
+                            placeholder="Select POS Software" bindLabel="name" bindValue="name"
+                            formControlName="selectPOSSoftware"></ng-select>
+                        <app-form-error-msg [control]="partnerUsersForm.controls.selectPOSSoftware">
+                        </app-form-error-msg>
+                    </div>
+                </form>
+                <div class="d-flex">
+                    <button class="buttons w-100 h-3 me-3 text-transform-uppercase" mat-button><b>proceed</b></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,62 @@
+<section class="dialog-wrapper">
+    <div *ngIf="data.action === 'view-details'">
+        <header class="heading"> Payout Details </header>
+        <div class="input-details mt-3">
+            <label class="input-heading">Beneficiary Name</label>
+            <input type="text" class="input-field mt-2 cursor-disable"
+                [(ngModel)]="payoutDetails.accountDetails.beneficiaryName" readonly>
+        </div>
+        <div class="input-details mt-3">
+            <label class="input-heading">Account Number</label>
+            <input type="text" class="input-field mt-2 cursor-disable"
+                [(ngModel)]="payoutDetails.accountDetails.accountNumber" readonly>
+        </div>
+        <div class="input-details mt-3">
+            <label class="input-heading">IFSC Code</label>
+            <input type="text" class="input-field mt-2 cursor-disable"
+                [(ngModel)]="payoutDetails.accountDetails.ifscCode" readonly>
+        </div>
+        <div class="input-details mt-3" *ngIf="payoutDetails.reason">
+            <label class="input-heading">Failure Reason</label>
+            <input type="text" class="input-field mt-2 cursor-disable" [(ngModel)]="payoutDetails.reason" readonly>
+        </div>
+    </div>
+    <div *ngIf="data.action === 'mark-complete'">
+        <header class="heading"> Add Payment Details</header>
+        <form [formGroup]="paymentDetailsForm" class="my-4">
+            <div class="input-details">
+                <label class="input-heading">Transaction ID</label>
+                <mat-form-field appearance="outline">
+                    <input matInput name="customDate" formControlName="txnId" placeholder="Enter transaction id">
+                </mat-form-field>
+                <app-form-error-msg [control]="paymentDetailsForm.controls.txnId"></app-form-error-msg>
+            </div>
+            <div class="row">
+                <div class="input-details col-6">
+                    <label class="input-heading">Date</label>
+                    <mat-form-field appearance="outline">
+                        <input matInput (click)="customDate.open()" [matDatepicker]="customDate" [readonly]="true"
+                            name="customDate" formControlName="date" placeholder="Select date">
+                        <mat-datepicker-toggle matSuffix [for]="customDate" matSuffix></mat-datepicker-toggle>
+                        <mat-datepicker #customDate></mat-datepicker>
+                    </mat-form-field>
+                    <app-form-error-msg [control]="paymentDetailsForm.controls.date"></app-form-error-msg>
+                </div>
+                <div class="input-details col-6">
+                    <label class="input-heading">Time</label>
+                    <mat-form-field appearance="outline">
+                        <input matInput type="text" [ngxTimepicker]="customTime" formControlName="time" readonly
+                            name="customTime" placeholder="Select Time">
+                        <ngx-material-timepicker-toggle matSuffix [for]="customTime"></ngx-material-timepicker-toggle>
+                        <ngx-material-timepicker #customTime [defaultTime]="currentTime"></ngx-material-timepicker>
+                    </mat-form-field>
+                    <app-form-error-msg [control]="paymentDetailsForm.controls.time"></app-form-error-msg>
+                </div>
+            </div>
+        </form>
+        <div class="d-flex justify-content-between gap-3">
+            <button class="buttons buttons--white br-50 w-50" (click)="onDismiss()">Dismiss</button>
+            <button class="buttons br-50 w-50" (click)="onConfirm()"> Add</button>
+        </div>
+    </div>
+</section>

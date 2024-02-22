@@ -1,0 +1,38 @@
+<main>
+    <section class="row mb-3">
+        <h3>Payment Details</h3>
+        <div class="input-details col-3">
+            <label class="input-heading">Failure Reason</label>
+            <p class="input-field">{{paymentDetails.failureReason ? paymentDetails.failureReason : 'N/A'}}</p>
+        </div>
+        <div class="input-details col-3">
+            <label class="input-heading">Transaction Time</label>
+            <p class="input-field">{{paymentDetails.txnDate ? paymentDetails.txnDate : 'N/A'}}</p>
+        </div>
+        <div class="input-details col-3">
+            <label class="input-heading">Updated At</label>
+            <p class="input-field">{{paymentDetails.updatedAt ? paymentDetails.updatedAt : 'N/A'}}</p>
+        </div>
+        <div class="input-details col-3">
+            <label class="input-heading">Scheduled On</label>
+            <p class="input-field">{{paymentDetails.scheduledOn ? paymentDetails.scheduledOn : 'N/A'}}</p>
+        </div>
+        <div class="input-details col-3">
+            <label class="input-heading">No. Of Grace Period Orders Alloted</label>
+            <p class="input-field">{{paymentDetails.noOfGracePeriodOrdersAlloted ?
+                paymentDetails.noOfGracePeriodOrdersAlloted : 'N/A'}}</p>
+        </div>
+        <div class="input-details col-3">
+            <label class="input-heading">No. Of Orders Bought</label>
+            <p class="input-field">{{paymentDetails.noOfOrdersBought ? paymentDetails.noOfOrdersBought : 'N/A'}}</p>
+        </div>
+        <div class="input-details col-3">
+            <label class="input-heading">Retry Attempts</label>
+            <p class="input-field">{{paymentDetails.retryAttempts ? paymentDetails.retryAttempts : 'N/A'}}</p>
+        </div>
+        <div class="input-details col-3">
+            <label class="input-heading">Current Cycle</label>
+            <p class="input-field">{{paymentDetails.currentCycle ? paymentDetails.currentCycle : 'N/A'}}</p>
+        </div>
+    </section>
+</main>

@@ -1,0 +1,250 @@
+<main>
+    <header>
+        <h4 class="text-capitalize"><strong>{{openedFor}} Details</strong></h4>
+    </header>
+    <!-- For Entity Type = Main Category-->
+    <section *ngIf="menuChangesDetails.entityType === EntityTypes.main_category">
+        <div class="input-details">
+            <label class="input-heading">Main Category Name</label>
+            <p class="input-field" [ngClass]="{'highlight-field': differentProps?.categoryName}">
+                {{entityDetails.categoryName}}</p>
+        </div>
+    </section>
+    <!-- For Entity Type = Sub Category-->
+    <section *ngIf="menuChangesDetails.entityType === EntityTypes.sub_category">
+        <div class="input-details">
+            <label class="input-heading">Category Name</label>
+            <p class="input-field" [ngClass]="{'highlight-field': differentProps?.categoryName}">
+                {{entityDetails.categoryName}}</p>
+        </div>
+        <div class="input-details">
+            <label class="input-heading">Sub Category Name</label>
+            <p class="input-field" [ngClass]="{'highlight-field': differentProps?.subCategoryName}">
+                {{entityDetails.subCategoryName}}</p>
+        </div>
+    </section>
+    <!-- For Entity Type = Addon Group-->
+    <section *ngIf="menuChangesDetails.entityType === EntityTypes.addon_group">
+        <div class="input-details">
+            <label class="input-heading">Add-on Group Name</label>
+            <p class="input-field" [ngClass]="{'highlight-field': differentProps?.addonGroupName}">
+                {{entityDetails.addonGroupName}}</p>
+        </div>
+    </section>
+    <!-- For Entity Type = Addon-->
+    <section *ngIf="menuChangesDetails.entityType === EntityTypes.addon">
+        <div class="input-details">
+            <label class="input-heading">Add-on Group Name</label>
+            <p class="input-field" [ngClass]="{'highlight-field': differentProps?.addonGroupName}">
+                {{entityDetails.addonGroupName}}</p>
+        </div>
+        <div class="input-details">
+            <label class="input-heading">Add-on Name</label>
+            <p class="input-field" [ngClass]="{'highlight-field': differentProps?.addonName}">
+                {{entityDetails.addonName}}</p>
+        </div>
+        <div class="input-details">
+            <label class="input-heading">Type</label>
+            <p class="input-field" [ngClass]="{'highlight-field': differentProps?.foodType}">{{entityDetails.foodType}}
+            </p>
+        </div>
+        <div class="input-details">
+            <label class="input-heading">Additional Price (&#8377;)</label>
+            <p class="input-field" [ngClass]="{'highlight-field': differentProps?.addonPrice}">
+                {{entityDetails.addonPrice}}</p>
+        </div>
+        <div class="input-details">
+            <label class="input-heading">GST (in %)</label>
+            <p class="input-field" [ngClass]="{'highlight-field': differentProps?.gst}">{{entityDetails.gst}}</p>
+        </div>
+        <div class="input-details">
+            <label class="input-heading">Is GST Inclusive</label>
+            <p class="input-field" [ngClass]="{'highlight-field': differentProps?.gst}">{{entityDetails.isGstInclusive ? 'Yes' : 'No'}}</p>
+        </div>
+    </section>
+    <!-- For Entity Type = Menu Item-->
+    <section class="row" *ngIf="menuChangesDetails.entityType === EntityTypes.menu_item">
+        <div class="input-details col-6">
+            <label class="input-heading">Category</label>
+            <p class="input-field" [ngClass]="{'highlight-field': differentProps?.categoryName}">
+                {{entityDetails.categoryName}}</p>
+        </div>
+        <div class="input-details col-6">
+            <label class="input-heading">Sub-Category</label>
+            <p class="input-field" [ngClass]="{'highlight-field': differentProps?.subCategoryName}">
+                {{entityDetails.subCategoryName}}</p>
+        </div>
+        <div class="input-details col-6">
+            <label class="input-heading">Item Name</label>
+            <p class="input-field" [ngClass]="{'highlight-field': differentProps?.itemName}">{{entityDetails.itemName}}
+            </p>
+        </div>
+        <div class="input-details col-6">
+            <label class="input-heading">Item Type</label>
+            <p class="input-field" [ngClass]="{'highlight-field': differentProps?.foodType}">{{entityDetails.foodType}}
+            </p>
+        </div>
+        <div class="input-details col-12">
+            <label class="input-heading">Description</label>
+            <p class="input-field" [ngClass]="{'highlight-field': differentProps?.description}">
+                {{entityDetails.description}}</p>
+        </div>
+        <div class="input-details col-6">
+            <label class="input-heading">Item Price (in ₹)</label>
+            <p class="input-field" [ngClass]="{'highlight-field': differentProps?.itemPrice}">{{entityDetails.itemPrice}}
+            </p>
+        </div>
+        <div class="input-details col-6">
+            <label class="input-heading">Packing Charges (in ₹)</label>
+            <p class="input-field" [ngClass]="{'highlight-field': differentProps?.packagingCharges}">
+                {{entityDetails.packagingCharges}}</p>
+        </div>
+        <div class="input-details col-6">
+            <label class="input-heading">Serves How Many?</label>
+            <p class="input-field" [ngClass]="{'highlight-field': differentProps?.servesHowMany}">
+                {{entityDetails.servesHowMany}}</p>
+        </div>
+        <div class="input-details col-6">
+            <label class="input-heading">Is GST Inclusive?</label>
+            <p class="input-field" [ngClass]="{'highlight-field': differentProps?.isGstInclusive}">
+                {{entityDetails.isGstInclusive ? 'Yes' : 'No'}}</p>
+        </div>
+        <div class="input-details col-6">
+            <label class="input-heading">GST (in %)</label>
+            <p class="input-field" [ngClass]="{'highlight-field': differentProps?.gst}">{{entityDetails.gst}}</p>
+        </div>
+        <div class="input-details col-6">
+            <label class="input-heading">Is Item Spicy?</label>
+            <p class="input-field" [ngClass]="{'highlight-field': differentProps?.isSpicy}">{{entityDetails.isSpicy ? 'Yes' : 'No'}}</p>
+        </div>
+        <div class="input-details col-6">
+            <label class="input-heading">Allow Long Distance?</label>
+            <p class="input-field" [ngClass]="{'highlight-field': differentProps?.allowLongDistance}">
+                {{entityDetails.allowLongDistance ? 'Yes' : 'No'}}</p>
+        </div>
+        <div class="input-details col-6" *ngIf="service === Services.Grocery">
+            <label class="input-heading">Item weight in Grams</label>
+            <p class="input-field" [ngClass]="{'highlight-field': differentProps?.weightGrams}">{{entityDetails.weightGrams}}</p>
+        </div>
+        <div class="input-details col-7">
+            <label class="input-heading mt-4">Item Photo</label>
+            <p class="input-field" [ngClass]="{'highlight-field': differentProps?.itemImage}">
+                {{entityDetails.itemImage}}</p>
+        </div>
+        <div class="col-5">
+            <img width="100" height="100" class="rounded-3" [src]="entityDetails.itemImageUrl" alt="item-image" *ngIf="entityDetails.itemImageUrl" onerror="this.onerror=null;this.src='assets/icons/menu-item-placeholder.jpg';">
+        </div>
+        <h5 class="mb-3 text-decoration-underline" *ngIf="entityDetails.variantGroupRow.length"><strong>Variant
+                Details</strong></h5>
+        <div *ngFor="let variantGroup of entityDetails.variantGroupRow; let i=index">
+            <div class="input-details">
+                <label class="input-heading">Variant Group Name</label>
+                <p class="input-field" [ngClass]="{'highlight-field': differentProps?.variantGroupRow[i] === true 
+                    || differentProps?.variantGroupRow[i]['variantGroupName']}">
+                    {{variantGroup.variantGroupName}}</p>
+            </div>
+            <div class="row variant-border mb-2" *ngFor="let variant of variantGroup.variantRow; let j=index">
+                <div class="input-details col-4">
+                    <label class="input-heading">Variant Name</label>
+                    <!-- 
+                        out of 3 separate conditions for ng-class, (note: here sequence of conditions are imp)
+                        1st signifies added/deleted variantGroup
+                        2nd signifies added/deleted varaint
+                        3rd signifies update in any specific field
+                     -->
+                    <p class="input-field" [ngClass]="{'highlight-field': differentProps?.variantGroupRow[i] === true
+                        || differentProps?.variantGroupRow[i]['variantRow'][j] === true 
+                        || differentProps?.variantGroupRow[i]['variantRow'][j]['variantName']}">
+                        {{variant.variantName}}</p>
+                </div>
+                <div class="input-details col-4">
+                    <label class="input-heading">Type</label>
+                    <p class="input-field" [ngClass]="{'highlight-field': differentProps?.variantGroupRow[i] === true
+                        || differentProps?.variantGroupRow[i]['variantRow'][j] === true 
+                        || differentProps?.variantGroupRow[i]['variantRow'][j]['variantType']}">
+                        {{variant.variantType}}</p>
+                </div>
+                <div class="input-details col-4">
+                    <label class="input-heading">Additional Price (in &#8377;) </label>
+                    <p class="input-field" [ngClass]="{'highlight-field': differentProps?.variantGroupRow[i] === true
+                        || differentProps?.variantGroupRow[i]['variantRow'][j] === true 
+                        || differentProps?.variantGroupRow[i]['variantRow'][j]['additionalPrice']}">
+                        {{variant.additionalPrice}}</p>
+                </div>
+                <div class="input-details col-4">
+                    <label class="input-heading">Is Default</label>
+                    <p class="input-field" [ngClass]="{'highlight-field': differentProps?.variantGroupRow[i] === true
+                        || differentProps?.variantGroupRow[i]['variantRow'][j] === true 
+                        || differentProps?.variantGroupRow[i]['variantRow'][j]['isDefault']}">
+                        {{variant.isDefault}}</p>
+                </div>
+                <div class="input-details col-4">
+                    <label class="input-heading">In Stock?</label>
+                    <p class="input-field" [ngClass]="{'highlight-field': differentProps?.variantGroupRow[i] === true
+                        || differentProps?.variantGroupRow[i]['variantRow'][j] === true 
+                        || differentProps?.variantGroupRow[i]['variantRow'][j]['inStock']}">
+                        {{variant.inStock}}</p>
+                </div>
+                <div class="input-details col-4">
+                    <label class="input-heading">Serves How Many?</label>
+                    <p class="input-field" [ngClass]="{'highlight-field': differentProps?.variantGroupRow[i] === true
+                        || differentProps?.variantGroupRow[i]['variantRow'][j] === true 
+                        || differentProps?.variantGroupRow[i]['variantRow'][j]['servesHowMany']}">
+                        {{variant.servesHowMany}}</p>
+                </div>
+                <div class="input-details col-4" *ngIf="service === Services.Grocery">
+                    <label class="input-heading">weight in Grams</label>
+                    <p class="input-field" [ngClass]="{'highlight-field': differentProps?.variantGroupRow[i] === true
+                        || differentProps?.variantGroupRow[i]['variantRow'][j] === true 
+                        || differentProps?.variantGroupRow[i]['variantRow'][j]['weightGrams']}">
+                        {{variant.weightGrams}}</p>
+                </div>
+            </div>
+        </div>
+        <h5 class="mb-3 text-decoration-underline" *ngIf="entityDetails.addOnRow.length"><strong>Add-on Details</strong>
+        </h5>
+        <div class="row" *ngFor="let addonGroup of entityDetails.addOnRow; let i=index">
+            <div class="input-details col-6">
+                <label class="input-heading">Add-on Group</label>
+                <p class="input-field" [ngClass]="{'highlight-field': differentProps?.addOnRow[i] === true
+                    || differentProps?.addOnRow[i]['addonGroupName']}">
+                    {{addonGroup.addonGroupName}}</p>
+            </div>
+            <div class="input-details col-6">
+                <label class="input-heading">Add-ons</label>
+                <p class="input-field">
+                    <span *ngFor="let addon of addonGroup.addons; let j=index"
+                        [ngClass]="{'highlight-field': differentProps?.addOnRow[i] === true 
+                        || differentProps?.addOnRow[i]['addons'][j]['addonName']}">
+                        {{addon.addonName}}
+                        <span *ngIf="addonGroup.addons.length !== j+1">,&nbsp;</span>
+                    </span>
+                </p>
+            </div>
+            <div class="input-details col-6">
+                <label class="input-heading">Minimum Selection</label>
+                <p class="input-field" [ngClass]="{'highlight-field': differentProps?.addOnRow[i] === true 
+                    || differentProps?.addOnRow[i]['minLimit']}">{{addonGroup.minLimit}}
+                </p>
+            </div>
+            <div class="input-details col-6">
+                <label class="input-heading">Maximum Selection</label>
+                <p class="input-field" [ngClass]="{'highlight-field': differentProps?.addOnRow[i] === true 
+                    || differentProps?.addOnRow[i]['maxLimit']}">{{addonGroup.maxLimit}}
+                </p>
+            </div>
+        </div>
+    </section>
+    <!-- For Approval action, will be visible only if openedFor= request entity -->
+    <section class="mt-3" *ngIf="openedFor === 'requested entity' && menuChangesDetails.approvalStatus === 'pending'">
+        <div class="input-details">
+            <label class="input-heading">Remarks</label>
+            <textarea class="reason" placeholder="Type here..." [formControl]="approvalRemarks"></textarea>
+            <app-form-error-msg [control]="approvalRemarks"></app-form-error-msg>
+        </div>
+        <div class="d-flex justify-content-end gap-3 mt-3">
+            <button class="buttons buttons--white br-50 w-25" (click)="approveRejectMenuChanges('rejected')">Reject</button>
+            <button class="buttons br-50 w-25" (click)="approveRejectMenuChanges('reviewed')"> Approve</button>
+        </div>
+    </section>
+</main>

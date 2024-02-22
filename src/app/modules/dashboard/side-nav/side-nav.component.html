@@ -1,0 +1,59 @@
+<nav class="side-nav pt-4 pb-2">
+    <div class="side-nav__header">
+        <div class="d-flex justify-content-center align-items-center w-100"><img
+                src="../../../../assets/icons/Speedyy logo.svg" >
+            <!-- <h3 class="text-center ms-3">
+                Speedyy</h3> -->
+        </div>
+
+
+
+        <p class="service cursor-enabled d-flex justify-content-center align-items-center m-0"
+            [matMenuTriggerFor]="menu">{{serviceDisplayName[service]}}
+            <mat-icon>arrow_drop_down</mat-icon></p>
+        <mat-menu #menu="matMenu" xPosition="before">
+            <ng-container *ngFor="let item of serviceDisplayName | keyvalue: originalOrder">
+                <div class="cursor-enabled mb-2" (click)="serviceSelectionChange(item.key)">
+                    {{item.value}}</div>
+            </ng-container>
+            <div class="cursor-enabled mb-2" (click)="navigateToGrafanaDashboard()">Grafana</div>
+        </mat-menu>
+    </div>
+    <div class="nav-links mt-5">
+        <ul>
+            <ng-container *ngFor="let link of navLinks">
+                <li class="d-flex flex-column justify-contnent-center">
+                    <a [routerLink]="[service, link.route]" routerLinkActive="nav-link-active" *ngIf="link.route">
+                        <img class="nav-icon" [src]="link.icon" [alt]="link.route"> {{link.name}}
+                    </a>
+                    <a class="d-flex align-items-center" (click)="toggleSubMenu(link.name)" *ngIf="!link.route">
+                        <img class="nav-icon" [src]="link.icon" [alt]="link.route">
+                        <span class="w-100">{{link.name}}</span>
+                        <mat-icon class="expand-button"
+                            [ngClass]="{'rotated' : showSubMenu[link.name]}">expand_more</mat-icon>
+                    </a>
+                    <div class="submenu d-flex flex-column" *ngIf="link.filteredSubMenu && showSubMenu[link.name]">
+                        <ng-container *ngFor="let sub of link.filteredSubMenu">
+                            <a [routerLink]="[service + '/' + sub.route]" [state]="{ data: 'reset' }" routerLinkActive="nav-link-active">{{sub.name}}</a>
+                        </ng-container>
+                    </div>
+                </li>
+            </ng-container>
+            <!-- User Profile -->
+            <!-- <li class="d-flex flex-column justify-contnent-center">
+                <a class="d-flex align-items-center" (click)="showUserProfile = !showUserProfile">
+                    <mat-icon class="nav-icon">person_outline</mat-icon>
+                    <span class="w-100">user profile</span>
+                    <mat-icon class="expand-button" [ngClass]="{'rotated' : showUserProfile}">expand_more</mat-icon>
+                </a>
+                <div class="submenu" *ngIf="showUserProfile">
+                    <label>{{userName}} <p class="m-0">({{role}})</p> </label>
+                    <a class="d-flex" (click)="logout()">
+                        <mat-icon class="nav-icon">logout</mat-icon>
+                        <span class="w-100">Logout</span>
+                    </a>
+                </div>
+            </li> -->
+        </ul>
+    </div>
+</nav>

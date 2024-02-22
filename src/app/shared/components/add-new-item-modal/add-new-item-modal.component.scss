@@ -1,0 +1,59 @@
+.modal.drawer .modal-dialog {
+    max-width: 43% !important;
+    @media only screen and (min-device-width: 1025px) and (max-device-width: 1440px) {
+        max-width: 51% !important;
+    }
+    a {
+        cursor: pointer;
+        color: #222239;
+    }
+    .ng-select .ng-select-container {
+        border: none !important;
+        color: black;
+    }
+    mat-icon {
+        cursor: pointer;
+    }
+    .upload-button {
+        background-color: #0d1d28;
+        color: #fff;
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 1px;
+        border-radius: 6px;
+        border: none;
+    }
+    .variants {
+        border: 1px solid #a8aaa7;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        padding: 1.5em 1em;
+    }
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    img {
+        border-radius: 12px;
+    }
+    .slab {
+        background-color: #f2f5f8;
+        padding: 1em;
+        border: 1px solid rgba(0, 0, 0, 0.13);
+        border-radius: 8px;
+        border-collapse: separate;
+        text-align: center;
+        font-size: 0.75em;
+        color: #0d1d28;
+        text-transform: uppercase;
+    }
+    .input-marge {
+        background: #fff !important;
+        border-radius: 10px;
+        padding-right: 10px;
+    }
+}

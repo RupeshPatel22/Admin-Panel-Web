@@ -1,0 +1,113 @@
+<section class="master-category-wrapper">
+    <app-page-title [pageTitle]="'Master Category Dump'"></app-page-title>
+    <div class="cuisines-wrapper__tools w-100">
+        <div class="row align-items-end justify-content-start">
+            <div class="col-3">
+                <button class="buttons" (click)="openMasterCategoryDialog()">
+                    Add Master Category
+                    <img src="assets/icons/add.svg" class="ms-4" alt="add-icon">
+                </button>
+            </div>
+            <div class="col-3" *ngIf="masterCategoryDataArr.length > 1">
+                <button class="buttons me-0" (click)="openMasterCategorySequenceModal()" title="Change Master Category Sequence">
+                    Master Category<img src="../../../../../assets/icons/two-opposite-up-and-down-arrows-side-by-side-svgrepo-com (2).svg" height="20" width="20" class="ms-2" alt="add-icon">
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="master-category-wrapper__content mt-5">
+        <table class="w-100" mat-table [dataSource]="masterCategoryList" matSort>
+            <ng-container matColumnDef="sr no">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Sr No </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row; let i= index"> {{ (paginatorRef.pageIndex * paginatorRef.pageSize) + (i + 1) }} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="masterCategoryImage">
+                <th mat-header-cell *matHeaderCellDef>Image </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    <img class="outlet-img" src='{{row.imageUrl}}' alt="" width="50" height="50">
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="masterCategoryDetail">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Master Category Details</th>
+                <td class="" mat-cell *matCellDef="let row">
+                    <span class="d-flex gap-3 align-items-center">
+                        <strong>{{row.name}}</strong>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.name">
+                    </span>
+                    <span class="d-flex gap-3 align-items-center">
+                        <strong>{{row.id}}</strong>
+                        <img class="cursor-enabled" src="assets/icons/copy-icon.svg" height="15" width="15"
+                            [appCopyToClipboard]="row.id">
+                    </span>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="createdAt">
+                <th mat-header-cell *matHeaderCellDef>Created At </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    {{row.createdAt}}
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="updatedAt">
+                <th mat-header-cell *matHeaderCellDef>Updated At </th>
+                <td class="cursor-disable" mat-cell *matCellDef="let row">
+                    {{row.updatedAt}}
+                </td>
+            </ng-container>
+
+            <!-- <ng-container matColumnDef="isDeleted">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Is Deleted</th>
+                <td class="" mat-cell *matCellDef="let row">
+                    <input class="me-3" type="checkbox" [ngClass]="{'true': row.isDeleted === 'true'}" role="switch" name="toggle" (click)="changeIsDeleted(row)">
+                </td>
+            </ng-container> -->
+            <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
+                <td class="" mat-cell *matCellDef="let row">
+                    <mat-icon class="ms-2" (click)="openMasterCategoryDialog(row)">edit</mat-icon>
+                    <mat-icon class="ms-2" (click)="deleteMasterCategory(row)">delete</mat-icon>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" colspan="6">There is no matching data !!!</td>
+            </tr>
+        </table>
+
+        <mat-paginator #paginatorRef [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+    </div>
+</section>
+
+<!-- Change Master Category Sequence -->
+<div class="modal hide drawer right-align" id="masterCategorySequenceModalRight" role="dialog" aria-labelledby="sequenceModalLabel" aria-hidden="true" *ngIf="isMasterCategorySequenceModalVisible">
+    <div class="modal-dialog" role="dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <label class="modal-title border-0" id="exampleModalLabel">Change Sequence</label>
+                <mat-icon class="ms-3 cursor-enabled" (click)="closeSequenceModal()" data-dismiss="modal">close</mat-icon>
+            </div>
+            <div class="modal-body">
+                <div class="m-0 d-flex align-items-center flex-column w-100">
+                    <span class="d-flex w-100 align-items-baseline justify-content-between">
+                <h6 class="note mb-4"><i>Drag and drop to determine the sequence</i></h6>
+              <span>
+                <button type="button" class="buttons active-button" (click)="saveMasterCategorySequence()" *ngIf="isMasterCategorySequenceModalVisible">Save</button>
+              </span>
+                    </span>
+                    <div class="w-100" cdkDropList cdkDropListOrientation="vertical" (cdkDropListDropped)="dropMasterCategorySequence($event)" *ngIf="isMasterCategorySequenceModalVisible">
+                        <div class="sequence mt-3" cdkDrag *ngFor="let master of masterCategoryDataArr">
+                            <strong>{{master.name}}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,102 @@
+.main {
+    padding: 0 24px 16px;
+  
+    .menu-wrapper {
+      &__content {
+        width: 100%;
+      }
+  
+      &__tools {
+        width: 27%;
+      }
+    }
+  }
+  .ckeckbox {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    grid-gap: 1em;
+    font-weight: 600;
+  }
+  .ckeckbox input {
+    position: relative;
+    appearance: none;
+  }
+  .ckeckbox input::before {
+    position: absolute;
+    content: "";
+    height: 1.25em;
+    width: 1.25em;
+    border: 2px solid #000;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    transition: 0.3s all ease;
+  }
+  .ckeckbox input:checked::before {
+    display: none;
+  }
+  .ckeckbox input:checked::after {
+    position: absolute;
+    content: url("../../../../../assets/icons/checknox-icon.svg");
+    color: #0d1d28;
+    cursor: pointer;
+    top: -0.8em;
+    left: -0.9em;
+  }
+  
+  th.mat-header-cell {
+    background-color: #133166;
+  }
+  .category-panel {
+    border: 1px solid;
+    border-radius: 12px !important;
+    background-color: #0f254d;
+    color: #fff;
+  
+    .title-action {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      padding: 1em 1em 1em 0;
+  
+      mat-icon {
+        margin-right: 0.5em;
+      }
+  
+      .title {
+        font-size: 20px;
+        font-weight: 500;
+        width: 90%;
+        justify-content: flex-start;
+      }
+  
+      .action {
+        display: flex;
+  
+        mat-icon {
+          cursor: pointer;
+        }
+      }
+    }
+  
+    .item-action {
+      display: flex;
+      width: 100%;
+      border-top: 1px solid #e7ecef;
+      .item-img {
+        border-radius: 50%;
+      }
+    }
+  }
+  
+  .sub-category-panel {
+    border: 1px solid;
+    border-radius: 12px !important;
+  }
+  .clickable{
+    cursor: pointer;
+  }
+  
+  
